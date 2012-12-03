@@ -114,8 +114,11 @@ def atlasstyle():
     gROOT.ForceStyle()
 
 
-def tdrstyle():
+def tdrstyle_grayscale():
+    tdrstyle()
+    set_palette('gray_inverted', 999)
 
+def tdrstyle():
     """
     Here is CMS ptdr style
     """
@@ -469,6 +472,11 @@ def set_palette(name='default', ncontours=200):
         red   = [1.00, 0.84, 0.61, 0.34, 0.00]
         green = [1.00, 0.84, 0.61, 0.34, 0.00]
         blue  = [1.00, 0.84, 0.61, 0.34, 0.00]
+    if name == 'gray_inverted':
+        stops = [0.00, 0.34, 0.61, 0.84, 1.00]
+        red   = [0.00, 0.34, 0.61, 0.84, 1.00]
+        green = [0.00, 0.34, 0.61, 0.84, 1.00]
+        blue  = [0.00, 0.34, 0.61, 0.84, 1.00]
     elif name == 'white_to_black':
         stops = [0.00, 0.10, 0.25, 0.45, 0.60, 0.75, 1.00]
         red   = [1.00, 0.00, 0.00, 0.00, 0.97, 0.97, 0.10]

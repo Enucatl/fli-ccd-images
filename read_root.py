@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 from __future__ import division, print_function
-from rootstyle import tdrstyle
+from rootstyle import tdrstyle_grayscale
 import sys
 import ROOT
 
 file_name = sys.argv[1]
 
 ROOT.gROOT.ProcessLine(".L read_raw_image.C+")
-tdrstyle()
+tdrstyle_grayscale()
 
 input_file = open(file_name, "rb")
 text = input_file.read()
@@ -47,5 +47,5 @@ image = ROOT.TH2I(file_name, file_name,
         max_y)
 ROOT.read_raw_image(file_name, header_bytes, image)
 
-image.Draw("colz")
+image.Draw("col")
 raw_input()
