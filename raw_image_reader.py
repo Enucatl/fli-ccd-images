@@ -33,7 +33,8 @@ class RawImageReader(object):
             elif "columns" in line:
                 self.columns = int(line.split()[2])
             elif "ROI" in line:
-                self.min_x, self.min_y, self.max_x, self.max_y = (int(x)
+                print(line, self.rows, self.columns)
+                self.min_y, self.min_x, self.max_y, self.max_x = (int(x)
                         for x in line.split()[2:])
             elif "EOH" in line:
                 break

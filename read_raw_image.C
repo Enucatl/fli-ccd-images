@@ -24,7 +24,7 @@ void read_raw_image(string file_name, int header_bytes, TH2& image) {
     file.seekg(header_bytes);
     Reader<uint16_t> reader;
     uint16_t value = 0;
-    int i = 0;
+    int i = 1;
     int j = 0;
     //load the values into the histogram
     while(reader(file, value)) {
@@ -32,7 +32,8 @@ void read_raw_image(string file_name, int header_bytes, TH2& image) {
             j++;
         else {
             j = 1;
-            i = (i % columns) + 1;
+            if (i < columns) i++;
+            else i = 1;
         }
         image.SetBinContent(i, j, value);
     }
