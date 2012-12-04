@@ -27,7 +27,7 @@ while True:
         if not os.path.exists(folder):
             raise OSError("folder does not exist.")
         file_list = os.listdir(folder)
-        file_list = [file_name
+        file_list = [os.path.join(folder, file_name)
                 for file_name in file_list
                 if ".raw" in file_name]
         newest = max(file_list, key=lambda x: os.stat(x).st_mtime)
