@@ -59,6 +59,7 @@ class RawImageReader(object):
                 canvas_name,
                 canvas_name)
         self.image.Draw(options)
+        self.canvas.AddExec("exec_draw_slice", ".x exec_draw_slice.C")
 
 if __name__ == '__main__':
     import sys
