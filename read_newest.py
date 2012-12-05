@@ -27,9 +27,14 @@ while True:
         if not os.path.exists(folder):
             raise OSError("folder does not exist.")
         file_list = os.listdir(folder)
+        "look for .raw files"
         file_list = [os.path.join(folder, file_name)
                 for file_name in file_list
                 if ".raw" in file_name]
+        "continue if no files in directory"
+        if not file_list:
+            sleep(2)
+            continue
         newest = max(file_list, key=lambda x: os.stat(x).st_mtime)
         if newest != previous_newest:
             print("found new file:", newest)
@@ -38,6 +43,7 @@ while True:
             image.draw()
         sleep(1)
     except KeyboardInterrupt:
+        print()
         print()
         print("Exiting.")
         break
