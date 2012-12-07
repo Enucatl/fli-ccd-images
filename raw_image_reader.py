@@ -42,7 +42,8 @@ class RawImageReader(object):
         return header_bytes
 
     def init_image(self, header_bytes):
-        ROOT.gROOT.ProcessLine(".L read_raw_image.C+")
+        ROOT.gROOT.ProcessLine(".L read_raw_image.cpp+")
+        ROOT.gROOT.ProcessLine(".L exec_draw_slice.cpp+")
         tdrstyle_grayscale()
         self.image = ROOT.TH2I(self.file_name, self.file_name,
                 self.rows,
@@ -59,7 +60,9 @@ class RawImageReader(object):
                 canvas_name,
                 canvas_name)
         self.image.Draw(options)
-        self.canvas.AddExec("exec_draw_slice", ".x exec_draw_slice.C")
+        canvas_name2 = self.file_name + "_canvas2"
+        ROOT.gROOT.ProcessLine("TCanvas canvas2;")
+        self.canvas.AddExec("exec_draw_slice", "exec_draw_slice(canvas2)")
 
 if __name__ == '__main__':
     import sys

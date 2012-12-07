@@ -1,18 +1,19 @@
+#include <sstream>
+#include <boost/scoped_ptr.hpp>
+#include "TVirtualPad.h"
+#include "TObject.h"
+#include "TCanvas.h"
+#include "TH1.h"
+#include "TH2.h"
+
+
+
 // echo object at mouse position and show a graphics line
-void exec_draw_slice() {
-    //example of macro called when a mouse event occurs in a pad.
-    // Example:
-    // Root > TFile f("hsimple.root");
-    // Root > hpxpy.Draw();
-    // Root > c1.AddExec("exec_draw_slice",".x exec_draw_slice.C");
-    // When moving the mouse in the canvas, a second canvas shows the
+void exec_draw_slice(TCanvas& slice_canvas) {
+    // When clicking the mouse in the canvas, slice_canvas shows the
     // projection along X of the bin corresponding to the Y position
-    // of the mouse. The resulting histogram is fitted with a gaussian.
+    // of the mouse.
     // A "dynamic" line shows the current bin position in Y.
-    // This more elaborated example can be used as a starting point
-    // to develop more powerful interactive applications exploiting CINT
-    // as a development engine.
-    //Author: Rene Brun
 
     TObject *select = gPad->GetSelected();
     if(!select) return;
@@ -24,7 +25,6 @@ void exec_draw_slice() {
 
     //only run on mouse click
     int event = gPad->GetEvent();
-    int px = gPad->GetEventX();
     int py = gPad->GetEventY();
     int pyold = gPad->GetUniqueID();
     float uxmin = gPad->GetUxmin();
@@ -39,15 +39,8 @@ void exec_draw_slice() {
     float upy = gPad->AbsPixeltoY(py);
     float y = gPad->PadtoY(upy);
 
-    //create or set the new canvas slice_canvas
     TVirtualPad *padsav = gPad;
-    TCanvas *slice_canvas = static_cast<TCanvas*>(gROOT->GetListOfCanvases()->FindObject("slice_canvas"));
-    if (slice_canvas)
-        delete slice_canvas->GetPrimitive("slice");
-    else
-        slice_canvas = new TCanvas("slice_canvas");
-
-    slice_canvas->cd();
+    slice_canvas.cd();
     //draw slice corresponding to mouse position
     TH2 *h = dynamic_cast<TH2*>(select);
     int biny = h->GetYaxis()->FindBin(y);
@@ -56,6 +49,6 @@ void exec_draw_slice() {
     title << "Slice at y bin " << biny;
     hp->SetTitle(title.str().c_str());
     hp->Draw();
-    slice_canvas->Update();
+    slice_canvas.Update();
     padsav->cd();
 }
