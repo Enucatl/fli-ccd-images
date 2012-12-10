@@ -56,12 +56,12 @@ class RawImageReader(object):
 
     def draw(self, options="col"):
         canvas_name = self.file_name + "_canvas"
+        ROOT.gROOT.ProcessLine("TCanvas canvas2;")
         self.canvas = ROOT.TCanvas(
                 canvas_name,
                 canvas_name)
         self.image.Draw(options)
         canvas_name2 = self.file_name + "_canvas2"
-        ROOT.gROOT.ProcessLine("TCanvas canvas2;")
         self.canvas.AddExec("exec_draw_slice", "exec_draw_slice(canvas2)")
 
 if __name__ == '__main__':

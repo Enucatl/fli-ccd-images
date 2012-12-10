@@ -1,5 +1,4 @@
 #include <sstream>
-#include <boost/scoped_ptr.hpp>
 #include "TVirtualPad.h"
 #include "TObject.h"
 #include "TCanvas.h"
