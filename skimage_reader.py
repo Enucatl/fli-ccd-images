@@ -30,5 +30,11 @@ def fromfile(file_name):
 if __name__ == '__main__':
     import sys
     image = fromfile(sys.argv[1])
-    io.imshow(image)
-    io.show()
+    from skimage import feature
+    from matplotlib import pyplot as plt
+    y, x = numpy.transpose(feature.harris(image, min_distance=100,
+        threshold=0.3, gaussian_deviation=5))
+    print(x, y)
+    plt.plot(x, y, "b.")
+    plt.imshow(image)
+    plt.show()
