@@ -80,10 +80,17 @@ class RawImageReaderScikit(object):
         pyplot.imshow(self.image)
         pyplot.show()
 
+    def save(self, fname, **kwargs):
+        pyplot.imsave(fname, self.image, **kwargs)
+
 if __name__ == '__main__':
     import sys
     file_name = sys.argv[1]
     image = RawImageReader(file_name)
     image.draw()
+
+    image2 = RawImageReaderScikit(file_name)
+    #image2.draw()
+    image2.save("immagine.png")
     raw_input()
 

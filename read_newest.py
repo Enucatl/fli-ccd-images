@@ -39,7 +39,7 @@ while True:
         if newest != previous_newest:
             print("found new file:", newest)
             previous_newest = newest
-            image = RawImageReaderScikit(newest)
+            image = RawImageReader(newest)
             image.draw()
         sleep(0.5)
     except KeyboardInterrupt:
