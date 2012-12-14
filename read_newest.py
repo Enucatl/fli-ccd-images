@@ -3,7 +3,7 @@ from __future__ import division, print_function
 import sys
 import os
 from time import sleep
-from raw_image_reader import RawImageReader
+from raw_image_reader import RawImageReader, RawImageReaderScikit
 
 try:
     import argparse
@@ -39,9 +39,9 @@ while True:
         if newest != previous_newest:
             print("found new file:", newest)
             previous_newest = newest
-            image = RawImageReader(newest)
+            image = RawImageReaderScikit(newest)
             image.draw()
-        sleep(1)
+        sleep(0.5)
     except KeyboardInterrupt:
         print()
         print()

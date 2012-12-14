@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from __future__ import division, print_function
 from rootstyle import tdrstyle_grayscale
+from skimage_reader import fromfile
+from matplotlib import pyplot
 import ROOT
 
 class RawImageReader(object):
@@ -63,6 +65,20 @@ class RawImageReader(object):
         self.image.Draw(options)
         canvas_name2 = self.file_name + "_canvas2"
         self.canvas.AddExec("exec_draw_slice", "exec_draw_slice(canvas2)")
+
+class RawImageReaderScikit(object):
+    """read raw image as saved by the Proline CCD camera in the PSI east
+    lab.
+    Store it as a skimage.io.Image
+    """
+    def __init__(self, file_name):
+        super(RawImageReaderScikit, self).__init__()
+        self.file_name = file_name
+        self.image = fromfile(file_name)
+        
+    def draw(self):
+        pyplot.imshow(self.image)
+        pyplot.show()
 
 if __name__ == '__main__':
     import sys

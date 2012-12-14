@@ -32,8 +32,11 @@ if __name__ == '__main__':
     image = fromfile(sys.argv[1])
     from skimage import feature
     from matplotlib import pyplot as plt
-    y, x = numpy.transpose(feature.harris(image, min_distance=100,
-        threshold=0.3, gaussian_deviation=5))
+    y, x = numpy.transpose(feature.harris(
+        image,
+        min_distance=100,
+        threshold=0.5,
+        gaussian_deviation=5))
     print(x, y)
     plt.plot(x, y, "b.")
     plt.imshow(image)
