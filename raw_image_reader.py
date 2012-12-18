@@ -2,7 +2,7 @@
 from __future__ import division, print_function
 from rootstyle import tdrstyle_grayscale
 from skimage_reader import fromfile
-from matplotlib import pyplot
+from matplotlib import pyplot, cm
 import ROOT
 
 class RawImageReader(object):
@@ -76,8 +76,8 @@ class RawImageReaderScikit(object):
         self.file_name = file_name
         self.image = fromfile(file_name)
         
-    def draw(self):
-        pyplot.imshow(self.image)
+    def draw(self, **kwargs):
+        pyplot.imshow(self.image, **kwargs)
         pyplot.show()
 
     def save(self, fname, **kwargs):
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     image.draw()
 
     image2 = RawImageReaderScikit(file_name)
-    #image2.draw()
-    image2.save("immagine.png")
+    image2.draw(cmap=cm.gray)
+    #image2.save("immagine.png")
     raw_input()
 
