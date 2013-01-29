@@ -41,9 +41,12 @@ while True:
             previous_newest = newest
             image = RawImageReader(newest)
             image.draw()
-        sleep(0.5)
+        #sleep(0.5)
     except KeyboardInterrupt:
         print()
         print()
         print("Exiting.")
         break
+
+
+

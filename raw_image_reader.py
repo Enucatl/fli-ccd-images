@@ -58,13 +58,26 @@ class RawImageReader(object):
 
     def draw(self, options="col"):
         canvas_name = self.file_name + "_canvas"
-        ROOT.gROOT.ProcessLine("TCanvas canvas2;")
+        #ROOT.gROOT.ProcessLine("TCanvas canvas2;")
         self.canvas = ROOT.TCanvas(
                 canvas_name,
                 canvas_name)
         self.image.Draw(options)
-        canvas_name2 = self.file_name + "_canvas2"
-        self.canvas.AddExec("exec_draw_slice", "exec_draw_slice(canvas2)")
+        #canvas_name2 = self.file_name + "_canvas2"
+        #self.canvas.AddExec("exec_draw_slice", "exec_draw_slice(canvas2)")
+
+    def save(self, name):
+        self.canvas.SaveAs(name)
+
+    def update(self, new_name):
+        self.file_name = new_name
+        input_file = open(new_name, "rb")
+        text = input_file.read()
+        input_file.close()
+        text = text.split("\n")
+        header_bytes = self.process_header(text)
+        ROOT.read_raw_image(new_name, header_bytes, self.image)
+        self.canvas.Update()
 
 class RawImageReaderScikit(object):
     """read raw image as saved by the Proline CCD camera in the PSI east
@@ -88,9 +101,10 @@ if __name__ == '__main__':
     file_name = sys.argv[1]
     image = RawImageReader(file_name)
     image.draw()
+    image.save(sys.argv[1].replace(".raw", ".png"))
 
-    image2 = RawImageReaderScikit(file_name)
-    image2.draw(cmap=cm.gray)
+    #image2 = RawImageReaderScikit(file_name)
+    #image2.draw(cmap=cm.gray)
     #image2.save("immagine.png")
-    raw_input()
+    #raw_input()
 
