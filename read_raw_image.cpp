@@ -1,20 +1,6 @@
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <vector>
-#include <inttypes.h>
-#include "TH2.h"
-#include <iterator>
-#include <algorithm>
+#include "read_raw_image.h"
 
-template<typename T> 
-struct Reader {
-    std::istream& operator()(std::istream& is, T& pixel){
-        return is.read(reinterpret_cast<char*>(&pixel), sizeof(pixel));
-    }
-};
-
-void read_raw_image(string file_name, int header_bytes, TH2& image) {
+void read_raw_image(std::string file_name, int header_bytes, TH2& image) {
     //open binary file
     std::ifstream file(file_name.c_str(), std::ios::binary);
     //get size of image
