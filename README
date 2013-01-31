@@ -1,0 +1,30 @@
+suite of classes and programmes that read the raw images taken by the CCD
+FLI camera in OFLG/U210
+
+requirements:
+The BOOST c++ libraries > 1.52
+boost.org
+
+The ROOT data analysis framework > 5.34
+root.cern.ch
+
+
+
+
+Compile
+----------
+as simple as
+
+make
+
+
+Standalone programmes
+----------------------
+
+for reading a specific image:
+    ./single_image_reader
+
+watch a folder for new images:
+    ./online_viewer
+
+run them to get help
