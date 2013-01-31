@@ -1,18 +1,49 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <iterator>
-#include <boost/program_options.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/iterator/filter_iterator.hpp>
-
 #include "TApplication.h"
 
-#include "raw_image_tools.h"
-#include "raw_image_reader.h"
+#include "read_newest.h"
 
 namespace po = boost::program_options;
-namespace fs = boost::filesystem;
+
+namespace raw_image_tools {
+
+ReadNewest::ReadNewest(std::string folder):
+    folder_(folder) {
+}
+
+void ReadNewest::update_histogram() {
+    //never returns!
+    while (true){
+        boost::mutex::scoped_lock lock(mutex_);
+        new_file_found_.wait(lock);
+        //std::cout << "received signal " << current_newest_ << std::endl;
+        image_reader_.load_image(current_newest_.string());
+        image_reader_.draw();
+    }
+}
+
+void ReadNewest::watch_folder() {
+    //never returns!
+    std::vector<boost::filesystem::path> files;
+    while (true) {
+        boost::filesystem::directory_iterator dir_first(folder_), dir_last;
+        std::copy(boost::make_filter_iterator(raw_image_tools::is_image_file, dir_first, dir_last),
+                boost::make_filter_iterator(raw_image_tools::is_image_file, dir_last, dir_last),
+                std::back_inserter(files)
+                );
+        boost::filesystem::path newest = *std::max_element(files.begin(), files.end(), raw_image_tools::is_file2_newer);
+        if (newest == current_newest_) {
+            continue;
+        }
+        else {
+            boost::mutex::scoped_lock lock(mutex_);
+            current_newest_ = newest;
+            //std::cout << current_newest_ << std::endl;
+            new_file_found_.notify_one();
+        }
+    }
+}
+
+}
 
 int main(int argc, char **argv) {
     po::options_description desc("Options");
@@ -44,11 +75,10 @@ int main(int argc, char **argv) {
     }
 
     TApplication app("app", &argc, argv);
-    raw_image_tools::RawImageReader image_reader;
-    std::vector<fs::path> files;
-    fs::path previous_newest;
+    raw_image_tools::ReadNewest read_newest(folder);
+    boost::thread folder_lookup_thread(&raw_image_tools::ReadNewest::watch_folder, &read_newest);
+    boost::thread update_histogram_thread(&raw_image_tools::ReadNewest::update_histogram, &read_newest);
     app.Run();
-
     return 0;
 }
 

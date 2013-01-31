@@ -10,6 +10,7 @@
 #include <inttypes.h>
 
 #include <boost/filesystem.hpp>
+#include <boost/iterator/filter_iterator.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp> 
 

@@ -76,22 +76,5 @@ bool is_file2_newer(const boost::filesystem::path& p1, const boost::filesystem::
     return boost::filesystem::last_write_time(p1) < boost::filesystem::last_write_time(p2);
 }
 
-void watch_folder(const boost::filesystem::path folder, boost::filesystem::path& previous_newest) {
-    //never returns!!
-    while (true) {
-        boost::filesystem::directory_iterator dir_first(dir), dir_last;
-        std::copy(boost::make_filter_iterator(raw_image_tools::is_image_file, dir_first, dir_last),
-                boost::make_filter_iterator(raw_image_tools::is_image_file, dir_last, dir_last),
-                std::back_inserter(files)
-                );
-        boost::filesystem::path newest = *std::max_element(files.begin(), files.end(), raw_image_tools::is_file2_newer);
-        if (newest == previous_newest) {
-            continue;
-        }
-        else {
-            previous_newest = newest;
-        }
-    }
-}
 
 }
