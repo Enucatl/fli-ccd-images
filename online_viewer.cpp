@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
 
-    std::string example = "./read_newest --folder /home/abis_m/afsproject/raw_data/2013/ccdfli/2013.01.29/S00000-00999/S00013/";
+    std::string example = "./online_viewer --folder /afs/psi.ch/project/hedpc/raw_data/2013/ccdfli/2013.01.29/S00000-00999/S00013/";
 
     if (vm.count("help")) {
         std::cout << desc << std::endl;
