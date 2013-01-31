@@ -3,8 +3,11 @@ LDFLAGS=`root-config --glibs`
 BOOST_LIBS=-lboost_program_options -lboost_filesystem -lboost_system -lboost_thread
 INC_STYLE=-I/home/abis_m/bin
 
+online_viewer: online_viewer.cpp read_newest raw_image_tools raw_image_reader single_image_reader.cpp
+	g++ -o online_viewer online_viewer.cpp read_newest.cpp ~/bin/rootstyle.cpp raw_image_reader.o raw_image_tools.o $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS) $(INC_STYLE)
+
 read_newest: raw_image_tools raw_image_reader single_image_reader.cpp
-	g++ -o read_newest read_newest.cpp ~/bin/rootstyle.cpp raw_image_reader.o raw_image_tools.o $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS) $(INC_STYLE)
+	g++ -c read_newest.cpp ~/bin/rootstyle.cpp raw_image_reader.o raw_image_tools.o $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS) $(INC_STYLE)
 
 single_image_reader: raw_image_tools raw_image_reader single_image_reader.cpp
 	g++ -o single_image_reader single_image_reader.cpp ~/bin/rootstyle.cpp raw_image_reader.o raw_image_tools.o $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS) $(INC_STYLE)
