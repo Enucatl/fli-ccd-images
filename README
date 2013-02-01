@@ -17,6 +17,18 @@ as simple as
 
 make
 
+if the compiler cannot find the proper headers and libraries, you are
+    probably missing these variables (ready to copy&paste on a bash shell):
+
+#setup ROOT from afs/cern.ch
+source /afs/cern.ch/sw/lcg/external/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh
+source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.03/x86_64-slc6-gcc46-opt/root/bin/thisroot.sh
+alias root='root -l'
+#setup boost c++ libraries
+export CPLUS_INCLUDE_PATH=/home/specuser/boost_install/include:$CPLUS_INCLUDE_PATH
+export LD_LIBRARY_PATH=/home/specuser/boost_install/lib:$LD_LIBRARY_PATH
+export LIBRARY_PATH=/home/specuser/boost_install/lib:$LIBRARY_PATH
+
 
 Standalone programmes
 ----------------------
