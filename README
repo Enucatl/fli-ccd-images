@@ -3,10 +3,10 @@ FLI camera in OFLG/U210
 
 requirements:
 The BOOST c++ libraries > 1.52
-boost.org
+http://www.boost.org
 
 The ROOT data analysis framework > 5.34
-root.cern.ch
+http://root.cern.ch
 
 
 
