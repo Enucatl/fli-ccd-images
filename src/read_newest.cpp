@@ -28,6 +28,7 @@ void ReadNewest::watch_folder() {
                 );
         boost::filesystem::path newest = *std::max_element(files.begin(), files.end(), raw_image_tools::is_file2_newer);
         if (newest == current_newest_) {
+            boost::this_thread::sleep(boost::posix_time::milliseconds(100));
             continue;
         }
         else {
