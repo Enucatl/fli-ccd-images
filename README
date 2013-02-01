@@ -13,9 +13,9 @@ root.cern.ch
 
 Compile
 ----------
-as simple as
 
 make
+
 
 if the compiler cannot find the proper headers and libraries, you are
     probably missing these variables (ready to copy&paste on a bash shell):
