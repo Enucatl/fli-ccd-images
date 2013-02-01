@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
             vm);
     po::notify(vm);
 
-    std::string example = "EXAMPLE\n./single_image_reader /home/abis_m/afsproject/raw_data/2013/ccdfli/2013.01.29/S00000-00999/S00013/ccdimage_00013_00068_00.raw";
+    std::string example = "EXAMPLE\n./single_image_reader /afs/psi.ch/project/hedpc/raw_data/2013/ccdfli/2013.01.29/S00000-00999/S00013/ccdimage_00013_00068_00.raw";
 
     if (vm.count("help")) {
         std::cout << desc << std::endl;

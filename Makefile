@@ -7,23 +7,26 @@ BOOST_LIBS=-lboost_program_options -lboost_filesystem -lboost_system -lboost_thr
 
 all: make_folders online_viewer read_newest single_image_reader raw_image_reader raw_image_tools
 
-online_viewer: $(SRC_FOLDER)/online_viewer.cpp raw_image_tools raw_image_reader read_newest $(SRC_FOLDER)/single_image_reader.cpp
-	g++ -o online_viewer $(SRC_FOLDER)/online_viewer.cpp $(SRC_FOLDER)/read_newest.cpp $(SRC_FOLDER)/rootstyle.cpp $(SRC_FOLDER)/raw_image_reader.cpp $(SRC_FOLDER)/raw_image_tools.cpp $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS) $(INC_STYLE)
+online_viewer: $(SRC_FOLDER)/online_viewer.cpp rootstyle raw_image_tools raw_image_reader read_newest 
+	g++ -o online_viewer $(SRC_FOLDER)/online_viewer.cpp $(LIB_FOLDER)/read_newest.o $(LIB_FOLDER)/rootstyle.o $(LIB_FOLDER)/raw_image_reader.o $(LIB_FOLDER)/raw_image_tools.o $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS) $(INC_STYLE)
 
-single_image_reader: raw_image_tools raw_image_reader $(SRC_FOLDER)/single_image_reader.cpp
-	g++ -o single_image_reader $(SRC_FOLDER)/single_image_reader.cpp $(SRC_FOLDER)/rootstyle.cpp $(SRC_FOLDER)/raw_image_reader.cpp $(SRC_FOLDER)/raw_image_tools.cpp $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS) 
+single_image_reader: rootstyle raw_image_tools raw_image_reader $(SRC_FOLDER)/single_image_reader.cpp 
+	g++ -o single_image_reader $(SRC_FOLDER)/single_image_reader.cpp $(LIB_FOLDER)/rootstyle.o $(LIB_FOLDER)/raw_image_reader.o $(LIB_FOLDER)/raw_image_tools.o $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS) 
 
-read_newest: make_folders raw_image_tools raw_image_reader $(SRC_FOLDER)/single_image_reader.cpp
-	g++ -fPIC -shared -o $(LIB_FOLDER)/read_newest.so $(SRC_FOLDER)/read_newest.cpp $(SRC_FOLDER)/rootstyle.cpp $(SRC_FOLDER)/raw_image_reader.cpp $(SRC_FOLDER)/raw_image_tools.cpp $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS) 
+read_newest: make_folders $(SRC_FOLDER)/read_newest.cpp $(INC_FOLDER)/read_newest.h
+	g++ -c -o $(LIB_FOLDER)/read_newest.o $(SRC_FOLDER)/read_newest.cpp $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS) 
 
-raw_image_reader: make_folders $(SRC_FOLDER)/raw_image_reader.cpp $(INC_FOLDER)/raw_image_reader.h raw_image_tools 
-	g++ -fPIC -shared -o $(LIB_FOLDER)/raw_image_reader.so $(SRC_FOLDER)/raw_image_reader.cpp $(SRC_FOLDER)/raw_image_tools.cpp $(SRC_FOLDER)/rootstyle.cpp $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS) 
+raw_image_reader: make_folders $(SRC_FOLDER)/raw_image_reader.cpp $(INC_FOLDER)/raw_image_reader.h 
+	g++ -c -o $(LIB_FOLDER)/raw_image_reader.o $(SRC_FOLDER)/raw_image_reader.cpp $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS) 
 
 raw_image_tools: make_folders $(SRC_FOLDER)/raw_image_tools.cpp $(INC_FOLDER)/raw_image_tools.h
-	g++ -fPIC -shared -o $(LIB_FOLDER)/raw_image_tools.so $(SRC_FOLDER)/raw_image_tools.cpp $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS)
+	g++ -c -o $(LIB_FOLDER)/raw_image_tools.o $(SRC_FOLDER)/raw_image_tools.cpp $(CFLAGS) $(LDFLAGS) $(BOOST_LIBS)
+
+rootstyle: make_folders $(SRC_FOLDER)/rootstyle.cpp $(INC_FOLDER)/rootstyle.h
+	g++ -c -o $(LIB_FOLDER)/rootstyle.o $(SRC_FOLDER)/rootstyle.cpp $(CFLAGS) $(LDFLAGS) 
 
 make_folders:
 	mkdir -p lib
 
 clean:
-	rm lib/*.so python/*.pyc online_viewer single_image_reader
+	rm -f lib/*.*o python/*.pyc online_viewer single_image_reader
