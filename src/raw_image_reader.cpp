@@ -20,6 +20,7 @@ RawImageReader::~RawImageReader(){
 }
 
 bool RawImageReader::load_image(std::string file_name) {
+    canvas_.SetTitle(boost::filesystem::basename(file_name).c_str());
     if (not boost::filesystem::exists(file_name))
         return false;
     int rows, columns, min_x, min_y, max_x, max_y;

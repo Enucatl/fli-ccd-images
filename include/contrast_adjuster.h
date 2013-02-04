@@ -1,10 +1,13 @@
 #ifndef CONTRAST_ADJUSTER_H
 #define CONTRAST_ADJUSTER_H
 
+#include <iostream>
+
 //noncopyable header:
 #include <boost/utility.hpp>
 
 #include "TObject.h"
+#include "TColor.h"
 #include "TCanvas.h"
 #include "TPad.h"
 #include "TH1.h"
@@ -26,11 +29,12 @@ public:
     ContrastAdjuster();
     void get_intensity_distribution(const TH2& parent_histogram);
     void set_style(TStyle* style) { style_ = style; }
+    void set_mother_canvas(TCanvas* mother_canvas) { mother_canvas_ = mother_canvas; }
     void draw(const char* options="");
     void update_style();
     //overloading TObject::ExecuteEvent
     //only calls update_style (which has a more meaningful name)
-    void ExecuteEvent(int event, int px, int py) { update_style(); }
+    void ExecuteEvent(int event, int px, int py); 
 
 private:
     const int n_bins_; //number of bins for histogram_ 
@@ -39,6 +43,7 @@ private:
     TH1D histogram_;
     TSlider slider_;
     TStyle* style_;
+    TCanvas* mother_canvas_;
 };
 
 }
