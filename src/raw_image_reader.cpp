@@ -49,4 +49,8 @@ void RawImageReader::update() {
         draw();
 }
 
+void RawImageReader::save(std::string file_name) {
+    canvas_.SaveAs(file_name.c_str());
+}
+
 }

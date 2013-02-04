@@ -24,6 +24,7 @@ public:
     bool load_image(std::string file_name);
     void draw(const char* options="");
     void update();
+    void save(std::string file_name);
 
 private:
     bool draw_called_;

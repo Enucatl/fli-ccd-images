@@ -30,7 +30,7 @@ export LD_LIBRARY_PATH=/home/specuser/boost_install/lib:$LD_LIBRARY_PATH
 export LIBRARY_PATH=/home/specuser/boost_install/lib:$LIBRARY_PATH
 
 
-Standalone programmes
+C++ programmes
 ----------------------
 
 for reading a specific image:
@@ -40,3 +40,11 @@ watch a folder for new images:
     ./online_viewer
 
 run them to get help
+
+
+Python programmes
+----------------------
+reads all images in a folder and convert them from RAW to PNG
+also saves a gif animation with all the png images
+
+python python/make_gif.py FOLDER
