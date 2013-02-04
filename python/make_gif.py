@@ -43,7 +43,7 @@ png_files = []
 for i, file_name in enumerate(files):
     file_name = os.path.join(folder, file_name)
     command = programme + " -f {0} --save -b".format(file_name)
-    png_files.append(file_name)
+    png_files.append(file_name.replace(".raw", ".png"))
     print(progress_bar(i / n), end="")
     check_call(command, shell=True)
 
