@@ -38,8 +38,8 @@ void ContrastAdjuster::draw(const char* options) {
 void ContrastAdjuster::update_style() {
     //see: http://ultrahigh.org/2007/08/making-pretty-root-color-palettes/
     //on how to make such a colour palette
-    const int NRGBs = 5;
-    const int NCont = 999;
+    const int NRGBs = 4;
+    const int NCont = 100;
     std::cout << "updated style" << std::endl;
 
     //get slide values
@@ -48,18 +48,11 @@ void ContrastAdjuster::update_style() {
 
     //define stops, see:
     //http://root.cern.ch/root/html/TColor.html#TColor:CreateGradientColorTable
-    double interval = white - black;
-    double colour0 = black;
-    double colour1 = 0.34 * interval + black;
-    double colour2 = 0.61 * interval + black;
-    double colour3 = 0.84 * interval + black;
-    double colour4 = white;
 
-    double red[NRGBs]   = { colour0, colour1, colour2, colour3, colour4 };
-    double green[NRGBs] = { colour0, colour1, colour2, colour3, colour4 };
-    double blue[NRGBs]  = { colour0, colour1, colour2, colour3, colour4 };
-    double stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
-    std::cout << colour0 << " " << colour4 << std::endl;
+    double red[NRGBs]   = { 0.0, 0.0, 1.0, 1.00 };
+    double green[NRGBs] = { 0.00, 0.0, 1.0, 1.00 };
+    double blue[NRGBs]  = { 0.00, 0.0, 1.0, 1.00 };
+    double stops[NRGBs] = { 0.00, black, white, 1.00 };
     TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
     style_->SetNumberContours(NCont);
     style_->cd();
