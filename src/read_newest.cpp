@@ -27,11 +27,7 @@ void ReadNewest::watch_folder() {
     //never returns!
     std::vector<boost::filesystem::path> files;
     while (true) {
-        boost::filesystem::directory_iterator dir_first(folder_), dir_last;
-        std::copy(boost::make_filter_iterator(raw_image_tools::is_image_file, dir_first, dir_last),
-                boost::make_filter_iterator(raw_image_tools::is_image_file, dir_last, dir_last),
-                std::back_inserter(files)
-                );
+        raw_image_tools::get_all_raw_files(folder_, files);
         if (not files.size()) {
             //wait if no files found
             boost::this_thread::sleep(boost::posix_time::milliseconds(500));

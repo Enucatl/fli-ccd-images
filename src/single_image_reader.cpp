@@ -3,12 +3,14 @@
 #include <string>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/filesystem.hpp>
 
 #include "TApplication.h"
 
 #include "raw_image_reader.h"
 
 namespace po = boost::program_options;
+namespace fs = boost::filesystem;
 
 int main(int argc, char **argv) {
     po::options_description desc("Options");
@@ -57,9 +59,18 @@ int main(int argc, char **argv) {
     if (loaded)
         image_reader.draw();
     if (save) {
-        std::string output_name(file_name);
-        boost::algorithm::replace_last(output_name, ".raw", ".png");
-        image_reader.save(output_name);
+        //save in separate png folder
+        //begin string operations to build the new filename
+        fs::path input_name(file_name);
+        fs::path input_folder(input_name.parent_path());
+        fs::path output_folder = input_folder / fs::path("png");
+        fs::create_directories(output_folder);
+        fs::path output_name = input_name.filename();
+        std::string output_name_string((output_folder / output_name).string());
+        std::cout << output_name_string << std::endl;
+        boost::algorithm::replace_last(output_name_string, ".raw", ".png");
+        //end string operations
+        image_reader.save(output_name_string);
     }
     else
         app.Run(); //don't Run when saving output image

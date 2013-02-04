@@ -30,6 +30,7 @@ int process_header(std::ifstream& file_name, int& rows, int& columns, int& min_x
 bool is_image_file(const boost::filesystem::directory_entry& path);
 bool is_file2_newer(const boost::filesystem::path& p1, const boost::filesystem::path& p2);
 void watch_folder(const boost::filesystem::path folder, boost::filesystem::path& new_name);
+void get_all_raw_files(const boost::filesystem::path& folder, std::vector<boost::filesystem::path>& vector);
 }
 
 #endif /* end of include guard: READ_RAW_IMAGE_H */
