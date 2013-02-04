@@ -18,6 +18,11 @@ void ReadNewest::update_histogram() {
 }
 
 void ReadNewest::watch_folder() {
+    while (not boost::filesystem::exists(folder_)) {
+        std::cout << "Folder " << folder_ <<
+            " not found! I will wait for half a second..." << std::endl;
+        boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+    }
     //never returns!
     std::vector<boost::filesystem::path> files;
     while (true) {
