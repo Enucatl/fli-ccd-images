@@ -19,6 +19,7 @@ void ReadNewest::update_histogram() {
 
 void ReadNewest::watch_folder() {
     while (not boost::filesystem::exists(folder_)) {
+        //wait if folder not found
         std::cout << "Folder " << folder_ <<
             " not found! I will wait for half a second..." << std::endl;
         boost::this_thread::sleep(boost::posix_time::milliseconds(500));
@@ -31,6 +32,11 @@ void ReadNewest::watch_folder() {
                 boost::make_filter_iterator(raw_image_tools::is_image_file, dir_last, dir_last),
                 std::back_inserter(files)
                 );
+        if (not files.size()) {
+            //wait if no files found
+            boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+            continue;
+        }
         boost::filesystem::path newest = *std::max_element(files.begin(), files.end(), raw_image_tools::is_file2_newer);
         if (newest == current_newest_) {
             boost::this_thread::sleep(boost::posix_time::milliseconds(100));
