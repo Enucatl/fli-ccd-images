@@ -49,7 +49,8 @@ for i, file_name in enumerate(files):
 
 gif_creation_command = "convert -delay 50 -loop 1 "
 gif_creation_command += " ".join(png_files)
-gif_name = os.path.basename(os.path.normpath(folder)) + ".gif"
+gif_name = os.path.join(folder,
+        os.path.basename(os.path.normpath(folder)) + ".gif")
 gif_creation_command += " " + gif_name
 print(gif_creation_command)
 check_call(gif_creation_command, shell=True)
