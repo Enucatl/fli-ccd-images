@@ -61,9 +61,8 @@ int main(int argc, char **argv) {
         boost::algorithm::replace_last(output_name, ".raw", ".png");
         image_reader.save(output_name);
     }
-    else {
-        app.Run(); //don't run when saving output image
-    }
+    else
+        app.Run(); //don't Run when saving output image
     return 0;
 }
 
