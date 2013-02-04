@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
     TStyle* style = setTDRStyle();
     style->cd();
     TCanvas main_canvas("canvas", "canvas");
-    TH2D histogram("hist", "hist", 1000, -2, 2, 1000, -2, 2);
+    TH2D histogram("hist", "hist", 100, -1, 1, 1000, -1, 1);
     histogram.FillRandom("gaus", 10000000);
     histogram.Draw("col");
 

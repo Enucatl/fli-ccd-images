@@ -55,15 +55,15 @@ void ContrastAdjuster::update_style() {
     double colour3 = 0.84 * interval + black;
     double colour4 = white;
 
-    double red[NRGBs]   = { 0.00, 0.34, 0.61, 0.84, 1.00 };
-    double green[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
-    double blue[NRGBs]  = { 0.00, 0.34, 0.61, 0.84, 1.00 };
-    double stops[NRGBs] = { colour0, colour1, colour2, colour3, colour4 };
+    double red[NRGBs]   = { colour0, colour1, colour2, colour3, colour4 };
+    double green[NRGBs] = { colour0, colour1, colour2, colour3, colour4 };
+    double blue[NRGBs]  = { colour0, colour1, colour2, colour3, colour4 };
+    double stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
     std::cout << colour0 << " " << colour4 << std::endl;
     TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
     style_->SetNumberContours(NCont);
     style_->cd();
-    mother_canvas_->Update();
+    mother_canvas_->Modified();
     mother_canvas_->Update();
 }
 
