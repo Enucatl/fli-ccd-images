@@ -13,6 +13,11 @@ RawImageReader::RawImageReader():
         gROOT->SetStyle("tdrStyle");
         gROOT->ForceStyle();
         canvas_.Update();
+
+        //contrast adjustment canvas:
+        contrast_adjuster_.set_style(style_);
+        contrast_adjuster_.set_parent_canvas(&canvas_);
+
 }
 
 RawImageReader::~RawImageReader(){
@@ -33,21 +38,16 @@ bool RawImageReader::load_image(std::string file_name) {
             columns, min_y, max_y);
     load_histogram(file, header_bytes, histogram_);
     file.close();
+    //setup for contrast adjustment
+    contrast_adjuster_.get_intensity_distribution(histogram_);
     return true;
 }
 
 void RawImageReader::draw(const char* options) {
-    draw_called_ = true;
     canvas_.cd();
     histogram_.Draw("col");
     canvas_.Update();
-}
-
-void RawImageReader::update() {
-    if (draw_called_)
-        canvas_.Update();
-    else 
-        draw();
+    contrast_adjuster_.Draw();
 }
 
 void RawImageReader::save(std::string file_name) {

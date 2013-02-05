@@ -15,10 +15,10 @@ BOOST_THREAD_LIBS=-lboost_thread
 
 all: online_viewer single_image_reader 
 
-online_viewer: online_viewer.cpp $(addprefix $(LIB_FOLDER)/, rootstyle.o raw_image_tools.o raw_image_reader.o read_newest.o)
+online_viewer: online_viewer.cpp $(addprefix $(LIB_FOLDER)/, rootstyle.o raw_image_tools.o raw_image_reader.o read_newest.o contrast_adjuster.o)
 	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
 
-single_image_reader: single_image_reader.cpp $(addprefix $(LIB_FOLDER)/, rootstyle.o raw_image_tools.o raw_image_reader.o)
+single_image_reader: single_image_reader.cpp $(addprefix $(LIB_FOLDER)/, rootstyle.o raw_image_tools.o raw_image_reader.o contrast_adjuster.o)
 	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) 
 
 $(LIB_FOLDER)/%.o: %.cpp %.h

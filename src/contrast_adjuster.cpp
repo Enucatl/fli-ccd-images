@@ -4,7 +4,7 @@ namespace root_style {
 
 ContrastAdjuster::ContrastAdjuster():
     n_bins_(100),
-    canvas_("contrast_canvas", "contrast_canvas", 200, 400),
+    canvas_("contrast_canvas", "contrast/brightness", 200, 400),
     histogram_pad_("contrast_hist_pad", "contrast_hist_pad",
             0.02, 0.1, 0.98, 0.98),
     histogram_("contrast_hist", "contrast_hist",
@@ -14,6 +14,7 @@ ContrastAdjuster::ContrastAdjuster():
         canvas_.cd();
         histogram_pad_.Draw();
         slider_.SetObject(this);
+        canvas_.SetWindowPosition(1000, 100);
 }
 
 void ContrastAdjuster::get_intensity_distribution(const TH2& parent_histogram) {
@@ -30,7 +31,8 @@ void ContrastAdjuster::get_intensity_distribution(const TH2& parent_histogram) {
     }
 }
 
-void ContrastAdjuster::draw(const char* options) {
+void ContrastAdjuster::Draw(const char* options) {
+    //TObject::Draw(options);
     histogram_pad_.cd();
     histogram_.Draw();
 }
@@ -40,7 +42,6 @@ void ContrastAdjuster::update_style() {
     //on how to make such a colour palette
     const int NRGBs = 4;
     const int NCont = 100;
-    std::cout << "updated style" << std::endl;
 
     //get slide values
     double white = slider_.GetMaximum();
@@ -56,8 +57,9 @@ void ContrastAdjuster::update_style() {
     TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
     style_->SetNumberContours(NCont);
     style_->cd();
-    mother_canvas_->Modified();
-    mother_canvas_->Update();
+    parent_canvas_->Modified();
+    parent_canvas_->Update();
+    std::cout << "black = " << black << "; white = " << white << std::endl;
 }
 
 void ContrastAdjuster::ExecuteEvent(int event, int px, int py) {

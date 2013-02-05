@@ -14,6 +14,7 @@
 #include "rootstyle.h"
 
 #include "raw_image_tools.h"
+#include "contrast_adjuster.h"
 
 namespace raw_image_tools {
 
@@ -31,6 +32,7 @@ private:
     TH2D histogram_;
     TCanvas canvas_;
     TStyle* style_;
+    root_style::ContrastAdjuster contrast_adjuster_;
 };
 
 }

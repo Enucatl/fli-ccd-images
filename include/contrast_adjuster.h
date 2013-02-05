@@ -18,6 +18,8 @@
 
 namespace root_style {
 
+//helper function to be bound to TCanvas::ProcessEvent
+
 class ContrastAdjuster: public TObject, private boost::noncopyable {
     //inheritance from TObject is necessary in order to get the slider to
     //work using the ExecuteEvent method
@@ -27,10 +29,12 @@ class ContrastAdjuster: public TObject, private boost::noncopyable {
     //containers have multiple items at the moment
 public:
     ContrastAdjuster();
+    //still needs to be initialized with set style and set parent canvas
+    //in order to work correctly
     void get_intensity_distribution(const TH2& parent_histogram);
     void set_style(TStyle* style) { style_ = style; }
-    void set_mother_canvas(TCanvas* mother_canvas) { mother_canvas_ = mother_canvas; }
-    void draw(const char* options="");
+    void set_parent_canvas(TCanvas* parent_canvas) { parent_canvas_ = parent_canvas; }
+    void Draw(const char* options="");
     void update_style();
     //overloading TObject::ExecuteEvent
     //only calls update_style (which has a more meaningful name)
@@ -43,7 +47,7 @@ private:
     TH1D histogram_;
     TSlider slider_;
     TStyle* style_;
-    TCanvas* mother_canvas_;
+    TCanvas* parent_canvas_;
 };
 
 }
