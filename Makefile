@@ -21,7 +21,7 @@ online_viewer: online_viewer.cpp $(addprefix $(LIB_FOLDER)/, rootstyle.o raw_ima
 single_image_reader: single_image_reader.cpp $(addprefix $(LIB_FOLDER)/, rootstyle.o raw_image_tools.o raw_image_reader.o contrast_adjuster.o)
 	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) 
 
-$(LIB_FOLDER)/%.o: %.cpp %.h $(LIB_FOLDER)
+$(LIB_FOLDER)/%.o: %.cpp %.h | $(LIB_FOLDER)
 	g++ -c $(CFLAGS) -o $@ $< 
 
 $(LIB_FOLDER):
