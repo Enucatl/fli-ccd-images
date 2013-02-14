@@ -1,9 +1,10 @@
 #include "read_newest.h"
 
-namespace raw_image_tools {
+namespace readimages {
 
-ReadNewest::ReadNewest(std::string folder):
-    folder_(folder) {
+ReadNewest::ReadNewest(std::string folder, TCanvas* canvas):
+    folder_(folder),
+    image_reader_(canvas) {
 }
 
 void ReadNewest::update_histogram() {
@@ -18,17 +19,19 @@ void ReadNewest::update_histogram() {
 }
 
 void ReadNewest::watch_folder() {
+    //never returns!
     while (not boost::filesystem::exists(folder_)) {
         //wait if folder not found
-        std::cout << "Folder " << folder_ <<
+        std::cerr << "Folder " << folder_ <<
             " not found! I will wait for half a second..." << std::endl;
         boost::this_thread::sleep(boost::posix_time::milliseconds(500));
     }
-    //never returns!
     std::vector<boost::filesystem::path> files;
     while (true) {
         raw_image_tools::get_all_raw_files(folder_, files);
         if (not files.size()) {
+        std::cerr << "Folder " << folder_ <<
+            " empty! I will wait for half a second..." << std::endl;
             //wait if no files found
             boost::this_thread::sleep(boost::posix_time::milliseconds(500));
             continue;

@@ -11,17 +11,14 @@
 #include "TStyle.h"
 #include "TH2.h"
 #include "TCanvas.h"
-#include "rootstyle.h"
 
 #include "raw_image_tools.h"
-#include "contrast_adjuster.h"
 
-namespace raw_image_tools {
+namespace readimages {
 
 class RawImageReader {
 public:
-    RawImageReader();
-    ~RawImageReader();
+    RawImageReader(TCanvas* canvas);
     bool load_image(std::string file_name);
     void draw(const char* options="");
     void update();
@@ -30,9 +27,7 @@ public:
 private:
     bool draw_called_;
     TH2D histogram_;
-    TCanvas canvas_;
-    TStyle* style_;
-    root_style::ContrastAdjuster contrast_adjuster_;
+    TCanvas* canvas_;
 };
 
 }

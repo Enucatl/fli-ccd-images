@@ -16,7 +16,7 @@
 #include "TStyle.h"
 
 
-namespace root_style {
+namespace readimages {
 
 //helper function to be bound to TCanvas::ProcessEvent
 
@@ -33,7 +33,8 @@ public:
     //in order to work correctly
     void get_intensity_distribution(const TH2& parent_histogram);
     void set_style(TStyle* style) { style_ = style; }
-    void set_parent_canvas(TCanvas* parent_canvas) { parent_canvas_ = parent_canvas; }
+    void set_parent_canvas(TCanvas* parent_canvas);
+    void set_my_canvas(TCanvas* canvas);
     void Draw(const char* options="");
     void update_style();
     //overloading TObject::ExecuteEvent
@@ -42,12 +43,15 @@ public:
 
 private:
     const int n_bins_; //number of bins for histogram_ 
-    TCanvas canvas_;
     TPad histogram_pad_;
     TH1D histogram_;
     TSlider slider_;
     TStyle* style_;
+    //check that canvases were initialized:
+    bool parent_canvas_is_set_;
+    bool my_canvas_is_set_;
     TCanvas* parent_canvas_;
+    TCanvas* my_canvas_;
 };
 
 }
