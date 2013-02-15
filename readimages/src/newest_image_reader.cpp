@@ -6,7 +6,7 @@ void NewestImageReader::update_histogram() {
     //never returns!
     while (true){
         boost::mutex::scoped_lock lock(mutex_);
-        new_file_found_.wait(lock);
+        file_found_.wait(lock);
         read_file();
     }
 }
@@ -36,7 +36,7 @@ void NewestImageReader::set_path(fs::path path) {
         else {
             boost::mutex::scoped_lock lock(mutex_);
             path_ = newest;
-            new_file_found_.notify_one();
+            file_found_.notify_one();
         }
     }
 }

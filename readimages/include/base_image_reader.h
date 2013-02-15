@@ -1,5 +1,5 @@
-#ifndef RAW_IMAGE_READER_H
-#define RAW_IMAGE_READER_H
+#ifndef BASE_IMAGE_READER_H
+#define BASE_IMAGE_READER_H
 
 //base class (pure virtual) with common structure for the viewer of a single
 //image and the folder watcher
@@ -41,4 +41,4 @@ protected:
 
 }
 
-#endif /* end of include guard: RAW_IMAGE_READER_H */
+#endif /* end of include guard: BASE_IMAGE_READER_H */

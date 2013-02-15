@@ -25,8 +25,8 @@ all: $(addprefix $(BIN_FOLDER)/, online_viewer)
 test: $(addprefix $(TEST_FOLDER)/, test_gui)
 
 $(TEST_FOLDER)/test_gui: test_gui.cpp\
-	$(addprefix $(LIB_FOLDER)/, main_frame.o base_image_reader.o raw_image_tools.o)
-	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS)
+	$(addprefix $(LIB_FOLDER)/, main_frame.o base_image_reader.o newest_image_reader.o single_image_reader.o raw_image_tools.o)
+	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
 
 $(BIN_FOLDER)/online_viewer: online_viewer.cpp\
 	$(addprefix $(LIB_FOLDER)/, rootstyle.o raw_image_tools.o raw_image_reader.o read_newest.o contrast_adjuster.o)\

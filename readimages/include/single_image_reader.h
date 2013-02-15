@@ -1,5 +1,7 @@
-#ifndef RAW_IMAGE_READER_H
-#define RAW_IMAGE_READER_H
+#ifndef SINGLE_IMAGE_READER_H
+#define SINGLE_IMAGE_READER_H
+
+
 
 //base class (pure virtual) with common structure for the viewer of a single
 //image and the folder watcher
@@ -23,5 +25,4 @@ public:
 };
 
 }
-
-#endif /* end of include guard: RAW_IMAGE_READER_H */
+#endif /* end of include guard: SINGLE_IMAGE_READER_H */

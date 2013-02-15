@@ -1,13 +1,18 @@
+Latest working version: v1.23!
+
 suite of classes and programmes that read the raw images taken by the CCD
 FLI camera in OFLG/U210
 
 requirements:
+
 GNU make >= 3.80
+
 The BOOST c++ libraries >= 1.50
 http://www.boost.org
 
 The ROOT data analysis framework >= 5.34
 http://root.cern.ch
+
 
 Compile
 ----------

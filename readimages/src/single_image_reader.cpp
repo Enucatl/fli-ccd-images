@@ -1,4 +1,4 @@
-#include "raw_image_reader.h"
+#include "single_image_reader.h"
 
 namespace fs = boost::filesystem;
 
@@ -6,7 +6,7 @@ namespace readimages {
 
 void SingleImageReader::update_histogram() {
     boost::mutex::scoped_lock lock(mutex_);
-    if (not path_)
+    if (not fs::exists(path_))
         file_found_.wait(lock);
     read_file();
     return;

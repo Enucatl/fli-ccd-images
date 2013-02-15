@@ -32,10 +32,10 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
 {
     //set menus
     file_menu_.Associate(this);
+    AddFrame(&menu_bar_, &menu_bar_layout_);
     menu_bar_.AddPopup("&File", &file_menu_, &menu_bar_item_layout_);
     file_menu_.AddEntry("&Open...", M_FILE_OPEN);
-    file_menu_.AddEntry("&Close", -1);
-    AddFrame(&menu_bar_, &menu_bar_layout_);
+    file_menu_.AddEntry("&Close", M_FILE_CLOSE);
 
     //set table
     table_.SetLayoutManager(&table_layout_);
@@ -85,7 +85,56 @@ void MainFrame::CloseWindow() {
 }
 
 bool MainFrame::ProcessMessage(long message, long par1, long par2) {
+    switch (GET_MSG(message)) {
+
+        case kC_COMMAND:
+            switch (GET_SUBMSG(message)) {
+
+                case kCM_MENUSELECT:
+                    break;
+
+                case kCM_MENU:
+                    std::cout << "menu pressed " << par1 << "\n" ;
+                    switch (par1) {
+
+                        case M_FILE_OPEN:
+                            OpenFile();
+                            std::cout << file_info_.fFilename << std::endl;
+                            break;
+
+                        case M_FILE_CLOSE:
+                            CloseWindow();
+                            break;
+
+                        default:
+                            std::cout << "Menu " << par1 << " not programmed\n" ;
+                            break;
+                    }//end of switch(par1)
+            }//end of switch (GET_SUBMSG(message))
+            break;
+        default:
+            break;
+    }//end of switch (GET_MSG(message))
     return true;
+}
+
+void MainFrame::OpenFile() {
+    const char *filetypes[] = {"RAW images", "*.raw", 0, 0};
+    file_info_.fFileTypes = filetypes;
+    file_info_.fIniDir = StrDup(".");
+    new TGFileDialog(this, this, kFDOpen, &file_info_);
+    std::cout << "returned constructor" << std::endl;
+}
+
+void MainFrame::LaunchImageReader(fs::path path) {
+    if (not fs::exists(path))
+        return;
+    else if (fs::is_directory(path)) 
+        image_reader_.reset(new NewestImageReader());
+    else if (fs::is_regular_file(path))
+        image_reader_.reset(new SingleImageReader());
+    boost::thread file_lookup_thread(&readimages::BaseImageReader::set_path, image_reader_.get(), path);
+    boost::thread update_histogram_thread(&readimages::BaseImageReader::update_histogram, image_reader_.get());
 }
 
 }

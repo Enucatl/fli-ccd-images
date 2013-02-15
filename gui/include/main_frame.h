@@ -8,20 +8,28 @@
 
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/thread.hpp>
 
 #include "TGFrame.h"
 #include "TGMenu.h"
 #include "TGTableLayout.h"
 #include "TRootEmbeddedCanvas.h"
 #include "TApplication.h"
+#include "TGFileDialog.h"
 
 #include "base_image_reader.h"
+#include "single_image_reader.h"
+#include "newest_image_reader.h"
+
+namespace fs = boost::filesystem;
 
 namespace readimages {
 namespace gui{
 
 enum menu_command_identifiers {
-    M_FILE_OPEN
+    M_FILE_OPEN,
+    M_FILE_CLOSE
 };
 
 class MainFrame : public TGMainFrame {
@@ -31,10 +39,15 @@ public:
     //process messages from all menus
     bool ProcessMessage(long message, long par1, long par2);
 
+    //choose file or folder to open
+    void OpenFile();
+    void LaunchImageReader(fs::path path);
+
     //close and terminate programme
     void CloseWindow();
 
 private:
+    //main table
     TGCompositeFrame table_;
     TGTableLayout table_layout_;
     TGLayoutHints layout_hints_;
@@ -46,12 +59,17 @@ private:
     TGLayoutHints menu_bar_help_layout_;
     TGPopupMenu file_menu_;
 
+    //open file or directory
+    TGFileInfo file_info_;
+    boost::scoped_ptr<TGFileDialog> dialog;
+
+    //canvases
     boost::ptr_vector<TGTableLayoutHints> table_layout_hints_;
     TRootEmbeddedCanvas embedded_canvas_;
     TRootEmbeddedCanvas projection_canvas_;
     TRootEmbeddedCanvas transform_canvas_;
 
-    //reads the image
+    //reads the image online or single
     boost::scoped_ptr<BaseImageReader> image_reader_;
 };
 

@@ -1,3 +1,6 @@
+#ifndef NEWEST_IMAGE_READER_H
+#define NEWEST_IMAGE_READER_H
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -7,14 +10,12 @@
 
 #include "base_image_reader.h"
 
-#ifndef READ_NEWEST_H
-#define READ_NEWEST_H
-
 namespace fs = boost::filesystem;
 
 namespace readimages {
 
-class NewestImageReader {
+class NewestImageReader: public BaseImageReader {
+
 public:
     NewestImageReader(): BaseImageReader() {}
 
@@ -30,5 +31,4 @@ public:
 };
 
 }
-
-#endif /* end of include guard: READ_NEWEST_H */
+#endif /* end of include guard: NEWEST_IMAGE_READER_H */
