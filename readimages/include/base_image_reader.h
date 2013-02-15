@@ -8,6 +8,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/condition_variable.hpp>
 
 #include "TH2.h"
 

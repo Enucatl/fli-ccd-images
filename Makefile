@@ -25,8 +25,7 @@ all: $(addprefix $(BIN_FOLDER)/, online_viewer)
 test: $(addprefix $(TEST_FOLDER)/, test_gui)
 
 $(TEST_FOLDER)/test_gui: test_gui.cpp\
-	main_frame_link_def.cpp\
-	$(addprefix $(LIB_FOLDER)/, main_frame.o raw_image_reader.o raw_image_tools.o)
+	$(addprefix $(LIB_FOLDER)/, main_frame.o base_image_reader.o raw_image_tools.o)
 	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS)
 
 $(BIN_FOLDER)/online_viewer: online_viewer.cpp\
@@ -36,9 +35,6 @@ $(BIN_FOLDER)/online_viewer: online_viewer.cpp\
 
 $(LIB_FOLDER)/%.o: %.cpp %.h | $(LIB_FOLDER)
 	g++ -c $(CFLAGS) -o $@ $< 
-
-%_link_def.cpp: %_link_def.h | $(DICT_FOLDER)
-	rootcint -I$(INC_FOLDER) -I$(GUI_INC_FOLDER) -f $(DICT_FOLDER)/$@ -c $< 
 
 $(LIB_FOLDER):
 	mkdir -p $(LIB_FOLDER)

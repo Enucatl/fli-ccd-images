@@ -11,6 +11,11 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
     table_layout_(&table_, 2, 2),
     layout_hints_(kLHintsTop | kLHintsLeft |
             kLHintsExpandX | kLHintsExpandY),
+    menu_bar_(this, 1, 1, kHorizontalFrame),
+    menu_bar_layout_(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1),
+    menu_bar_item_layout_(kLHintsTop | kLHintsLeft, 0, 4, 0, 0),
+    menu_bar_help_layout_(kLHintsTop | kLHintsRight),
+    file_menu_(this),
     table_layout_hints_(3),
     embedded_canvas_("image_embedded_canvas",
             &table_,
@@ -23,12 +28,18 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
     transform_canvas_("transform_canvas",
             &table_,
             static_cast<unsigned int>(width * (1 - golden)),
-            height / 2),
-    image_reader_(new BaseImageReader());
+            height / 2)
 {
+    //set menus
+    file_menu_.Associate(this);
+    menu_bar_.AddPopup("&File", &file_menu_, &menu_bar_item_layout_);
+    file_menu_.AddEntry("&Open...", M_FILE_OPEN);
+    file_menu_.AddEntry("&Close", -1);
+    AddFrame(&menu_bar_, &menu_bar_layout_);
+
+    //set table
     table_.SetLayoutManager(&table_layout_);
     AddFrame(&table_, &layout_hints_);
-
 
     //set main canvas in table
     table_layout_hints_.push_back(new TGTableLayoutHints(
@@ -71,6 +82,10 @@ void MainFrame::CloseWindow() {
     //
     TGMainFrame::CloseWindow();
     gApplication->Terminate(0);
+}
+
+bool MainFrame::ProcessMessage(long message, long par1, long par2) {
+    return true;
 }
 
 }
