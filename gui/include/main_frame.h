@@ -31,6 +31,9 @@ private:
     TRootEmbeddedCanvas embedded_canvas_;
     TRootEmbeddedCanvas projection_canvas_;
     TRootEmbeddedCanvas transform_canvas_;
+
+    //reads the image
+    boost::shared_ptr<BaseImageReader> image_reader_;
 };
 
 }

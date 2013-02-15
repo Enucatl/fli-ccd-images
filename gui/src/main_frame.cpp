@@ -23,7 +23,8 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
     transform_canvas_("transform_canvas",
             &table_,
             static_cast<unsigned int>(width * (1 - golden)),
-            height / 2)
+            height / 2),
+    image_reader_(new BaseImageReader());
 {
     table_.SetLayoutManager(&table_layout_);
     AddFrame(&table_, &layout_hints_);
