@@ -20,6 +20,7 @@ void NewestImageReader::set_path(fs::path path) {
     }
     std::vector<boost::filesystem::path> files;
     while (true) {
+        std::cout << "looking for new files..." << std::endl;
         raw_image_tools::get_all_raw_files(path, files);
         if (not files.size()) {
         std::cerr << "Folder " << path <<

@@ -16,6 +16,7 @@ void SingleImageReader::set_path(fs::path path) {
     boost::mutex::scoped_lock lock(mutex_);
     if (fs::exists(path)) {
         path_ = path;
+        //std::cout << "single image reader " << path.string() << std::endl;
         file_found_.notify_one();
     }
     else

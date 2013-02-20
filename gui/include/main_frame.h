@@ -17,6 +17,7 @@
 #include "TRootEmbeddedCanvas.h"
 #include "TApplication.h"
 #include "TGFileDialog.h"
+#include "TCanvas.h"
 
 #include "base_image_reader.h"
 #include "single_image_reader.h"

@@ -33,9 +33,9 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
     //set menus
     AddFrame(&menu_bar_, &menu_bar_layout_);
     menu_bar_.AddPopup("&File", &file_menu_, &menu_bar_item_layout_);
+    file_menu_.Associate(this);
     file_menu_.AddEntry("&Open...", M_FILE_OPEN);
     file_menu_.AddEntry("&Close", M_FILE_CLOSE);
-    file_menu_.Associate(this);
 
     //set table
     table_.SetLayoutManager(&table_layout_);
@@ -94,12 +94,11 @@ bool MainFrame::ProcessMessage(long message, long par1, long par2) {
                     break;
 
                 case kCM_MENU:
-                    std::cout << "menu pressed " << par1 << "\n" ;
+                    //std::cout << "menu pressed " << par1 << "\n" ;
                     switch (par1) {
 
                         case M_FILE_OPEN:
                             OpenFile();
-                            std::cout << file_info_.fFilename << std::endl;
                             break;
 
                         case M_FILE_CLOSE:
@@ -121,9 +120,10 @@ bool MainFrame::ProcessMessage(long message, long par1, long par2) {
 void MainFrame::OpenFile() {
     const char *filetypes[] = {"RAW images", "*.raw", 0, 0};
     file_info_.fFileTypes = filetypes;
-    file_info_.fIniDir = StrDup(".");
+    file_info_.fIniDir = StrDup("./test");
     //automatically deleted when the window is closed, according to http://root.cern.ch/phpBB3/viewtopic.php?p=69013#p69013
     dialog_ = new TGFileDialog(gClient->GetRoot(), this, kFDOpen, &file_info_);
+    LaunchImageReader(file_info_.fFilename);
 }
 
 void MainFrame::LaunchImageReader(fs::path path) {
@@ -133,8 +133,17 @@ void MainFrame::LaunchImageReader(fs::path path) {
         image_reader_.reset(new NewestImageReader());
     else if (fs::is_regular_file(path))
         image_reader_.reset(new SingleImageReader());
+    //with this version, it is not possible to stop the threads without
+    //closing the app. Therefore, in order to switch the behaviour from
+    //"online viewer" to "single viewer" you have to restart it.
     boost::thread file_lookup_thread(&readimages::BaseImageReader::set_path, image_reader_.get(), path);
+    file_lookup_thread.detach();
     boost::thread update_histogram_thread(&readimages::BaseImageReader::update_histogram, image_reader_.get());
+    update_histogram_thread.detach();
+    embedded_canvas_.GetCanvas()->cd();
+    image_reader_->Draw("col");
+    embedded_canvas_.GetCanvas()->Modified();
+    embedded_canvas_.GetCanvas()->Update();
 }
 
 }
