@@ -61,7 +61,7 @@ private:
 
     //open file or directory
     TGFileInfo file_info_;
-    boost::scoped_ptr<TGFileDialog> dialog;
+    TGFileDialog* dialog_;
 
     //canvases
     boost::ptr_vector<TGTableLayoutHints> table_layout_hints_;
