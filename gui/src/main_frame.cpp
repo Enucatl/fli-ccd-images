@@ -109,12 +109,12 @@ bool MainFrame::ProcessMessage(long message, long par1, long par2) {
                         default:
                             std::cout << "Menu " << par1 << " not programmed\n" ;
                             break;
-                    }//end of switch(par1)
-            }//end of switch (GET_SUBMSG(message))
+                    } //end of switch(par1)
+            } //end of switch (GET_SUBMSG(message))
             break;
         default:
             break;
-    }//end of switch (GET_MSG(message))
+    } //end of switch (GET_MSG(message))
     return true;
 }
 
