@@ -3,13 +3,13 @@
 namespace readimages {
 namespace gui{
 
-HorizontalLine::HorizontalLine(double x1, double y1, double x2, double y2)
- : TLine(x1,y1,x2,y2)
+HorizontalLine::HorizontalLine(double x1, double y1, double x2, double y2) : TLine(x1,y1,x2,y2)
 {
 }
 
 //______________________________________________________________________________
 void HorizontalLine::ExecuteEvent(int event, int px, int py) {
+    std::cout << "Entering execute event!" << std::endl;
 //*-*-*-*-*-*-*-*-*-*-*Execute action corresponding to one event*-*-*-*
 //*-*                  =========================================
 //  This member function is called when a line is clicked with the locator
@@ -21,8 +21,7 @@ void HorizontalLine::ExecuteEvent(int event, int px, int py) {
 //     until the button is released.
 //
 
-   int kMaxDiff = 20;
-   int d1, d2, px1, px2, py1, py2;
+   int px1, px2, py1, py2;
    int pxold, pyold, px1old, py1old, px2old, py2old;
    bool P1, P2, L;
    double dpx, dpy, xp1, yp1;
@@ -124,7 +123,7 @@ void HorizontalLine::ExecuteEvent(int event, int px, int py) {
       }
       gPad->Modified(kTRUE);
       gVirtualX->SetLineColor(-1);
-      cout << "New y = " << fY1 << "\n";
+      std::cout << "New y = " << fY1 << "\n";
       
       break;
 

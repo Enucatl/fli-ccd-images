@@ -22,6 +22,7 @@
 #include "base_image_reader.h"
 #include "single_image_reader.h"
 #include "newest_image_reader.h"
+#include "horizontal_line.h"
 
 namespace fs = boost::filesystem;
 
@@ -44,10 +45,20 @@ public:
     void OpenFile();
     void LaunchImageReader(fs::path path);
 
+    //Draw projection in top right canvas
+    void DrawProjection(int pixel=40);
+
+    //Draw fourier transform of projection in bottom right canvas
+    void DrawTransform();
+
     //close and terminate programme
     void CloseWindow();
 
 private:
+    //draws the horizontal line selecting the pixel along which to show the
+    //projection (slice)
+    void DrawHorizontalLine();
+
     //main table
     TGCompositeFrame table_;
     TGTableLayout table_layout_;
@@ -69,6 +80,14 @@ private:
     TRootEmbeddedCanvas embedded_canvas_;
     TRootEmbeddedCanvas projection_canvas_;
     TRootEmbeddedCanvas transform_canvas_;
+
+    //histograms
+    TH1D* projection_histogram_;
+    TH1* transform_histogram_;
+
+    //projection line
+    boost::scoped_ptr<HorizontalLine> horizontal_line_;
+
 
     //reads the image online or single
     boost::scoped_ptr<BaseImageReader> image_reader_;

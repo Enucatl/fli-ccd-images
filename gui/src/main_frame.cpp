@@ -28,7 +28,8 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
     transform_canvas_("transform_canvas",
             &table_,
             static_cast<unsigned int>(width * (1 - golden)),
-            height / 2)
+            height / 2),
+    transform_histogram_(0)
 {
     //set menus
     AddFrame(&menu_bar_, &menu_bar_layout_);
@@ -142,9 +143,37 @@ void MainFrame::LaunchImageReader(fs::path path) {
     update_histogram_thread.detach();
     embedded_canvas_.GetCanvas()->cd();
     image_reader_->Draw("col");
+    //DrawHorizontalLine();
+    embedded_canvas_.GetCanvas()->Modified();
+    embedded_canvas_.GetCanvas()->Update();
+    DrawProjection();
+    DrawTransform();
+}
+
+void MainFrame::DrawHorizontalLine() {
+    embedded_canvas_.GetCanvas()->cd();
+    horizontal_line_.reset(new HorizontalLine(image_reader_->get_histogram_x_min(), 10, image_reader_->get_histogram_x_max(), 10));
+    horizontal_line_->Draw();
     embedded_canvas_.GetCanvas()->Modified();
     embedded_canvas_.GetCanvas()->Update();
 }
+
+void MainFrame::DrawProjection(int pixel) {
+    projection_canvas_.GetCanvas()->cd();
+    projection_histogram_ = image_reader_->ProjectionX("projection", pixel, pixel);
+    projection_histogram_->Draw();
+    projection_canvas_.GetCanvas()->Modified();
+    projection_canvas_.GetCanvas()->Update();
+}
+
+void MainFrame::DrawTransform() {
+    transform_canvas_.GetCanvas()->cd();
+    transform_histogram_ = projection_histogram_->FFT(transform_histogram_, "MAG R2C EX");
+    transform_histogram_->Draw();
+    transform_canvas_.GetCanvas()->Modified();
+    transform_canvas_.GetCanvas()->Update();
+}
+
 
 }
 }

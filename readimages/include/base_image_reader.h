@@ -30,6 +30,15 @@ public:
     virtual void set_path(fs::path path) = 0; //to be threaded
     virtual void update_histogram() = 0; //to be threaded
 
+    //accessing the axis dimensions, useful for the line drawing the
+    //projection
+    double get_histogram_x_min() {return histogram_.GetXaxis()->GetXmin();}
+    double get_histogram_x_max() {return histogram_.GetXaxis()->GetXmax();}
+
+    //get the projection
+    //just a layer on TH2D::ProjectionX
+    TH1D* ProjectionX(const char* name="_px", int firstybin=0, int lastybin=-1, const char* option="") {return histogram_.ProjectionX(name, firstybin, lastybin, option);}
+
 protected:
     void read_file(); //loads file (path_) into histogram
 
