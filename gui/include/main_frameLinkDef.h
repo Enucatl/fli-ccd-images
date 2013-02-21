@@ -5,6 +5,6 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class MainFrame;
+#pragma link C++ class readimages::gui::MainFrame;
 
 #endif

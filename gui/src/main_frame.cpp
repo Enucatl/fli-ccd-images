@@ -3,6 +3,8 @@
 namespace readimages {
 namespace gui{
 
+ClassImp(MainFrame)
+
 double golden = 0.618;
 
 MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int height):
@@ -121,7 +123,7 @@ void MainFrame::OpenFile() {
     const char *filetypes[] = {"RAW images", "*.raw", 0, 0};
     file_info_.fFileTypes = filetypes;
     file_info_.fIniDir = StrDup("./test");
-    //automatically deleted when the window is closed, according to http://root.cern.ch/phpBB3/viewtopic.php?p=69013#p69013
+    //automatically calls delete when the window is closed, according to http://root.cern.ch/phpBB3/viewtopic.php?p=69013#p69013
     dialog_ = new TGFileDialog(gClient->GetRoot(), this, kFDOpen, &file_info_);
     LaunchImageReader(file_info_.fFilename);
 }

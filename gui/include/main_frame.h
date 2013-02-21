@@ -6,11 +6,29 @@
 #include <iostream>
 #include <vector>
 
+#ifndef __CINT__
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
+#else
+namespace boost {
+template<typename T>
+class ptr_vector<T>;
 
+template<typename T>
+class scoped_ptr<T>;
+
+class thread;
+
+namespace filesystem {
+class path;
+
+}
+}
+#endif
+
+#include "Rtypes.h" //classdef and classimp
 #include "TGFrame.h"
 #include "TGMenu.h"
 #include "TGTableLayout.h"
@@ -18,11 +36,20 @@
 #include "TApplication.h"
 #include "TGFileDialog.h"
 #include "TCanvas.h"
+#include "TH1.h"
+#include "TH2.h"
 
+#ifndef __CINT__
 #include "base_image_reader.h"
 #include "single_image_reader.h"
 #include "newest_image_reader.h"
 #include "horizontal_line.h"
+#else
+class BaseImageReader;
+class SingleImageReader;
+class NewestImageReader;
+class HorizontalLine;
+#endif
 
 namespace fs = boost::filesystem;
 
@@ -91,6 +118,9 @@ private:
 
     //reads the image online or single
     boost::scoped_ptr<BaseImageReader> image_reader_;
+
+public:
+    ClassDef(MainFrame, 0)  //for ROOT CINT
 };
 
 }

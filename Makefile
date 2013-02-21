@@ -15,7 +15,7 @@ TEST_FOLDER=test
 vpath %.cpp $(SRC_FOLDER) $(GUI_SRC_FOLDER) $(TEST_FOLDER) $(DICT_FOLDER)
 vpath %.h $(INC_FOLDER) $(GUI_INC_FOLDER)
 
-CFLAGS=-Wall `root-config --cflags` -I$(INC_FOLDER)/ -I$(GUI_INC_FOLDER)
+CFLAGS=-Wall `root-config --cflags` -I$(INC_FOLDER)/ -I$(GUI_INC_FOLDER) -I$(DICT_FOLDER)
 LDFLAGS=`root-config --glibs`
 BOOST_LIBS=-lboost_program_options -lboost_filesystem -lboost_system
 BOOST_THREAD_LIBS=-lboost_thread
@@ -24,7 +24,14 @@ all: $(addprefix $(BIN_FOLDER)/, online_viewer)
 
 test: $(addprefix $(TEST_FOLDER)/, test_gui)
 
+lib/libMainFrame.so: 
+	g++ $(CFLAGS) -fPIC -o lib/main_frame.o -c gui/src/main_frame.cpp
+	rootcint -f $(DICT_FOLDER)/main_frameDict.cpp -c -p -I$(INC_FOLDER) -I$(GUI_INC_FOLDER) gui/include/main_frame.h gui/include/main_frameLinkDef.h
+	g++ $(CFLAGS) -fPIC -o lib/main_frameDict.o -c lib/dict/main_frameDict.cpp
+	g++ $(CFLAGS) -fPIC -shared -o lib/libMainFrame.so lib/main_frame.o lib/main_frameDict.o
+
 $(TEST_FOLDER)/test_gui: test_gui.cpp\
+	main_frameDict.cpp\
 	$(addprefix $(LIB_FOLDER)/, main_frame.o base_image_reader.o newest_image_reader.o single_image_reader.o raw_image_tools.o horizontal_line.o)
 	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
 
@@ -35,6 +42,9 @@ $(BIN_FOLDER)/online_viewer: online_viewer.cpp\
 
 $(LIB_FOLDER)/%.o: %.cpp %.h | $(LIB_FOLDER)
 	g++ -c $(CFLAGS) -o $@ $< 
+
+%Dict.cpp: %.h %LinkDef.h | $(DICT_FOLDER)
+	rootcint -f $(DICT_FOLDER)/$@ -c -p -I$(INC_FOLDER) -I$(GUI_INC_FOLDER) $^ 
 
 $(LIB_FOLDER):
 	mkdir -p $(LIB_FOLDER)
