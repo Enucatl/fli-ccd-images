@@ -40,8 +40,8 @@ $(LIB_FOLDER)/%.o: %.cpp %.h | $(LIB_FOLDER)
 %Dict.o: %Dict.cpp
 	g++ -c $(CFLAGS) -o $(LIB_FOLDER)/$@ $<
 
-%Dict.cpp: %.h %LinkDef.h | $(DICT_FOLDER)
-	rootcint -f $(DICT_FOLDER)/$@ -c -p -I$(INC_FOLDER) -I$(GUI_INC_FOLDER) $^ 
+$(DICT_FOLDER)/%Dict.cpp: %.h %LinkDef.h | $(DICT_FOLDER)
+	rootcint -f $@ -c -p -I$(INC_FOLDER) -I$(GUI_INC_FOLDER) $^ 
 
 $(LIB_FOLDER):
 	mkdir -p $(LIB_FOLDER)

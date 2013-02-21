@@ -38,7 +38,10 @@ class path;
 #include "TCanvas.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TROOT.h"
 
+#include "rootstyle.h"
+#include "contrast_adjuster.h"
 #ifndef __CINT__
 #include "base_image_reader.h"
 #include "single_image_reader.h"
@@ -85,6 +88,7 @@ private:
     //draws the horizontal line selecting the pixel along which to show the
     //projection (slice)
     void DrawHorizontalLine();
+    void SpawnContrastAdjustment();
 
     //main table
     TGCompositeFrame table_;
@@ -97,6 +101,7 @@ private:
     TGLayoutHints menu_bar_item_layout_;
     TGLayoutHints menu_bar_help_layout_;
     TGPopupMenu file_menu_;
+    TGPopupMenu view_menu_;
 
     //open file or directory
     TGFileInfo file_info_;
@@ -115,9 +120,15 @@ private:
     //projection line
     boost::scoped_ptr<HorizontalLine> horizontal_line_;
 
-
     //reads the image online or single
     boost::scoped_ptr<BaseImageReader> image_reader_;
+
+    //style
+    TStyle style_;
+
+    //contrast adjustment
+    ContrastAdjuster contrast_adjuster_;
+    boost::scoped_ptr<TCanvas> contrast_adjuster_canvas_;
 
 public:
     ClassDef(MainFrame, 0)  //for ROOT CINT

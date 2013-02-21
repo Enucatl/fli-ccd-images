@@ -3,8 +3,6 @@
 namespace readimages {
 namespace gui{
 
-ClassImp(MainFrame)
-
 double golden = 0.618;
 
 MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int height):
@@ -30,7 +28,8 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
             &table_,
             static_cast<unsigned int>(width * (1 - golden)),
             height / 2),
-    transform_histogram_(0)
+    transform_histogram_(0),
+    style_(setTDRStyle())
 {
     //set menus
     AddFrame(&menu_bar_, &menu_bar_layout_);
@@ -38,6 +37,9 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
     file_menu_.Associate(this);
     file_menu_.AddEntry("&Open...", M_FILE_OPEN);
     file_menu_.AddEntry("&Close", M_FILE_CLOSE);
+    menu_bar_.AddPopup("&View", &view_menu_, &menu_bar_item_layout_);
+    view_menu_.Associate(this);
+    view_menu_.AddEntry("&Adjust contrast/brightness...", M_CONTRAST);
 
     //set table
     table_.SetLayoutManager(&table_layout_);
@@ -64,6 +66,9 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
                 kLHintsShrinkX | kLHintsShrinkY |
                 kLHintsFillX | kLHintsFillY));
     table_.AddFrame(&transform_canvas_, &table_layout_hints_[2]);
+
+    gROOT->SetStyle("tdrStyle");
+    gROOT->ForceStyle();
 
     table_.Layout();
     MapSubwindows();
@@ -105,6 +110,10 @@ bool MainFrame::ProcessMessage(long message, long par1, long par2) {
 
                         case M_FILE_CLOSE:
                             CloseWindow();
+                            break;
+
+                        case M_CONTRAST:
+                            SpawnContrastAdjustment();
                             break;
 
                         default:
@@ -175,6 +184,13 @@ void MainFrame::DrawTransform() {
     transform_canvas_.GetCanvas()->Update();
 }
 
+void MainFrame::SpawnContrastAdjustment() {
+    contrast_adjuster_canvas_.reset(new TCanvas("contrast adjustment", "contrast adjustment"));
+    contrast_adjuster_.set_parent_canvas(embedded_canvas_.GetCanvas());
+    contrast_adjuster_.set_my_canvas(contrast_adjuster_canvas_.get());
+    contrast_adjuster_.get_intensity_distribution(image_reader_->get_histogram());
+    contrast_adjuster_.Draw();
+}
 
 }
 }

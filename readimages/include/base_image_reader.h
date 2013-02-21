@@ -39,6 +39,8 @@ public:
     //just a layer on TH2D::ProjectionX
     TH1D* ProjectionX(const char* name="_px", int firstybin=0, int lastybin=-1, const char* option="") {return histogram_.ProjectionX(name, firstybin, lastybin, option);}
 
+    const TH2D& get_histogram() const {return histogram_;}
+
 protected:
     void read_file(); //loads file (path_) into histogram
 
