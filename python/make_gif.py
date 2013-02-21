@@ -12,43 +12,33 @@ parser.add_argument('folder', metavar='FOLDER',
 folder = parser.parse_args().folder[0]
 
 #setup program name:
-programme = "single_image_reader"
+programme = "make_png"
 
 if not os.path.exists(folder) or not os.path.isdir(folder):
     print("Folder not found!", folder)
     print()
     raise OSError
 
-files = os.listdir(folder)
-files = [file_name for file_name in files
-        if ".raw" in file_name]
-
-#look for the reader programme in this folder or in the parent folder:
-programme_dir = os.listdir(".")
+#look for the reader programme in the bin folder
+programme_dir = os.listdir("bin")
 if programme not in programme_dir:
-    programme_dir = os.listdir("..")
+    programme_dir = os.listdir("../bin")
     if programme not in programme_dir:
         print("Programme not found!", programme)
         print()
         raise OSError
     else:
-        programme_dir = ".."
+        programme_dir = "../bin"
 else:
-    programme_dir = "."
+    programme_dir = "./bin"
 
 os.environ["PATH"] += ":{0}".format(programme_dir)
 
-n = len(files)
-png_files = []
-for i, file_name in enumerate(files):
-    file_name = os.path.join(folder, file_name)
-    command = programme + " -f {0} --save -b".format(file_name)
-    png_files.append(file_name.replace(".raw", ".png"))
-    print(progress_bar(i / n), end="")
-    check_call(command, shell=True)
+command = programme + " {0} -b".format(folder)
+check_call(command, shell=True)
 
 gif_creation_command = "convert -delay 50 -loop 1 "
-gif_creation_command += os.path.join(folder, "*.png")
+gif_creation_command += os.path.join(folder, "png", "*.png")
 gif_name = os.path.join(folder,
         os.path.basename(os.path.normpath(folder)) + ".gif")
 gif_creation_command += " " + gif_name
