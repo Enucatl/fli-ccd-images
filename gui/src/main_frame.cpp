@@ -3,7 +3,7 @@
 namespace readimages {
 namespace gui{
 
-double golden = 0.618;
+double horizontal_separation_fraction = 0.618;
 
 MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int height):
     TGMainFrame(window, width, height),
@@ -18,15 +18,15 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
     table_layout_hints_(3),
     embedded_canvas_("image_embedded_canvas",
             &table_,
-            static_cast<unsigned int>(width * golden),
+            static_cast<unsigned int>(width * horizontal_separation_fraction),
             height),
     projection_canvas_("projection_canvas",
             &table_,
-            static_cast<unsigned int>(width * (1 - golden)),
+            static_cast<unsigned int>(width * (1 - horizontal_separation_fraction)),
             height / 2),
     transform_canvas_("transform_canvas",
             &table_,
-            static_cast<unsigned int>(width * (1 - golden)),
+            static_cast<unsigned int>(width * (1 - horizontal_separation_fraction)),
             height / 2),
     transform_histogram_(0),
     style_(setTDRStyle())
@@ -70,6 +70,7 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
     gROOT->SetStyle("tdrStyle");
     gROOT->ForceStyle();
 
+    transform_canvas_.GetCanvas()->SetLogy();
     table_.Layout();
     MapSubwindows();
     Layout();
@@ -131,13 +132,16 @@ bool MainFrame::ProcessMessage(long message, long par1, long par2) {
 void MainFrame::OpenFile() {
     const char *filetypes[] = {"RAW images", "*.raw", 0, 0};
     file_info_.fFileTypes = filetypes;
-    file_info_.fIniDir = StrDup("./test");
+    file_info_.fIniDir = StrDup(".");
     //automatically calls delete when the window is closed, according to http://root.cern.ch/phpBB3/viewtopic.php?p=69013#p69013
     dialog_ = new TGFileDialog(gClient->GetRoot(), this, kFDOpen, &file_info_);
-    LaunchImageReader(file_info_.fFilename);
+    //start in new detached thread
+    boost::thread main_thread(&MainFrame::LaunchImageReader, this, file_info_.fFilename);
+    main_thread.detach();
 }
 
 void MainFrame::LaunchImageReader(fs::path path) {
+    //never returns! start in new thread!
     if (not fs::exists(path))
         return;
     else if (fs::is_directory(path)) 
@@ -147,17 +151,28 @@ void MainFrame::LaunchImageReader(fs::path path) {
     //with this version, it is not possible to stop the threads without
     //closing the app. Therefore, in order to switch the behaviour from
     //"online viewer" to "single viewer" you have to restart it.
+
     boost::thread file_lookup_thread(&readimages::BaseImageReader::set_path, image_reader_.get(), path);
     file_lookup_thread.detach();
     boost::thread update_histogram_thread(&readimages::BaseImageReader::update_histogram, image_reader_.get());
     update_histogram_thread.detach();
+    while (true) {
+        boost::mutex::scoped_lock lock(image_reader_->mutex_);
+        image_reader_->histogram_drawn_.wait(lock);
+        //waiting because sometimes the histogram wasn't ready to be drawn
+        boost::this_thread::sleep(boost::posix_time::milliseconds(50));
+        DrawImage();
+        DrawProjection();
+        boost::thread fft_thread(&MainFrame::DrawTransform, this);
+    }
+}
+
+void MainFrame::DrawImage() {
     embedded_canvas_.GetCanvas()->cd();
     image_reader_->Draw("col");
     //DrawHorizontalLine();
     embedded_canvas_.GetCanvas()->Modified();
     embedded_canvas_.GetCanvas()->Update();
-    DrawProjection();
-    DrawTransform();
 }
 
 void MainFrame::DrawHorizontalLine() {
@@ -170,7 +185,10 @@ void MainFrame::DrawHorizontalLine() {
 
 void MainFrame::DrawProjection(int pixel) {
     projection_canvas_.GetCanvas()->cd();
+    int user_coordinate_pixel = image_reader_->get_histogram().GetYaxis()->GetBinLowEdge(pixel);
     projection_histogram_ = image_reader_->ProjectionX("projection", pixel, pixel);
+    std::string new_title = "Along pixel " + boost::lexical_cast<std::string>(user_coordinate_pixel);
+    projection_histogram_->SetTitle(new_title.c_str());
     projection_histogram_->Draw();
     projection_canvas_.GetCanvas()->Modified();
     projection_canvas_.GetCanvas()->Update();
@@ -179,17 +197,21 @@ void MainFrame::DrawProjection(int pixel) {
 void MainFrame::DrawTransform() {
     transform_canvas_.GetCanvas()->cd();
     transform_histogram_ = projection_histogram_->FFT(transform_histogram_, "MAG R2C EX");
+    transform_histogram_->SetTitle("Fourier transform of projection");
     transform_histogram_->Draw();
     transform_canvas_.GetCanvas()->Modified();
     transform_canvas_.GetCanvas()->Update();
 }
 
 void MainFrame::SpawnContrastAdjustment() {
-    contrast_adjuster_canvas_.reset(new TCanvas("contrast adjustment", "contrast adjustment"));
-    contrast_adjuster_.set_parent_canvas(embedded_canvas_.GetCanvas());
-    contrast_adjuster_.set_my_canvas(contrast_adjuster_canvas_.get());
-    contrast_adjuster_.get_intensity_distribution(image_reader_->get_histogram());
-    contrast_adjuster_.Draw();
+    contrast_adjuster_canvas_.reset(new TCanvas("contrast adjustment", "contrast adjustment", 200, 400));
+    contrast_adjuster_.reset(new ContrastAdjuster());
+    contrast_adjuster_canvas_->SetWindowPosition(1000, 400);
+    contrast_adjuster_->set_parent_canvas(embedded_canvas_.GetCanvas());
+    contrast_adjuster_->set_my_canvas(contrast_adjuster_canvas_.get());
+    contrast_adjuster_->set_style(&style_);
+    contrast_adjuster_->get_intensity_distribution(image_reader_->get_histogram());
+    contrast_adjuster_->Draw();
 }
 
 }

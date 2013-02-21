@@ -1,34 +1,17 @@
 #ifndef MAIN_FRAME_H
 #define MAIN_FRAME_H
 
-//virtual main class for the frames of the single and online viewers
+//main class for the frames viewer
 
 #include <iostream>
 #include <vector>
 
-#ifndef __CINT__
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
-#else
-namespace boost {
-template<typename T>
-class ptr_vector<T>;
+#include <boost/lexical_cast.hpp>
 
-template<typename T>
-class scoped_ptr<T>;
-
-class thread;
-
-namespace filesystem {
-class path;
-
-}
-}
-#endif
-
-#include "Rtypes.h" //classdef and classimp
 #include "TGFrame.h"
 #include "TGMenu.h"
 #include "TGTableLayout.h"
@@ -42,17 +25,10 @@ class path;
 
 #include "rootstyle.h"
 #include "contrast_adjuster.h"
-#ifndef __CINT__
 #include "base_image_reader.h"
 #include "single_image_reader.h"
 #include "newest_image_reader.h"
 #include "horizontal_line.h"
-#else
-class BaseImageReader;
-class SingleImageReader;
-class NewestImageReader;
-class HorizontalLine;
-#endif
 
 namespace fs = boost::filesystem;
 
@@ -61,7 +37,8 @@ namespace gui{
 
 enum menu_command_identifiers {
     M_FILE_OPEN,
-    M_FILE_CLOSE
+    M_FILE_CLOSE,
+    M_CONTRAST
 };
 
 class MainFrame : public TGMainFrame {
@@ -74,6 +51,8 @@ public:
     //choose file or folder to open
     void OpenFile();
     void LaunchImageReader(fs::path path);
+
+    void DrawImage();
 
     //Draw projection in top right canvas
     void DrawProjection(int pixel=40);
@@ -127,11 +106,8 @@ private:
     TStyle style_;
 
     //contrast adjustment
-    ContrastAdjuster contrast_adjuster_;
+    boost::scoped_ptr<ContrastAdjuster> contrast_adjuster_;
     boost::scoped_ptr<TCanvas> contrast_adjuster_canvas_;
-
-public:
-    ClassDef(MainFrame, 0)  //for ROOT CINT
 };
 
 }

@@ -8,6 +8,7 @@ void NewestImageReader::update_histogram() {
         boost::mutex::scoped_lock lock(mutex_);
         file_found_.wait(lock);
         read_file();
+        histogram_drawn_.notify_one();
     }
 }
 
@@ -20,7 +21,6 @@ void NewestImageReader::set_path(fs::path path) {
     }
     std::vector<boost::filesystem::path> files;
     while (true) {
-        std::cout << "looking for new files..." << std::endl;
         raw_image_tools::get_all_raw_files(path, files);
         if (not files.size()) {
         std::cerr << "Folder " << path <<

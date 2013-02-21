@@ -20,13 +20,11 @@ LDFLAGS=`root-config --glibs`
 BOOST_LIBS=-lboost_program_options -lboost_filesystem -lboost_system
 BOOST_THREAD_LIBS=-lboost_thread
 
-all: $(addprefix $(BIN_FOLDER)/, online_viewer)
+all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer)
 
-test: $(addprefix $(TEST_FOLDER)/, test_gui)
-
-$(TEST_FOLDER)/test_gui: test_gui.cpp\
-	main_frameDict.o\
-	$(addprefix $(LIB_FOLDER)/, main_frame.o base_image_reader.o newest_image_reader.o single_image_reader.o raw_image_tools.o horizontal_line.o)
+$(BIN_FOLDER)/ccdfli_viewer: ccdfli_viewer.cpp\
+	$(addprefix $(LIB_FOLDER)/, rootstyle.o main_frame.o base_image_reader.o newest_image_reader.o single_image_reader.o raw_image_tools.o horizontal_line.o contrast_adjuster.o)\
+	| $(BIN_FOLDER)
 	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
 
 $(BIN_FOLDER)/online_viewer: online_viewer.cpp\
@@ -36,12 +34,6 @@ $(BIN_FOLDER)/online_viewer: online_viewer.cpp\
 
 $(LIB_FOLDER)/%.o: %.cpp %.h | $(LIB_FOLDER)
 	g++ -c $(CFLAGS) -o $@ $< 
-
-%Dict.o: %Dict.cpp
-	g++ -c $(CFLAGS) -o $(LIB_FOLDER)/$@ $<
-
-$(DICT_FOLDER)/%Dict.cpp: %.h %LinkDef.h | $(DICT_FOLDER)
-	rootcint -f $@ -c -p -I$(INC_FOLDER) -I$(GUI_INC_FOLDER) $^ 
 
 $(LIB_FOLDER):
 	mkdir -p $(LIB_FOLDER)

@@ -41,11 +41,12 @@ public:
 
     const TH2D& get_histogram() const {return histogram_;}
 
-protected:
-    void read_file(); //loads file (path_) into histogram
-
     boost::mutex mutex_; //for the threads
     boost::condition_variable file_found_; //signals that a file has been found
+    boost::condition_variable histogram_drawn_; //signals that the histogram is ready to be drawn
+
+protected:
+    void read_file(); //loads file (path_) into histogram
     fs::path path_;
     TH2D histogram_;
 };
