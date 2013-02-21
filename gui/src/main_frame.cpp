@@ -15,7 +15,6 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
     menu_bar_layout_(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1),
     menu_bar_item_layout_(kLHintsTop | kLHintsLeft, 0, 4, 0, 0),
     menu_bar_help_layout_(kLHintsTop | kLHintsRight),
-    file_menu_(this),
     table_layout_hints_(3),
     embedded_canvas_("image_embedded_canvas",
             &table_,
