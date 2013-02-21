@@ -170,7 +170,9 @@ void MainFrame::LaunchImageReader(fs::path path) {
         //waiting because sometimes the histogram wasn't ready to be drawn
         boost::this_thread::sleep(boost::posix_time::milliseconds(50));
         DrawImage();
+        DrawHorizontalLine();
         DrawProjection();
+        //start in separate thread because it is time consuming
         boost::thread fft_thread(&MainFrame::DrawTransform, this);
     }
 }
@@ -178,7 +180,6 @@ void MainFrame::LaunchImageReader(fs::path path) {
 void MainFrame::DrawImage() {
     embedded_canvas_.GetCanvas()->cd();
     image_reader_->Draw("col");
-    //DrawHorizontalLine();
     embedded_canvas_.GetCanvas()->Modified();
     embedded_canvas_.GetCanvas()->Update();
 }
