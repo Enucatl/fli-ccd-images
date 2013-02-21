@@ -21,7 +21,9 @@ void NewestImageReader::set_path(fs::path path) {
     }
     std::vector<boost::filesystem::path> files;
     while (true) {
+        mutex_.lock();
         raw_image_tools::get_all_raw_files(path, files);
+        mutex_.unlock();
         if (not files.size()) {
         std::cerr << "Folder " << path <<
             " empty! I will wait for half a second..." << std::endl;

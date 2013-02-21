@@ -133,11 +133,19 @@ void MainFrame::OpenFile() {
     const char *filetypes[] = {"RAW images", "*.raw", 0, 0};
     file_info_.fFileTypes = filetypes;
     file_info_.fIniDir = StrDup(".");
+    //lock mutex to prevent the newest image reader from looking into folders
+    //while browsing the Dialog
+    if (image_reader_)
+        image_reader_->mutex_.lock();
     //automatically calls delete when the window is closed, according to http://root.cern.ch/phpBB3/viewtopic.php?p=69013#p69013
     dialog_ = new TGFileDialog(gClient->GetRoot(), this, kFDOpen, &file_info_);
-    //start in new detached thread
-    boost::thread main_thread(&MainFrame::LaunchImageReader, this, file_info_.fFilename);
-    main_thread.detach();
+    if (image_reader_)
+        image_reader_->mutex_.unlock();
+    //start in new detached thread if necessary
+    if (file_info_.fFilename) {
+        boost::thread main_thread(&MainFrame::LaunchImageReader, this, file_info_.fFilename);
+        main_thread.detach();      
+    }
 }
 
 void MainFrame::LaunchImageReader(fs::path path) {
@@ -170,7 +178,7 @@ void MainFrame::LaunchImageReader(fs::path path) {
 void MainFrame::DrawImage() {
     embedded_canvas_.GetCanvas()->cd();
     image_reader_->Draw("col");
-    //DrawHorizontalLine();
+    DrawHorizontalLine();
     embedded_canvas_.GetCanvas()->Modified();
     embedded_canvas_.GetCanvas()->Update();
 }
