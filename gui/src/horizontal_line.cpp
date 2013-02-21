@@ -21,13 +21,6 @@ void HorizontalLine::ExecuteEvent(int event, int px, int py) {
     int py1 = 0;
     int py2 = 0;
     int pyold = 0;
-    int px1old = 0;
-    int py1old = 0;
-    int px2old = 0;
-    int py2old = 0;
-    bool P1 = false;
-    double P2 = false;
-    double L = false;
     double dpx = 0;
     double dpy = 0;
     double xp1 = 0;
@@ -56,12 +49,7 @@ void HorizontalLine::ExecuteEvent(int event, int px, int py) {
                 px2 = gPad->XtoAbsPixel(fX2);
                 py2 = gPad->YtoAbsPixel(fY2);
             }
-            // P.Castro: points don't move
-            P1 = false;
-            P2 = false;
 
-            // P.Castro: only line is moved paralell to itself
-            L = kTRUE;
             pyold = py;
             gPad->SetCursor(kMove);
 
@@ -69,27 +57,13 @@ void HorizontalLine::ExecuteEvent(int event, int px, int py) {
 
         case kButton1Motion:
 
-            if (P1) {
-                gVirtualX->DrawLine(px1old, py1old, px2, py2);
-                gVirtualX->DrawLine(px, py, px2, py2);
-                px1old = px;
-                py1old = py;
-            }
-            if (P2) {
-                gVirtualX->DrawLine(px1, py1, px2old, py2old);
-                gVirtualX->DrawLine(px1, py1, px, py);
-                px2old = px;
-                py2old = py;
-            }
-            if (L) {
-                gVirtualX->DrawLine(px1, py1, px2, py2);
-                dy = py-pyold;
-                //move only vertically
-                py1 += dy;
-                py2 += dy;
-                gVirtualX->DrawLine(px1, py1, px2, py2);
-                pyold = py;
-            }
+            gVirtualX->DrawLine(px1, py1, px2, py2);
+            dy = py-pyold;
+            //move only vertically
+            py1 += dy;
+            py2 += dy;
+            gVirtualX->DrawLine(px1, py1, px2, py2);
+            pyold = py;
             break;
 
         case kButton1Up:
@@ -99,35 +73,15 @@ void HorizontalLine::ExecuteEvent(int event, int px, int py) {
                 dpy  = gPad->GetY2() - gPad->GetY1();
                 xp1  = gPad->GetX1();
                 yp1  = gPad->GetY1();
-                if (P1) {
-                    fX1 = (gPad->AbsPixeltoX(px)-xp1)/dpx;
-                    fY1 = (gPad->AbsPixeltoY(py)-yp1)/dpy;
-                }
-                if (P2) {
-                    fX2 = (gPad->AbsPixeltoX(px)-xp1)/dpx;
-                    fY2 = (gPad->AbsPixeltoY(py)-yp1)/dpy;
-                }
-                if (L) {
-                    fX1 = (gPad->AbsPixeltoX(px1)-xp1)/dpx;
-                    fY1 = (gPad->AbsPixeltoY(py1)-yp1)/dpy;
-                    fX2 = (gPad->AbsPixeltoX(px2)-xp1)/dpx;
-                    fY2 = (gPad->AbsPixeltoY(py2)-yp1)/dpy;
-                }
+                fX1 = (gPad->AbsPixeltoX(px1)-xp1)/dpx;
+                fY1 = (gPad->AbsPixeltoY(py1)-yp1)/dpy;
+                fX2 = (gPad->AbsPixeltoX(px2)-xp1)/dpx;
+                fY2 = (gPad->AbsPixeltoY(py2)-yp1)/dpy;
             } else {
-                if (P1) {
-                    fX1 = gPad->AbsPixeltoX(px);
-                    fY1 = gPad->AbsPixeltoY(py);
-                }
-                if (P2) {
-                    fX2 = gPad->AbsPixeltoX(px);
-                    fY2 = gPad->AbsPixeltoY(py);
-                }
-                if (L) {
-                    fX1 = gPad->AbsPixeltoX(px1);
-                    fY1 = gPad->AbsPixeltoY(py1);
-                    fX2 = gPad->AbsPixeltoX(px2);
-                    fY2 = gPad->AbsPixeltoY(py2);
-                }
+                fX1 = gPad->AbsPixeltoX(px1);
+                fY1 = gPad->AbsPixeltoY(py1);
+                fX2 = gPad->AbsPixeltoX(px2);
+                fY2 = gPad->AbsPixeltoY(py2);
             }
             gPad->Modified(kTRUE);
             gVirtualX->SetLineColor(-1);

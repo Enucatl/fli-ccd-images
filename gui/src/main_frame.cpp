@@ -178,7 +178,7 @@ void MainFrame::LaunchImageReader(fs::path path) {
 void MainFrame::DrawImage() {
     embedded_canvas_.GetCanvas()->cd();
     image_reader_->Draw("col");
-    DrawHorizontalLine();
+    //DrawHorizontalLine();
     embedded_canvas_.GetCanvas()->Modified();
     embedded_canvas_.GetCanvas()->Update();
 }
