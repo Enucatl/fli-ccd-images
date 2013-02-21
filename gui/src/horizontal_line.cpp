@@ -5,6 +5,8 @@ namespace gui{
 
 HorizontalLine::HorizontalLine(double x1, double y1, double x2, double y2) : TLine(x1,y1,x2,y2)
 {
+    SetLineColor(kWhite);
+    SetLineWidth(2);
 }
 
 //______________________________________________________________________________
@@ -31,7 +33,6 @@ void HorizontalLine::ExecuteEvent(int event, int px, int py) {
     switch (event) {
 
         case kButton1Down:
-            gVirtualX->SetLineColor(-1);
             TAttLine::Modify();  //Change line attributes only if necessary
 
             // No break !!!
@@ -83,8 +84,8 @@ void HorizontalLine::ExecuteEvent(int event, int px, int py) {
                 fX2 = gPad->AbsPixeltoX(px2);
                 fY2 = gPad->AbsPixeltoY(py2);
             }
-            gPad->Modified(kTRUE);
-            gVirtualX->SetLineColor(-1);
+            gPad->Modified();
+            SetLineColor(kRed);
             std::cout << "New y = " << fY1 << "\n";
 
             break;

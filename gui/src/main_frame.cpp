@@ -186,9 +186,12 @@ void MainFrame::DrawImage() {
 
 void MainFrame::DrawHorizontalLine() {
     embedded_canvas_.GetCanvas()->cd();
-    horizontal_line_.reset(new HorizontalLine(image_reader_->get_histogram_x_min(), 10, image_reader_->get_histogram_x_max(), 10));
+    int x_min = embedded_canvas_.GetCanvas()->GetUxmin();
+    int x_max = embedded_canvas_.GetCanvas()->GetUxmax();
+    int y_value = 520;
+    horizontal_line_.reset(new HorizontalLine(x_min, y_value, x_max, y_value));
     horizontal_line_->Draw();
-    embedded_canvas_.GetCanvas()->Modified();
+    //embedded_canvas_.GetCanvas()->Modified();
     embedded_canvas_.GetCanvas()->Update();
 }
 
@@ -206,7 +209,7 @@ void MainFrame::DrawProjection(int pixel) {
 void MainFrame::DrawTransform() {
     transform_canvas_.GetCanvas()->cd();
     transform_histogram_ = projection_histogram_->FFT(transform_histogram_, "MAG R2C EX");
-    transform_histogram_->SetTitle("Fourier transform of projection");
+    transform_histogram_->SetTitle("Fourier transform of above histogram");
     transform_histogram_->Draw();
     transform_canvas_.GetCanvas()->Modified();
     transform_canvas_.GetCanvas()->Update();
