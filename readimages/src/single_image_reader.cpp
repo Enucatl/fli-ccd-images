@@ -6,7 +6,7 @@ namespace readimages {
 
 void SingleImageReader::update_histogram() {
     boost::mutex::scoped_lock lock(mutex_);
-    file_found_.wait(lock);
+    file_found_.timed_wait(lock, boost::posix_time::milliseconds(200));
     read_file();
     histogram_drawn_.notify_one();
     return;

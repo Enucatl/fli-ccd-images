@@ -108,6 +108,13 @@ private:
     //contrast adjustment
     boost::scoped_ptr<ContrastAdjuster> contrast_adjuster_;
     boost::scoped_ptr<TCanvas> contrast_adjuster_canvas_;
+
+    //threads
+    boost::thread image_reader_thread_;
+    boost::thread set_path_thread_;
+    boost::thread update_hist_thread_;
+    boost::thread fourier_thread_;
+    boost::thread::id not_a_thread_id_;
 };
 
 }

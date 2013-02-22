@@ -8,6 +8,8 @@ void NewestImageReader::update_histogram() {
         boost::mutex::scoped_lock lock(mutex_);
         file_found_.wait(lock);
         read_file();
+        //waiting for ROOT timeouts (mysterious crashes otherwise)
+        boost::this_thread::sleep(boost::posix_time::milliseconds(50));
         histogram_drawn_.notify_one();
     }
 }
@@ -21,9 +23,7 @@ void NewestImageReader::set_path(fs::path path) {
     }
     std::vector<boost::filesystem::path> files;
     while (true) {
-        mutex_.lock();
         raw_image_tools::get_all_raw_files(path, files);
-        mutex_.unlock();
         if (not files.size()) {
         std::cerr << "Folder " << path <<
             " empty! I will wait for half a second..." << std::endl;
@@ -33,7 +33,7 @@ void NewestImageReader::set_path(fs::path path) {
         }
         boost::filesystem::path newest = *std::max_element(files.begin(), files.end(), raw_image_tools::is_file2_newer);
         if (newest == path_) {
-            boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+            boost::this_thread::sleep(boost::posix_time::milliseconds(200));
             continue;
         }
         else {

@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
     //default start empty GUI:
     if (vm.count("f")) {
         std::string folder = vm["f"].as<std::string>();
-        std::cout << folder << std::endl;
+        //std::cout << folder << std::endl;
         boost::thread main_thread(&readimages::gui::MainFrame::LaunchImageReader, &viewer, folder);
     }
     app.Run();

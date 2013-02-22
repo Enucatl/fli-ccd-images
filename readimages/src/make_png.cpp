@@ -1,6 +1,7 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/progress.hpp>
+#include <boost/thread.hpp>
 
 #include "TApplication.h"
 #include "TCanvas.h"
@@ -67,11 +68,12 @@ int main(int argc, char **argv) {
     std::cout << std::endl;
     std::cout << "Converting " << n << " RAW files" << std::endl;
     boost::progress_display progress(n);
+    boost::thread t;
 
     for (std::vector<fs::path>::const_iterator file_name = files.begin(); file_name != files.end(); ++file_name) {
         ++progress;
-        image_reader.update_histogram();
         image_reader.set_path(*file_name);
+        image_reader.update_histogram();
         image_reader.Draw("col");
         fs::path output_name = file_name->filename();
         std::string output_name_string((output_folder / output_name).string());

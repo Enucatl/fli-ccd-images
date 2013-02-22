@@ -31,6 +31,9 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
     transform_histogram_(0),
     style_(setTDRStyle())
 {
+    //set title
+    SetWindowName("ccdfli_viewer");
+
     //set menus
     AddFrame(&menu_bar_, &menu_bar_layout_);
     menu_bar_.AddPopup("&File", &file_menu_, &menu_bar_item_layout_);
@@ -67,6 +70,7 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
                 kLHintsFillX | kLHintsFillY));
     table_.AddFrame(&transform_canvas_, &table_layout_hints_[2]);
 
+    //force style
     gROOT->SetStyle("tdrStyle");
     gROOT->ForceStyle();
 
@@ -135,16 +139,19 @@ void MainFrame::OpenFile() {
     file_info_.fIniDir = StrDup(".");
     //lock mutex to prevent the newest image reader from looking into folders
     //while browsing the Dialog
-    if (image_reader_)
+    if (image_reader_) {
         image_reader_->mutex_.lock();
+        if (image_reader_thread_.get_id() != not_a_thread_id_)
+            std::cout << "calling interrupt image reader thread" << std::endl;
+            image_reader_thread_.interrupt();
+    }
     //automatically calls delete when the window is closed, according to http://root.cern.ch/phpBB3/viewtopic.php?p=69013#p69013
     dialog_ = new TGFileDialog(gClient->GetRoot(), this, kFDOpen, &file_info_);
     if (image_reader_)
         image_reader_->mutex_.unlock();
-    //start in new detached thread if necessary
-    if (file_info_.fFilename) {
-        boost::thread main_thread(&MainFrame::LaunchImageReader, this, file_info_.fFilename);
-        main_thread.detach();      
+    //start in new thread 
+    if (file_info_.fFilename and image_reader_thread_.get_id() != not_a_thread_id_) {
+        image_reader_thread_ = boost::thread(&MainFrame::LaunchImageReader, this, file_info_.fFilename);
     }
 }
 
@@ -160,20 +167,19 @@ void MainFrame::LaunchImageReader(fs::path path) {
     //closing the app. Therefore, in order to switch the behaviour from
     //"online viewer" to "single viewer" you have to restart it.
 
-    boost::thread file_lookup_thread(&readimages::BaseImageReader::set_path, image_reader_.get(), path);
-    file_lookup_thread.detach();
-    boost::thread update_histogram_thread(&readimages::BaseImageReader::update_histogram, image_reader_.get());
-    update_histogram_thread.detach();
+    set_path_thread_ = boost::thread(&readimages::BaseImageReader::set_path, image_reader_.get(), path);
+    update_hist_thread_ = boost::thread(&readimages::BaseImageReader::update_histogram, image_reader_.get());
     while (true) {
+        //wait for calculation of fourier transform in the previous loop
+        //cycle
+        fourier_thread_.join();
         boost::mutex::scoped_lock lock(image_reader_->mutex_);
         image_reader_->histogram_drawn_.wait(lock);
-        //waiting because sometimes the histogram wasn't ready to be drawn
-        boost::this_thread::sleep(boost::posix_time::milliseconds(50));
         DrawImage();
-        DrawHorizontalLine();
+        //DrawHorizontalLine();
         DrawProjection();
         //start in separate thread because it is time consuming
-        boost::thread fft_thread(&MainFrame::DrawTransform, this);
+        fourier_thread_ = boost::thread(&MainFrame::DrawTransform, this);
     }
 }
 
@@ -208,7 +214,7 @@ void MainFrame::DrawProjection(int pixel) {
 
 void MainFrame::DrawTransform() {
     transform_canvas_.GetCanvas()->cd();
-    transform_histogram_ = projection_histogram_->FFT(transform_histogram_, "MAG R2C EX");
+    transform_histogram_ = projection_histogram_->FFT(transform_histogram_, "MAG R2C");
     transform_histogram_->SetTitle("Fourier transform of above histogram");
     transform_histogram_->Draw();
     transform_canvas_.GetCanvas()->Modified();
