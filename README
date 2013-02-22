@@ -49,9 +49,16 @@ if you specify a FOLDER name, it will continuously update the display with
     the most recent image in the folder.
 
 
-Python 
+Analysis 
 ----------------------
+
+1) Make PNG and GIF files
 reads all images in a folder and convert them from RAW to PNG
 also saves a gif animation with all the png images
 
 python python/make_gif.py FOLDER
+
+2) Changes of intensity with time
+see intensity changes across all the images in a folder (e.g. a scan), also
+defining a region of interest:
+./bin/intensity_scan ~/afsproject/raw_data/2013/ccdfli/2013.02.22/S00000-00999/S00014/ --roi 250 950 524 531
