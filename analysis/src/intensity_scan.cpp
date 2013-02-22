@@ -15,6 +15,7 @@
 #include "TROOT.h"
 #include "TStyle.h"
 #include "TGraph.h"
+#include "TFile.h"
 
 #include "raw_image_tools.h"
 #include "single_image_reader.h"
@@ -140,16 +141,20 @@ int main(int argc, char **argv) {
     }
 
     TCanvas intensity_canvas;
+    fs::path output_name = fs::path(folder) / "intensity_scan.root";
+    TFile output_root_file(output_name.c_str(), "recreate");
     TGraph intensity_graph(n, &x[0], &y[0]);
 
     std::stringstream title;
     title << "intensity in roi " << x_min << "-"
         << x_max << " x " << y_min << "-" << y_max;
     title << ";file number;intensity (integral)";
+    intensity_graph.SetName("intensity_graph");
     intensity_graph.SetTitle(title.str().c_str());
     intensity_graph.GetXaxis()->SetNdivisions(n);
     intensity_graph.Draw("ap");
     std::cout << "Done!" << std::endl;
+    intensity_graph.Write();
 
     app.Run();
     return 0;

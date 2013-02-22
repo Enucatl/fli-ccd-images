@@ -4,5 +4,6 @@ test/test_contrast_adjuster
 test/test_gui
 test/png
 *pyc
-test/*.gif
+*root
+*.gif
 *.swp
