@@ -205,7 +205,8 @@ void MainFrame::DrawHorizontalLine() {
 
 void MainFrame::DrawProjection() {
     projection_canvas_.GetCanvas()->cd();
-    projection_histogram_ = image_reader_->ProjectionX("projection", projection_along_pixel_, projection_along_pixel_);
+    int pixel = projection_along_pixel_ - embedded_canvas_.GetCanvas()->GetUymin();
+    projection_histogram_ = image_reader_->ProjectionX("projection", pixel, pixel);
     std::string new_title = "Along pixel " + boost::lexical_cast<std::string>(projection_along_pixel_);
     projection_histogram_->SetTitle(new_title.c_str());
     projection_histogram_->Draw();
@@ -235,9 +236,10 @@ void MainFrame::SpawnContrastAdjustment() {
 
 void MainFrame::UpdateProjection(int event, int x, int y, TObject* selected) {
     if (event == kButton1Double) {
+        fourier_thread_.join();
         projection_along_pixel_ = embedded_canvas_.GetCanvas()->AbsPixeltoY(y);
-        std::cout << projection_along_pixel_ << std::endl;
         DrawProjection();
+        fourier_thread_ = boost::thread(&MainFrame::DrawTransform, this);
     }
 }
 
