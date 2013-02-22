@@ -70,8 +70,8 @@ int main(int argc, char **argv) {
 
     for (std::vector<fs::path>::const_iterator file_name = files.begin(); file_name != files.end(); ++file_name) {
         ++progress;
-        image_reader.set_path(*file_name);
         image_reader.update_histogram();
+        image_reader.set_path(*file_name);
         image_reader.Draw("col");
         fs::path output_name = file_name->filename();
         std::string output_name_string((output_folder / output_name).string());
