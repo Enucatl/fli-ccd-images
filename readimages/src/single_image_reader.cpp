@@ -6,9 +6,9 @@ namespace readimages {
 
 void SingleImageReader::update_histogram() {
     boost::mutex::scoped_lock lock(mutex_);
-    if (not fs::exists(path_))
-        file_found_.wait(lock);
+    file_found_.wait(lock);
     read_file();
+    histogram_drawn_.notify_one();
     return;
 }
 
@@ -19,8 +19,10 @@ void SingleImageReader::set_path(fs::path path) {
         //std::cout << "single image reader " << path.string() << std::endl;
         file_found_.notify_one();
     }
-    else
-        path_ = "";
+    else {
+        std::cout << "File not found!" << std::endl;
+        path_ = "file.not.found";
+    }
     return;
 }
 
