@@ -1,7 +1,6 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/progress.hpp>
-#include <boost/thread.hpp>
 
 #include "TApplication.h"
 #include "TCanvas.h"
@@ -29,7 +28,7 @@ int main(int argc, char **argv) {
             vm);
     po::notify(vm);
 
-    std::string example = "EXAMPLE\n./make_gif /afs/psi.ch/project/hedpc/raw_data/2013/ccdfli/2013.01.29/S00000-00999/S00013/";
+    std::string example = "EXAMPLE\n./make_png /afs/psi.ch/project/hedpc/raw_data/2013/ccdfli/2013.01.29/S00000-00999/S00013/";
 
     if (vm.count("help")) {
         std::cout << desc << std::endl;
@@ -68,7 +67,6 @@ int main(int argc, char **argv) {
     std::cout << std::endl;
     std::cout << "Converting " << n << " RAW files" << std::endl;
     boost::progress_display progress(n);
-    boost::thread t;
 
     for (std::vector<fs::path>::const_iterator file_name = files.begin(); file_name != files.end(); ++file_name) {
         ++progress;
