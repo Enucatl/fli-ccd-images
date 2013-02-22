@@ -29,6 +29,7 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
             static_cast<unsigned int>(width * (1 - horizontal_separation_fraction)),
             height / 2),
     transform_histogram_(0),
+    projection_along_pixel_(540),
     style_(setTDRStyle())
 {
     //set title
@@ -80,6 +81,8 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
     Layout();
     MapWindow();
 
+    embedded_canvas_.GetCanvas()->Connect("ProcessedEvent(int, int, int, TObject*)",
+            "readimages::gui::MainFrame", this, "UpdateProjection(int, int, int, TObject*)");
 }
 
 void MainFrame::CloseWindow() {
@@ -176,7 +179,7 @@ void MainFrame::LaunchImageReader(fs::path path) {
         boost::mutex::scoped_lock lock(image_reader_->mutex_);
         image_reader_->histogram_drawn_.wait(lock);
         DrawImage();
-        //DrawHorizontalLine();
+        boost::this_thread::sleep(boost::posix_time::milliseconds(200));
         DrawProjection();
         //start in separate thread because it is time consuming
         fourier_thread_ = boost::thread(&MainFrame::DrawTransform, this);
@@ -197,15 +200,13 @@ void MainFrame::DrawHorizontalLine() {
     int y_value = 520;
     horizontal_line_.reset(new HorizontalLine(x_min, y_value, x_max, y_value));
     horizontal_line_->Draw();
-    //embedded_canvas_.GetCanvas()->Modified();
     embedded_canvas_.GetCanvas()->Update();
 }
 
-void MainFrame::DrawProjection(int pixel) {
+void MainFrame::DrawProjection() {
     projection_canvas_.GetCanvas()->cd();
-    int user_coordinate_pixel = image_reader_->get_histogram().GetYaxis()->GetBinLowEdge(pixel);
-    projection_histogram_ = image_reader_->ProjectionX("projection", pixel, pixel);
-    std::string new_title = "Along pixel " + boost::lexical_cast<std::string>(user_coordinate_pixel);
+    projection_histogram_ = image_reader_->ProjectionX("projection", projection_along_pixel_, projection_along_pixel_);
+    std::string new_title = "Along pixel " + boost::lexical_cast<std::string>(projection_along_pixel_);
     projection_histogram_->SetTitle(new_title.c_str());
     projection_histogram_->Draw();
     projection_canvas_.GetCanvas()->Modified();
@@ -230,6 +231,14 @@ void MainFrame::SpawnContrastAdjustment() {
     contrast_adjuster_->set_style(&style_);
     contrast_adjuster_->get_intensity_distribution(image_reader_->get_histogram());
     contrast_adjuster_->Draw();
+}
+
+void MainFrame::UpdateProjection(int event, int x, int y, TObject* selected) {
+    if (event == kButton1Double) {
+        projection_along_pixel_ = embedded_canvas_.GetCanvas()->AbsPixeltoY(y);
+        std::cout << projection_along_pixel_ << std::endl;
+        DrawProjection();
+    }
 }
 
 }

@@ -6,11 +6,30 @@
 #include <iostream>
 #include <vector>
 
+#ifndef __CINT__
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 #include <boost/lexical_cast.hpp>
+#else
+namespace boost {
+template<typename T>
+class ptr_vector<T>;
+
+template<typename T>
+class scoped_ptr<T>;
+
+class thread;
+
+namespace filesystem {
+class path;
+}
+namespace thread{
+class id;
+}
+}
+#endif
 
 #include "TGFrame.h"
 #include "TGMenu.h"
@@ -23,12 +42,20 @@
 #include "TH2.h"
 #include "TROOT.h"
 
+#ifndef __CINT__
 #include "rootstyle.h"
-#include "contrast_adjuster.h"
 #include "base_image_reader.h"
 #include "single_image_reader.h"
 #include "newest_image_reader.h"
 #include "horizontal_line.h"
+#include "contrast_adjuster.h"
+#else
+class ContrastAdjuster;
+class BaseImageReader;
+class SingleImageReader;
+class NewestImageReader;
+class HorizontalLine;
+#endif
 
 namespace fs = boost::filesystem;
 
@@ -55,7 +82,9 @@ public:
     void DrawImage();
 
     //Draw projection in top right canvas
-    void DrawProjection(int pixel=40);
+    void UpdateProjection(int event, int x, int y, TObject* selected);
+
+    void DrawProjection();
 
     //Draw fourier transform of projection in bottom right canvas
     void DrawTransform();
@@ -98,6 +127,7 @@ private:
 
     //projection line
     boost::scoped_ptr<HorizontalLine> horizontal_line_;
+    int projection_along_pixel_;
 
     //reads the image online or single
     boost::scoped_ptr<BaseImageReader> image_reader_;
