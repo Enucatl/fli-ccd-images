@@ -24,7 +24,7 @@ The [ROOT data analysis framework](http://root.cern.ch "ROOT homepage") >= 5.34
 
 ## Report Bugs & Request Features
 
-please report any bugs or feature request using the [issues webpage](https://bitbucket.org/Enucatl/readimages/issues/new).
+please report any bug or feature request using the [issues webpage](https://bitbucket.org/Enucatl/readimages/issues/new).
 
 
 ## Download
