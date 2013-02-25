@@ -83,6 +83,11 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
 
     embedded_canvas_.GetCanvas()->Connect("ProcessedEvent(int, int, int, TObject*)",
             "readimages::gui::MainFrame", this, "UpdateProjection(int, int, int, TObject*)");
+
+    //initialize file_info_ needed for the dialog
+    const char *filetypes[] = {"RAW images", "*.raw", 0, 0};
+    file_info_.fFileTypes = filetypes;
+    file_info_.fIniDir = StrDup(".");
 }
 
 void MainFrame::CloseWindow() {
@@ -137,9 +142,6 @@ bool MainFrame::ProcessMessage(long message, long par1, long par2) {
 }
 
 void MainFrame::OpenFile() {
-    const char *filetypes[] = {"RAW images", "*.raw", 0, 0};
-    file_info_.fFileTypes = filetypes;
-    file_info_.fIniDir = StrDup(".");
     //lock mutex to prevent the newest image reader from looking into folders
     //while browsing the Dialog
     if (image_reader_) {

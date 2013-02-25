@@ -151,7 +151,6 @@ int main(int argc, char **argv) {
     title << ";file number;intensity (integral)";
     intensity_graph.SetName("intensity_graph");
     intensity_graph.SetTitle(title.str().c_str());
-    intensity_graph.GetXaxis()->SetNdivisions(n);
     intensity_graph.Draw("ap");
     std::cout << "Done!" << std::endl;
     intensity_graph.Write();

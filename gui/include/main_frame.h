@@ -111,7 +111,7 @@ private:
 
     //open file or directory
     TGFileInfo file_info_;
-    TGFileDialog* dialog_;
+    TGFileDialog* dialog_; //has to be a raw pointer as the window deletes itself
 
     //canvases
     boost::ptr_vector<TGTableLayoutHints> table_layout_hints_;
