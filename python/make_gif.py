@@ -12,7 +12,7 @@ parser.add_argument('folder', metavar='FOLDER',
 folder = parser.parse_args().folder[0]
 
 #setup program name:
-programme = "make_png"
+programme = "make_png_and_root"
 
 if not os.path.exists(folder) or not os.path.isdir(folder):
     print("Folder not found!", folder)

@@ -39,6 +39,9 @@ public:
     //just a layer on TH2D::ProjectionX
     TH1D* ProjectionX(const char* name="_px", int firstybin=0, int lastybin=-1, const char* option="") {return histogram_.ProjectionX(name, firstybin, lastybin, option);}
 
+    //Write to a ROOT file
+    int Write(const char* name=0, int option=0, int bufsize=0) {return histogram_.Write(name, option, bufsize);}
+
     const TH2D& get_histogram() const {return histogram_;}
 
     boost::mutex mutex_; //for the threads

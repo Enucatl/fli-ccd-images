@@ -6,6 +6,7 @@
 #include "TCanvas.h"
 #include "TROOT.h"
 #include "TStyle.h"
+#include "TFile.h"
 
 #include "raw_image_tools.h"
 #include "single_image_reader.h"
@@ -28,7 +29,7 @@ int main(int argc, char **argv) {
             vm);
     po::notify(vm);
 
-    std::string example = "EXAMPLE\n./make_png /afs/psi.ch/project/hedpc/raw_data/2013/ccdfli/2013.01.29/S00000-00999/S00013/";
+    std::string example = "EXAMPLE\n./make_png_and_root /afs/psi.ch/project/hedpc/raw_data/2013/ccdfli/2013.01.29/S00000-00999/S00013/";
 
     if (vm.count("help")) {
         std::cout << desc << std::endl;
@@ -47,6 +48,16 @@ int main(int argc, char **argv) {
         return 2;
     }
 
+    fs::path root_file_name(folder);
+    //check if the last character is a slash, needs special handling
+    if (*folder.rbegin() == '/')
+        root_file_name = root_file_name.parent_path().filename();
+    else
+        root_file_name = root_file_name.filename();
+    root_file_name += ".root";
+    root_file_name = folder / root_file_name;
+    TFile root_file(root_file_name.string().c_str(), "recreate");
+    root_file.cd();
     readimages::SingleImageReader image_reader;
     std::vector<fs::path> files;
 
@@ -73,6 +84,8 @@ int main(int argc, char **argv) {
         image_reader.set_path(*file_name);
         image_reader.update_histogram();
         image_reader.Draw("col");
+        image_reader.Write();
+        //begin string operations for the file name
         fs::path output_name = file_name->filename();
         std::string output_name_string((output_folder / output_name).string());
         boost::algorithm::replace_last(output_name_string, ".raw", ".png");
