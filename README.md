@@ -13,15 +13,14 @@ To back up to e.g. v1.23 just type `git checkout v1.23`
 Requirements
 ----------
 
-GCC >= 4.3 (for copy semantics used with boost::thread)
+GCC &ge; >= x2265 4.3 (for copy semantics used with boost::thread)
 
 GNU make >= 3.80 (for order-only prerequisites with '|' in this Makefile)
 
-The BOOST c++ libraries >= 1.50
-http://www.boost.org
+The [BOOST c++ libraries](http://www.boost.org "BOOST homepage") >= 1.50
 
-The ROOT data analysis framework >= 5.34
-http://root.cern.ch
+The [ROOT data analysis framework](http://root.cern.ch "ROOT homepage") >= 5.34
+
 
 
 Report Bugs & Request Features
