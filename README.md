@@ -19,11 +19,17 @@ The [BOOST c++ libraries](http://www.boost.org "BOOST homepage") >= 1.50
 
 The [ROOT data analysis framework](http://root.cern.ch "ROOT homepage") >= 5.34
 
+[GIT](http://git-scm.com/ "GIT homepage") version control system >= 1.7
 
 
 ## Report Bugs & Request Features
 
 please report any bugs or feature request using the [issues webpage](https://bitbucket.org/Enucatl/readimages/issues/new).
+
+
+## Download
+
+    git clone https://bitbucket.org/Enucatl/readimages.git
 
 
 ## Compile
