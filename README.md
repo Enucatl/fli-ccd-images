@@ -13,9 +13,9 @@ To back up to e.g. v1.23 just type `git checkout v1.23`
 Requirements
 ----------
 
-GCC &ge; >= x2265 4.3 (for copy semantics used with boost::thread)
+[GCC](gcc.gnu.org "GCC homepage") >= 4.3 (for copy semantics used with boost::thread)
 
-GNU make >= 3.80 (for order-only prerequisites with '|' in this Makefile)
+[GNU make](www.gnu.org/software/make/ "make homepage") >= 3.80 (for order-only prerequisites with '|' in this Makefile)
 
 The [BOOST c++ libraries](http://www.boost.org "BOOST homepage") >= 1.50
 
