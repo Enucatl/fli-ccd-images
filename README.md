@@ -41,19 +41,17 @@ if the compiler cannot find the proper headers and libraries, you are
     probably missing these variables (ready to copy & paste on a bash shell
     on mpc1054.psi.ch):
 
-`
-#setup ROOT from afs/cern.ch
-source /afs/cern.ch/sw/lcg/external/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh
-source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.03/x86_64-slc6-gcc46-opt/root/bin/thisroot.sh
-alias root='root -l'
-#setup boost c++ libraries
-#change the following line if needed
-#so that it points to your installation of Boost
-export BOOST_HOME=/home/specuser/boost_install
-export CPLUS_INCLUDE_PATH=$(BOOST_HOME)/include:$CPLUS_INCLUDE_PATH
-export LD_LIBRARY_PATH=$(BOOST_HOME)/lib:$LD_LIBRARY_PATH
-export LIBRARY_PATH=$(BOOST_HOME)/lib:$LIBRARY_PATH
-`
+    #setup ROOT from afs/cern.ch
+    source /afs/cern.ch/sw/lcg/external/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh
+    source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.03/x86_64-slc6-gcc46-opt/root/bin/thisroot.sh
+    alias root='root -l'
+    #setup boost c++ libraries
+    #change the following line if needed
+    #so that it points to your installation of Boost
+    export BOOST_HOME=/home/specuser/boost_install
+    export CPLUS_INCLUDE_PATH=$(BOOST_HOME)/include:$CPLUS_INCLUDE_PATH
+    export LD_LIBRARY_PATH=$(BOOST_HOME)/lib:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=$(BOOST_HOME)/lib:$LIBRARY_PATH
 
 
 Run
