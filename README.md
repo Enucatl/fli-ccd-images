@@ -1,5 +1,4 @@
-ccdfli viewer
-==========
+# ccdfli viewer
 
 ROOT GUI programme to view the files recorded by the CCD
 FLI camera in OFLG/U210.
@@ -10,8 +9,7 @@ If you want the stable versions stick with v1.XX.
 To back up to e.g. v1.23 just type `git checkout v1.23`
 
 
-Requirements
-----------
+## Requirements
 
 [GCC](gcc.gnu.org "GCC homepage") >= 4.3 (for copy semantics used with boost::thread)
 
@@ -23,13 +21,13 @@ The [ROOT data analysis framework](http://root.cern.ch "ROOT homepage") >= 5.34
 
 
 
-Report Bugs & Request Features
-----------
+## Report Bugs & Request Features
+
 please report any bugs or feature request using the [issues webpage](https://bitbucket.org/Enucatl/readimages/issues/new).
 
 
-Compile
-----------
+## Compile
+
 just type
 
     make
@@ -52,8 +50,8 @@ if the compiler cannot find the proper headers and libraries, you are
     export LIBRARY_PATH=$(BOOST_HOME)/lib:$LIBRARY_PATH
 
 
-Run
-----------------------
+## Run
+
 run the programme by supplying a FILE or FOLDER name on the command line
 
     ./bin/ccdfli_viewer FILE/FOLDER
@@ -62,17 +60,16 @@ if you specify a FOLDER name, it will continuously update the display with
     the most recent image in the folder.
 
 
-Post-processing and other bonus programmes
-----------------------
+## Post-processing and other bonus programmes
 
-# Make PNG, ROOT and GIF files
+### Make PNG, ROOT and GIF files
 reads all images in a folder and convert them from RAW to PNG
 also saves a gif animation with all the png images and a ROOT file saving
 the same images as TH2D
 
     python python/make_gif.py FOLDER
 
-# Changes of intensity with time
+### Changes of intensity with time
 see intensity changes across all the images in a folder (e.g. a scan) in 
 a region of interest
 
