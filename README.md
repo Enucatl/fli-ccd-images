@@ -7,8 +7,7 @@ FLI camera in OFLG/U210.
 version tags >= v2.00 mark the development of the newer (but less stable) GUI app.
 If you want the stable versions stick with v1.XX.
 
-To back up to e.g. v1.23 just type:
-`git checkout v1.23`
+To back up to e.g. v1.23 just type `git checkout v1.23`
 
 
 Requirements
@@ -32,9 +31,9 @@ please report any bugs or feature request using the [issues webpage](https://bit
 
 Compile
 ----------
-just type:
+just type
 
-`make`
+    make
 
 
 if the compiler cannot find the proper headers and libraries, you are
