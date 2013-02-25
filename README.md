@@ -28,8 +28,6 @@ please report any bugs or feature request using the [issues webpage](https://bit
 
 ## Compile
 
-just type
-
     make
 
 
