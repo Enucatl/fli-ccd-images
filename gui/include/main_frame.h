@@ -21,6 +21,7 @@ template<typename T>
 class scoped_ptr<T>;
 
 class thread;
+class mutex;
 
 namespace filesystem {
 class path;
@@ -47,14 +48,12 @@ class id;
 #include "base_image_reader.h"
 #include "single_image_reader.h"
 #include "newest_image_reader.h"
-#include "horizontal_line.h"
 #include "contrast_adjuster.h"
 #else
 class ContrastAdjuster;
 class BaseImageReader;
 class SingleImageReader;
 class NewestImageReader;
-class HorizontalLine;
 #endif
 
 namespace fs = boost::filesystem;
@@ -95,7 +94,6 @@ public:
 private:
     //draws the horizontal line selecting the pixel along which to show the
     //projection (slice)
-    void DrawHorizontalLine();
     void SpawnContrastAdjustment();
 
     //main table
@@ -126,7 +124,6 @@ private:
     TH1* transform_histogram_;
 
     //projection line
-    boost::scoped_ptr<HorizontalLine> horizontal_line_;
     int projection_along_pixel_;
 
     //reads the image online or single
@@ -140,10 +137,10 @@ private:
     boost::scoped_ptr<TCanvas> contrast_adjuster_canvas_;
 
     //threads
+    boost::mutex drawing_mutex_; //only one thread can be drawing the canvases
     boost::thread image_reader_thread_;
     boost::thread set_path_thread_;
     boost::thread update_hist_thread_;
-    boost::thread fourier_thread_;
     boost::thread::id not_a_thread_id_;
 };
 

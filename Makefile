@@ -26,7 +26,7 @@ all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer make_png_and_root intensity_scan)
 
 $(BIN_FOLDER)/ccdfli_viewer: ccdfli_viewer.cpp\
 	$(DICT_FOLDER)/main_frameDict.cpp\
-	$(addprefix $(LIB_FOLDER)/, rootstyle.o main_frame.o base_image_reader.o newest_image_reader.o single_image_reader.o raw_image_tools.o horizontal_line.o contrast_adjuster.o)\
+	$(addprefix $(LIB_FOLDER)/, rootstyle.o main_frame.o base_image_reader.o newest_image_reader.o single_image_reader.o raw_image_tools.o contrast_adjuster.o)\
 	| $(BIN_FOLDER)
 	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
 

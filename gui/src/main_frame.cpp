@@ -175,35 +175,25 @@ void MainFrame::LaunchImageReader(fs::path path) {
     while (true) {
         //wait for calculation of fourier transform in the previous loop
         //cycle
-        fourier_thread_.join();
         boost::mutex::scoped_lock lock(image_reader_->mutex_);
         image_reader_->histogram_drawn_.wait(lock);
         DrawImage();
-        boost::this_thread::sleep(boost::posix_time::milliseconds(200));
         DrawProjection();
         //start in separate thread because it is time consuming
-        fourier_thread_ = boost::thread(&MainFrame::DrawTransform, this);
+        DrawTransform();
     }
 }
 
 void MainFrame::DrawImage() {
+    boost::mutex::scoped_lock lock(drawing_mutex_);
     embedded_canvas_.GetCanvas()->cd();
     image_reader_->Draw("col");
     embedded_canvas_.GetCanvas()->Modified();
     embedded_canvas_.GetCanvas()->Update();
 }
 
-void MainFrame::DrawHorizontalLine() {
-    embedded_canvas_.GetCanvas()->cd();
-    int x_min = embedded_canvas_.GetCanvas()->GetUxmin();
-    int x_max = embedded_canvas_.GetCanvas()->GetUxmax();
-    int y_value = 520;
-    horizontal_line_.reset(new HorizontalLine(x_min, y_value, x_max, y_value));
-    horizontal_line_->Draw();
-    embedded_canvas_.GetCanvas()->Update();
-}
-
 void MainFrame::DrawProjection() {
+    boost::mutex::scoped_lock lock(drawing_mutex_);
     projection_canvas_.GetCanvas()->cd();
     int pixel = projection_along_pixel_ - embedded_canvas_.GetCanvas()->GetUymin();
     projection_histogram_ = image_reader_->ProjectionX("projection", pixel, pixel);
@@ -215,6 +205,7 @@ void MainFrame::DrawProjection() {
 }
 
 void MainFrame::DrawTransform() {
+    boost::mutex::scoped_lock lock(drawing_mutex_);
     transform_canvas_.GetCanvas()->cd();
     transform_histogram_ = projection_histogram_->FFT(transform_histogram_, "MAG R2C");
     transform_histogram_->SetTitle("Fourier transform of above histogram");
@@ -236,10 +227,9 @@ void MainFrame::SpawnContrastAdjustment() {
 
 void MainFrame::UpdateProjection(int event, int x, int y, TObject* selected) {
     if (event == kButton1Double) {
-        fourier_thread_.join();
         projection_along_pixel_ = embedded_canvas_.GetCanvas()->AbsPixeltoY(y);
         DrawProjection();
-        fourier_thread_ = boost::thread(&MainFrame::DrawTransform, this);
+        DrawTransform();
     }
 }
 
