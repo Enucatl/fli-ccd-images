@@ -39,7 +39,7 @@ just type:
 
 if the compiler cannot find the proper headers and libraries, you are
     probably missing these variables (ready to copy & paste on a bash shell
-    on mpc1054.psi.ch):
+    on `mpc1054.psi.ch`):
 
     #setup ROOT from afs/cern.ch
     source /afs/cern.ch/sw/lcg/external/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh
@@ -58,7 +58,7 @@ Run
 ----------------------
 run the programme by supplying a FILE or FOLDER name on the command line
 
-./bin/ccdfli_viewer FILE/FOLDER
+    ./bin/ccdfli_viewer FILE/FOLDER
 
 if you specify a FOLDER name, it will continuously update the display with
     the most recent image in the folder.
@@ -67,15 +67,15 @@ if you specify a FOLDER name, it will continuously update the display with
 Post-processing and other bonus programmes
 ----------------------
 
-1) Make PNG, ROOT and GIF files
+# Make PNG, ROOT and GIF files
 reads all images in a folder and convert them from RAW to PNG
 also saves a gif animation with all the png images and a ROOT file saving
 the same images as TH2D
 
-python python/make_gif.py FOLDER
+    python python/make_gif.py FOLDER
 
-2) Changes of intensity with time
+# Changes of intensity with time
 see intensity changes across all the images in a folder (e.g. a scan) in 
 a region of interest
 
-./bin/intensity_scan ~/afsproject/raw_data/2013/ccdfli/2013.02.22/S00000-00999/S00014/ --roi 250 950 524 531
+    ./bin/intensity_scan ~/afsproject/raw_data/2013/ccdfli/2013.02.22/S00000-00999/S00014/ --roi 250 950 524 531
