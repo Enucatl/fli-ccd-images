@@ -28,6 +28,7 @@ list_of_keys = root_file.GetListOfKeys()
 next_item = ROOT.TIter(list_of_keys)
 key = next_item.next()
 
+ROOT.gROOT.SetBatch(True)
 canvas = ROOT.TCanvas("canvas", "canvas")
 
 #check pixel command line arg
@@ -40,13 +41,29 @@ elif len(pixel) > 2:
 pixel = [int(x) for x in pixel]
 
 
+canvas.cd()
 while key:
-    print(key.GetName())
+    name = key.GetName()
     obj = key.ReadObj()
-    projection = obj.ProjectionX("projection", pixel[0], pixel[1])
+    if not obj.InheritsFrom("TH2"):
+        continue
+    first_pixel = int(obj.GetYaxis().GetBinLowEdge(1))
+    projection = obj.ProjectionX("_px", pixel[0] - first_pixel, pixel[1] -
+            first_pixel)
+    projection.SetTitle(name + " pixel " + str(pixel[0]))
     projection.Draw()
-    print(projection.Integral(), obj.Integral())
+    canvas.SaveAs(name + ".png")
     try:
         key = next_item.next()
     except StopIteration:
         break
+
+gif_creation_command = "convert -delay 50 -loop 1 *png"
+gif_name = root_file_name.replace(".root", "_projections.gif")
+gif_creation_command += " " + gif_name
+print(gif_creation_command)
+check_call(gif_creation_command, shell=True)
+
+remove_pngs_command = "rm -f *png"
+print(remove_pngs_command)
+check_call(remove_pngs_command, shell=True)
