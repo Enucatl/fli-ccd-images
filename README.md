@@ -3,7 +3,7 @@
 ROOT GUI programme to view the files recorded by the CCD
 FLI camera in OFLG/U210.
 
-version tags >= ≥ 0x2265 Ux2265 v2.00 mark the development of the newer (but less stable) GUI app.
+version tags ≥ v2.00 mark the development of the newer (but less stable) GUI app.
 If you want the stable versions stick with v1.XX.
 
 To back up to e.g. v1.23 just type `git checkout v1.23`
@@ -11,15 +11,15 @@ To back up to e.g. v1.23 just type `git checkout v1.23`
 
 ## Requirements
 
-[GCC](gcc.gnu.org "GCC homepage") >= 4.3 (for copy semantics used with boost::thread)
+[GCC](gcc.gnu.org "GCC homepage") ≥ 4.3 (for copy semantics used with boost::thread)
 
-[GNU make](www.gnu.org/software/make/ "make homepage") >= 3.80 (for order-only prerequisites with '|' in this Makefile)
+[GNU make](www.gnu.org/software/make/ "make homepage") ≥ 3.80 (for order-only prerequisites with '|' in this Makefile)
 
-The [BOOST c++ libraries](http://www.boost.org "BOOST homepage") >= 1.50
+The [BOOST c++ libraries](http://www.boost.org "BOOST homepage") ≥ 1.50
 
-The [ROOT data analysis framework](http://root.cern.ch "ROOT homepage") >= 5.34
+The [ROOT data analysis framework](http://root.cern.ch "ROOT homepage") ≥ 5.34
 
-[GIT](http://git-scm.com/ "GIT homepage") version control system >= 1.7
+[GIT](http://git-scm.com/ "GIT homepage") version control system ≥ 1.7
 
 
 ## Report Bugs & Request Features
