@@ -49,7 +49,7 @@ print("creating temp folder... ", end="")
 tmp_folder_name = tempfile.mkdtemp()
 print(tmp_folder_name)
 
-while key:
+for key in list_of_keys:
     name = key.GetName()
     obj = key.ReadObj()
     if not obj.InheritsFrom("TH2"):
@@ -61,10 +61,6 @@ while key:
     projection.Draw()
     output_name = os.path.join(tmp_folder_name, name + ".png")
     canvas.SaveAs(output_name)
-    try:
-        key = next_item.next()
-    except StopIteration:
-        break
 
 gif_creation_command = "convert -delay 50 -loop 1 "
 gif_creation_command += os.path.join(tmp_folder_name, "*.png")
