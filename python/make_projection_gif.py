@@ -4,6 +4,9 @@ from progress_bar import progress_bar
 from subprocess import check_call
 import os
 import argparse
+import tempfile
+import shutil
+
 parser = argparse.ArgumentParser(description='''save GIF with projection
         along pixel PIXEL''')
 parser.add_argument('file', metavar='FILE',
@@ -42,6 +45,10 @@ pixel = [int(x) for x in pixel]
 
 
 canvas.cd()
+print("creating temp folder... ", end="")
+tmp_folder_name = tempfile.mkdtemp()
+print(tmp_folder_name)
+
 while key:
     name = key.GetName()
     obj = key.ReadObj()
@@ -52,18 +59,24 @@ while key:
             first_pixel)
     projection.SetTitle(name + " pixel " + str(pixel[0]))
     projection.Draw()
-    canvas.SaveAs(name + ".png")
+    output_name = os.path.join(tmp_folder_name, name + ".png")
+    canvas.SaveAs(output_name)
     try:
         key = next_item.next()
     except StopIteration:
         break
 
-gif_creation_command = "convert -delay 50 -loop 1 *png"
+gif_creation_command = "convert -delay 50 -loop 1 "
+gif_creation_command += os.path.join(tmp_folder_name, "*.png")
 gif_name = root_file_name.replace(".root", "_projections.gif")
 gif_creation_command += " " + gif_name
 print(gif_creation_command)
 check_call(gif_creation_command, shell=True)
 
-remove_pngs_command = "rm -f *png"
-print(remove_pngs_command)
-check_call(remove_pngs_command, shell=True)
+print("removing temp folder... ", end="")
+print(tmp_folder_name)
+shutil.rmtree(tmp_folder_name)
+
+print()
+print("generated gif file with the projections:")
+print(gif_name)
