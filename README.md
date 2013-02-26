@@ -29,11 +29,13 @@ please report any bug or feature request using the [issues webpage](https://bitb
 
 ## Download
 
+    :::bash
     git clone https://bitbucket.org/Enucatl/readimages.git
 
 
 ## Compile
 
+    :::bash
     make
 
 
@@ -59,6 +61,7 @@ if the compiler cannot find the proper headers and libraries, you are
 
 run the programme by supplying a FILE or FOLDER name on the command line
 
+    :::bash
     ./bin/ccdfli_viewer FILE/FOLDER
 
 if you specify a FOLDER name, it will continuously update the display with
@@ -72,16 +75,19 @@ reads all images in a folder and convert them from RAW to PNG
 also saves a gif animation with all the png images and a ROOT file saving
 the same images as TH2D
 
+    :::bash
     python python/make_gif.py FOLDER
 
 ### Changes of intensity with time
 see intensity changes across all the images in a folder (e.g. a scan) in 
 a region of interest
 
+    :::bash
     ./bin/intensity_scan ~/afsproject/raw_data/2013/ccdfli/2013.02.22/S00000-00999/S00014/ --roi 250 950 524 531
 
 ### GIF of profile along a pixel
 see the evolution of a profile in a folder along a pixel. Needs the ROOT
 file with all the RAW images inside created by `python/make_gif.py`!
 
+    :::bash
     python python/make_projection_gif.py ROOT_FILE
