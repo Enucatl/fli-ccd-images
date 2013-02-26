@@ -41,6 +41,7 @@ if the compiler cannot find the proper headers and libraries, you are
     probably missing these variables (ready to copy & paste on a bash shell
     on `mpc1054.psi.ch`):
 
+    :::bash
     #setup ROOT from afs/cern.ch
     source /afs/cern.ch/sw/lcg/external/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh
     source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.03/x86_64-slc6-gcc46-opt/root/bin/thisroot.sh
