@@ -29,7 +29,7 @@ MainFrame::MainFrame(const TGWindow* window, unsigned int width, unsigned int he
             static_cast<unsigned int>(width * (1 - horizontal_separation_fraction)),
             height / 2),
     transform_histogram_(0),
-    projection_along_pixel_(540),
+    projection_along_pixel_(530),
     style_(setTDRStyle())
 {
     //set title
