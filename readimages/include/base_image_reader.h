@@ -38,6 +38,8 @@ public:
     //get the projection
     //just a layer on TH2D::ProjectionX
     TH1D* ProjectionX(const char* name="_px", int firstybin=0, int lastybin=-1, const char* option="") {return histogram_.ProjectionX(name, firstybin, lastybin, option);}
+    //expose TH1::Divide
+    bool Divide(const TH1* h) { return histogram_.Divide(h); }
 
     //Write to a ROOT file
     int Write(const char* name=0, int option=0, int bufsize=0) {return histogram_.Write(name, option, bufsize);}

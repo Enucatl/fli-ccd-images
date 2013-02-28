@@ -15,6 +15,7 @@ int main(int argc, char **argv) {
     desc.add_options()
         ("help,h", "produce help message")
         ("f", po::value<std::string>(), "path of file or folder")
+        ("divide,d", po::value<std::string>(), "path of file of flat field")
         ;
 
     po::positional_options_description positional;
@@ -47,6 +48,10 @@ int main(int argc, char **argv) {
         std::string folder = vm["f"].as<std::string>();
         //std::cout << folder << std::endl;
         boost::thread main_thread(&readimages::gui::MainFrame::LaunchImageReader, &viewer, folder);
+    }
+    if (vm.count("divide")) {
+        std::string divide_path = vm["divide"].as<std::string>();
+        viewer.Divide(divide_path);
     }
     app.Run();
     return 0;

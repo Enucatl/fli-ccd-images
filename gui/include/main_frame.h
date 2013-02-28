@@ -78,6 +78,9 @@ public:
     void OpenFile();
     void LaunchImageReader(fs::path path);
 
+    //divide all displayed images by the image stored in path
+    void Divide(fs::path path);
+
     void DrawImage();
 
     //Draw projection in top right canvas
@@ -128,6 +131,8 @@ private:
 
     //reads the image online or single
     boost::scoped_ptr<BaseImageReader> image_reader_;
+    //sets flat field image to divide
+    boost::scoped_ptr<SingleImageReader> image_reader_divide_;
 
     //style
     TStyle style_;

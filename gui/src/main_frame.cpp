@@ -144,7 +144,7 @@ bool MainFrame::ProcessMessage(long message, long par1, long par2) {
 void MainFrame::OpenFile() {
     //lock mutex to prevent the newest image reader from looking into folders
     //while browsing the Dialog
-    if (image_reader_) {
+    if (image_reader_ != 0) {
         image_reader_->mutex_.lock();
         if (image_reader_thread_.get_id() != not_a_thread_id_)
             std::cout << "calling interrupt image reader thread" << std::endl;
@@ -152,7 +152,7 @@ void MainFrame::OpenFile() {
     }
     //automatically calls delete when the window is closed, according to http://root.cern.ch/phpBB3/viewtopic.php?p=69013#p69013
     dialog_ = new TGFileDialog(gClient->GetRoot(), this, kFDOpen, &file_info_);
-    if (image_reader_)
+    if (image_reader_ != 0)
         image_reader_->mutex_.unlock();
     //start in new thread 
     if (file_info_.fFilename and image_reader_thread_.get_id() != not_a_thread_id_) {
@@ -162,12 +162,16 @@ void MainFrame::OpenFile() {
 
 void MainFrame::LaunchImageReader(fs::path path) {
     //never returns! start in new thread!
-    if (not fs::exists(path))
+    if (not fs::exists(path)) {
+        std::cerr << "File not found!" << std::endl;
         return;
-    else if (fs::is_directory(path)) 
+    }
+    else if (fs::is_directory(path)) {
         image_reader_.reset(new NewestImageReader());
-    else if (fs::is_regular_file(path))
+    }
+    else if (fs::is_regular_file(path)) {
         image_reader_.reset(new SingleImageReader());
+    }
     //with this version, it is not possible to stop the threads without
     //closing the app. Therefore, in order to switch the behaviour from
     //"online viewer" to "single viewer" you have to restart it.
@@ -186,9 +190,30 @@ void MainFrame::LaunchImageReader(fs::path path) {
     }
 }
 
+void MainFrame::Divide(fs::path path) {
+    if (not fs::exists(path) or not fs::is_regular_file(path)) {
+        std::cerr << "File not found for division  " << path << std::endl;
+        return;
+}
+    else {
+        image_reader_divide_.reset(new SingleImageReader());
+    }
+    if (image_reader_ == 0) {
+        while (image_reader_ == 0) {
+            std::cerr << "in MainFrame::Divide(fs::path path): image_reader_ not ready, waiting 100ms" << std::endl;
+            boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+        }
+    }
+    boost::mutex::scoped_lock lock(image_reader_->mutex_);
+    image_reader_divide_->set_path(path);
+    image_reader_divide_->update_histogram();
+}
+
 void MainFrame::DrawImage() {
     boost::mutex::scoped_lock lock(drawing_mutex_);
     embedded_canvas_.GetCanvas()->cd();
+    if (image_reader_divide_ != 0)
+        image_reader_->Divide(&image_reader_divide_->get_histogram());
     image_reader_->Draw("col");
     embedded_canvas_.GetCanvas()->Modified();
     embedded_canvas_.GetCanvas()->Update();
