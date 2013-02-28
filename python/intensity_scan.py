@@ -62,6 +62,7 @@ graph = ROOT.TGraph(n, x, y)
 title = "intensity in roi {0[0]}-{0[1]} x {0[2]}-{0[3]};\
 file number;\
 intensity (integral)".format(roi)
+graph.SetTitle(title)
 graph.SetName("intensity_graph")
 graph.SetMarkerStyle(20)
 graph.Draw("ap")
