@@ -39,8 +39,8 @@ roi = [int(x) for x in roi]
 x_min, x_max, y_min, y_max = roi
 x1 = obj.GetXaxis().FindFixBin(x_min)
 x2 = obj.GetXaxis().FindFixBin(x_max)
-y1 = obj.GetXaxis().FindFixBin(y_min)
-y2 = obj.GetXaxis().FindFixBin(y_max)
+y1 = obj.GetYaxis().FindFixBin(y_min)
+y2 = obj.GetYaxis().FindFixBin(y_max)
 
 x = []
 y = []
@@ -63,5 +63,6 @@ title = "intensity in roi {0[0]}-{0[1]} x {0[2]}-{0[3]};\
 file number;\
 intensity (integral)".format(roi)
 graph.SetName("intensity_graph")
+graph.SetMarkerStyle(20)
 graph.Draw("ap")
 raw_input()
