@@ -8,9 +8,9 @@ import array
 
 parser = argparse.ArgumentParser(description='''save GIF with projection
         along pixel PIXEL''')
-parser.add_argument('file', metavar='FILE',
+parser.add_argument('file', metavar='FILE.root',
         nargs=1, help='ROOT file with the RAW images converted to TH2D')
-parser.add_argument('roi', metavar='ROI',
+parser.add_argument('--roi', metavar=('min_x', 'max_x', 'min_y', 'max_y'),
         nargs=4, help='min_x max_x min_y max_y')
 
 root_file_name = parser.parse_args().file[0]

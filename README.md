@@ -80,14 +80,15 @@ the same images as TH2D
 
 ### Changes of intensity with time
 see intensity changes across all the images in a folder (e.g. a scan) in 
-a region of interest
+a region of interest.
+Needs the ROOT file with all the RAW images inside created by `python/make_gif.py`!
 
     :::bash
-    ./bin/intensity_scan ~/afsproject/raw_data/2013/ccdfli/2013.02.22/S00000-00999/S00014/ --roi 250 950 524 531
+    python python/intensity_scan.py ~/afsproject/raw_data/2013/ccdfli/2013.02.22/S00000-00999/S00014/S00014.root --roi 250 950 524 531
 
 ### GIF of profile along a pixel
-see the evolution of a profile in a folder along a pixel. Needs the ROOT
-file with all the RAW images inside created by `python/make_gif.py`!
+see the evolution of a profile in a folder along a pixel.
+Needs the ROOT file with all the RAW images inside created by `python/make_gif.py`!
 
     :::bash
     python python/make_projection_gif.py ROOT_FILE
