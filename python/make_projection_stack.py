@@ -22,9 +22,11 @@ if not os.path.exists(root_file_name):
     raise OSError
 
 import ROOT
-from rootstyle import tdrstyle
+from rootstyle import tdrstyle_grayscale
 
-tdrstyle()
+tdrstyle_grayscale()
+print("style set")
+print()
 
 root_file = ROOT.TFile(root_file_name)
 list_of_keys = root_file.GetListOfKeys()
@@ -71,7 +73,9 @@ for i, key in enumerate(list_of_keys):
         stack.SetBinContent(j + 1, i + 1,
                 projection.GetBinContent(j + 1))
 
-stack.Draw()
+print()
+stack.Draw("col")
+canvas.Update()
 canvas.SaveAs("stack.png")
 print()
 print("Done!")
