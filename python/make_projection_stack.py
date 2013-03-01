@@ -22,6 +22,9 @@ if not os.path.exists(root_file_name):
     raise OSError
 
 import ROOT
+from rootstyle import tdrstyle
+
+tdrstyle()
 
 root_file = ROOT.TFile(root_file_name)
 list_of_keys = root_file.GetListOfKeys()
