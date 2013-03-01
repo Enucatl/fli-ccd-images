@@ -23,19 +23,14 @@ if not os.path.exists(root_file_name):
 
 import ROOT
 from rootstyle import tdrstyle_grayscale
+from iterate_over_histograms import HistogramIterator
 
 tdrstyle_grayscale()
 print("style set")
 print()
 
-root_file = ROOT.TFile(root_file_name)
-list_of_keys = root_file.GetListOfKeys()
-next_item = ROOT.TIter(list_of_keys)
-key = next_item.next()
-obj = key.ReadObj()
-while not obj.InheritsFrom("TH2"):
-    key = next_item.next()
-    obj = key.ReadObj()
+root_file = ROOT.TFile(root_file_name, "update")
+iterator = HistogramIterator(root_file)
 
 #check pixel command line arg
 if len(pixel) == 1:
@@ -44,30 +39,32 @@ elif len(pixel) > 2:
     print("only two pixels (begin and end) can be specified!")
     raise OSError
 
-pixel = [int(x) for x in pixel]
-
 canvas = ROOT.TCanvas("canvas", "canvas")
 canvas.cd()
 
-title = "{0}; x pixel; file number".format(root_file_name)
-n_bins_x = obj.GetNbinsX()
-n_images = list_of_keys.GetSize()
-stack = ROOT.TH2D("stack", title,
+title = "{0} along pixel {1[0]}-{1[1]}; x pixel; file number".format(
+        root_file_name,
+        pixel)
+hist = iterator[0]
+n_bins_x = hist.GetNbinsX()
+n_images = len(iterator)
+stack = ROOT.TH2D("stack_pixel_{0[0]}_{0[1]}".format(
+    pixel), title,
         n_bins_x,
-        obj.GetXaxis().GetXmin(),
-        obj.GetXaxis().GetXmax(),
+        hist.GetXaxis().GetXmin(),
+        hist.GetXaxis().GetXmax(),
         n_images,
         0,
         n_images)
 
-for i, key in enumerate(list_of_keys):
+pixel = [int(x) for x in pixel]
+for i, hist in enumerate(iterator):
     print(progress_bar((i + 1)/n_images), end="")
-    name = key.GetName()
-    obj = key.ReadObj()
-    if not obj.InheritsFrom("TH2"):
+    name = hist.GetName()
+    if not hist.InheritsFrom("TH2"):
         continue
-    first_pixel = int(obj.GetYaxis().GetBinLowEdge(1))
-    projection = obj.ProjectionX("_px", pixel[0] - first_pixel, pixel[1] -
+    first_pixel = int(hist.GetYaxis().GetBinLowEdge(1))
+    projection = hist.ProjectionX("_px", pixel[0] - first_pixel, pixel[1] -
             first_pixel)
     for j in range(n_bins_x):
         stack.SetBinContent(j + 1, i + 1,

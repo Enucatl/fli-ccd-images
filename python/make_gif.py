@@ -42,5 +42,10 @@ gif_creation_command += os.path.join(folder, "png", "*.png")
 gif_name = os.path.join(folder,
         os.path.basename(os.path.normpath(folder)) + ".gif")
 gif_creation_command += " " + gif_name
+print()
 print(gif_creation_command)
+print()
 check_call(gif_creation_command, shell=True)
+print()
+print("created gif file:", gif_name)
+print()

@@ -23,17 +23,6 @@ if not os.path.exists(root_file_name):
     print()
     raise OSError
 
-
-import ROOT
-
-root_file = ROOT.TFile(root_file_name)
-list_of_keys = root_file.GetListOfKeys()
-next_item = ROOT.TIter(list_of_keys)
-key = next_item.next()
-
-ROOT.gROOT.SetBatch(True)
-canvas = ROOT.TCanvas("canvas", "canvas")
-
 #check pixel command line arg
 if len(pixel) == 1:
     pixel.append(pixel[0])
@@ -44,16 +33,21 @@ elif len(pixel) > 2:
 pixel = [int(x) for x in pixel]
 
 
+import ROOT
+from iterate_over_histograms import HistogramIterator
+
+root_file = ROOT.TFile(root_file_name)
+iterator = HistogramIterator(root_file)
+
+ROOT.gROOT.SetBatch(True)
+canvas = ROOT.TCanvas("canvas", "canvas")
 canvas.cd()
 print("creating temp folder... ", end="")
 tmp_folder_name = tempfile.mkdtemp()
 print(tmp_folder_name)
 
-for key in list_of_keys:
-    name = key.GetName()
-    obj = key.ReadObj()
-    if not obj.InheritsFrom("TH2"):
-        continue
+for obj in iterator:
+    name = obj.GetName()
     first_pixel = int(obj.GetYaxis().GetBinLowEdge(1))
     projection = obj.ProjectionX("_px", pixel[0] - first_pixel, pixel[1] -
             first_pixel)
