@@ -22,16 +22,11 @@ LDFLAGS=`root-config --glibs`
 BOOST_LIBS=-lboost_program_options -lboost_filesystem -lboost_system
 BOOST_THREAD_LIBS=-lboost_thread
 
-all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer make_root make_png)
+all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer make_root)
 
 $(BIN_FOLDER)/ccdfli_viewer: ccdfli_viewer.cpp\
 	$(DICT_FOLDER)/main_frameDict.cpp\
 	$(addprefix $(LIB_FOLDER)/, rootstyle.o main_frame.o base_image_reader.o newest_image_reader.o single_image_reader.o raw_image_tools.o contrast_adjuster.o)\
-	| $(BIN_FOLDER)
-	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
-
-$(BIN_FOLDER)/make_png: make_png.cpp\
-	$(addprefix $(LIB_FOLDER)/, rootstyle.o single_image_reader.o base_image_reader.o raw_image_tools.o)\
 	| $(BIN_FOLDER)
 	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
 
