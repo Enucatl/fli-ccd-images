@@ -1,10 +1,16 @@
-#!/usr/bin/env python                                                                                                                                         
-from __future__ import division, print_function                                                                                                               
-from progress_bar import progress_bar                                                                                                                         
+#!/usr/bin/env python
+from __future__ import division,  print_function
+from progress_bar import progress_bar
+
 from subprocess import check_call
-import os
+import os, sys
 import argparse
 import array
+
+import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+
+from iterate_over_histograms import HistogramIterator
 
 parser = argparse.ArgumentParser(description='''save GIF with projection
         along pixel PIXEL''')
@@ -22,35 +28,27 @@ if not os.path.exists(root_file_name):
     print()
     raise OSError
 
-
-import ROOT
-
 root_file = ROOT.TFile(root_file_name)
-list_of_keys = root_file.GetListOfKeys()
-next_item = ROOT.TIter(list_of_keys)
-key = next_item.next()
-obj = key.ReadObj()
-while not obj.InheritsFrom("TH2"):
-    key = next_item.next()
-    obj = key.ReadObj()
-
+iterator = HistogramIterator(root_file)
+n_images = len(iterator)
+if not n_images:
+    print("no images in file!")
+    sys.exit(1)
+hist = iterator[0]
 
 roi = [int(x) for x in roi]
 x_min, x_max, y_min, y_max = roi
-x1 = obj.GetXaxis().FindFixBin(x_min)
-x2 = obj.GetXaxis().FindFixBin(x_max)
-y1 = obj.GetYaxis().FindFixBin(y_min)
-y2 = obj.GetYaxis().FindFixBin(y_max)
+x1 = hist.GetXaxis().FindFixBin(x_min)
+x2 = hist.GetXaxis().FindFixBin(x_max)
+y1 = hist.GetYaxis().FindFixBin(y_min)
+y2 = hist.GetYaxis().FindFixBin(y_max)
 
 x = []
 y = []
 
-for i, key in enumerate(list_of_keys):
-    name = key.GetName()
-    obj = key.ReadObj()
-    if not obj.InheritsFrom("TH2"):
-        continue
-    integral = obj.Integral(x1, x2, y1, y2)
+for i, histogram in enumerate(iterator):
+    print(progress_bar((i + 1) / n_images)
+    integral = histogram.Integral(x1, x2, y1, y2)
     x.append(i + 1)
     y.append(integral)
 

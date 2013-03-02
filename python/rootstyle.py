@@ -37,7 +37,6 @@ MITStyle = TStyle("mitStyle","The Perfect Style for Plots ;-)");
 
 
 def atlasstyle():
-
     """ ATLAS stylebased on a style file from BaBar"""
 
     global atlasStyle
@@ -112,7 +111,6 @@ def atlasstyle():
     atlasStyle.SetPadTickY(1)
     gROOT.SetStyle("atlasStyle")
     gROOT.ForceStyle()
-
 
 def tdrstyle_grayscale():
     tdrstyle()
@@ -264,7 +262,6 @@ def tdrstyle():
     gROOT.ForceStyle()
 
 def ildstyle():
-
     """
     Here is ILD style
     """
@@ -349,7 +346,6 @@ def ildstyle():
     gROOT.ForceStyle()
 
 def yastyle():
-
     """
     Here is Yet Another style
     """

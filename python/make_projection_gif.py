@@ -1,11 +1,18 @@
-#!/usr/bin/env python                                                                                                                                         
-from __future__ import division, print_function                                                                                                               
-from progress_bar import progress_bar                                                                                                                         
+#!/usr/bin/env python
+
+from __future__ import division, print_function
 from subprocess import check_call
 import os
 import argparse
 import tempfile
 import shutil
+
+import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+
+from iterate_over_histograms import HistogramIterator
+from progress_bar import progress_bar
+
 
 parser = argparse.ArgumentParser(description='''save GIF with projection
         along pixel PIXEL''')
@@ -17,7 +24,6 @@ parser.add_argument('pixel', metavar='PIXELS',
 root_file_name = parser.parse_args().file[0]
 pixel = parser.parse_args().pixel
 
-#setup program name:
 if not os.path.exists(root_file_name):
     print("File not found!", root_file_name)
     print()
@@ -32,9 +38,6 @@ elif len(pixel) > 2:
 
 pixel = [int(x) for x in pixel]
 
-
-import ROOT
-from iterate_over_histograms import HistogramIterator
 
 root_file = ROOT.TFile(root_file_name)
 iterator = HistogramIterator(root_file)

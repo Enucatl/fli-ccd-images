@@ -1,9 +1,18 @@
-#!/usr/bin/env python                                                                                                                                         
-from __future__ import division, print_function                                                                                                               
-from progress_bar import progress_bar                                                                                                                         
-from subprocess import check_call
+#!/usr/bin/env python
+
+from __future__ import division, print_function
 import os
 import argparse
+from subprocess import check_call
+
+import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+
+from progress_bar import progress_bar
+from rootstyle import tdrstyle_grayscale
+from iterate_over_histograms import HistogramIterator
+
+tdrstyle_grayscale()
 
 parser = argparse.ArgumentParser(description='''draw a stack of a projection
         along pixel PIXEL of all the images in the ROOT file''')
@@ -21,15 +30,14 @@ if not os.path.exists(root_file_name):
     print()
     raise OSError
 
-import ROOT
-from rootstyle import tdrstyle_grayscale
-from iterate_over_histograms import HistogramIterator
-
-tdrstyle_grayscale()
-print("style set")
-print()
-
 root_file = ROOT.TFile(root_file_name, "update")
+root_file.cd()
+"""make subdir if it doesn't exist"""
+dir_name = "postprocessing"
+directory = root_file.Get(dir_name)
+if not directory:
+    directory = root_file.mkdir("postprocessing")
+directory.cd()
 iterator = HistogramIterator(root_file)
 
 #check pixel command line arg
@@ -40,7 +48,6 @@ elif len(pixel) > 2:
     raise OSError
 
 canvas = ROOT.TCanvas("canvas", "canvas")
-canvas.cd()
 
 title = "{0} along pixel {1[0]}-{1[1]}; x pixel; file number".format(
         root_file_name,
@@ -58,6 +65,8 @@ stack = ROOT.TH2D("stack_pixel_{0[0]}_{0[1]}".format(
         n_images)
 
 pixel = [int(x) for x in pixel]
+print()
+print("drawing stack...")
 for i, hist in enumerate(iterator):
     print(progress_bar((i + 1)/n_images), end="")
     name = hist.GetName()
@@ -72,8 +81,9 @@ for i, hist in enumerate(iterator):
 
 print()
 stack.Draw("col")
+stack.Write()
 canvas.Update()
-canvas.SaveAs("stack.png")
 print()
 print("Done!")
+print()
 raw_input()

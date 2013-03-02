@@ -52,9 +52,9 @@ if the compiler cannot find the proper headers and libraries, you are
     #change the following line if needed
     #so that it points to your installation of Boost
     export BOOST_HOME=/home/specuser/boost_install
-    export CPLUS_INCLUDE_PATH=$(BOOST_HOME)/include:$CPLUS_INCLUDE_PATH
-    export LD_LIBRARY_PATH=$(BOOST_HOME)/lib:$LD_LIBRARY_PATH
-    export LIBRARY_PATH=$(BOOST_HOME)/lib:$LIBRARY_PATH
+    export CPLUS_INCLUDE_PATH=${BOOST_HOME}/include:$CPLUS_INCLUDE_PATH
+    export LD_LIBRARY_PATH=${BOOST_HOME}/lib:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=${BOOST_HOME}/lib:$LIBRARY_PATH
 
 
 ## Run
@@ -70,25 +70,37 @@ if you specify a FOLDER name, it will continuously update the display with
 
 ## Post-processing and other bonus programmes
 
-### Make PNG, ROOT and GIF files
-reads all images in a folder and convert them from RAW to PNG
-also saves a gif animation with all the png images and a ROOT file saving
-the same images as TH2D
+### Make ROOT file
+reads all images in a folder and convert them from RAW to TH2D in a ROOT file 
 
     :::bash
-    python python/make_gif.py FOLDER
+    ./bin/make_root FOLDER
+
+### Convert to images (the default format is GIF)
+reads all images in a folder and convert them from RAW to an image format
+Needs the ROOT file with all the RAW images inside created by `bin/make_root`!
+
+    :::bash
+    python python/convert_images.py FILE.root --format FORMAT
 
 ### Changes of intensity with time
 see intensity changes across all the images in a folder (e.g. a scan) in 
 a region of interest.
-Needs the ROOT file with all the RAW images inside created by `python/make_gif.py`!
+Needs the ROOT file with all the RAW images inside created by `bin/make_root`!
 
     :::bash
-    python python/intensity_scan.py ~/afsproject/raw_data/2013/ccdfli/2013.02.22/S00000-00999/S00014/S00014.root --roi 250 950 524 531
+    python python/intensity_scan.py FILE.root --roi min_x max_x min_y max_y
 
 ### GIF of profile along a pixel
 see the evolution of a profile in a folder along a pixel.
-Needs the ROOT file with all the RAW images inside created by `python/make_gif.py`!
+Needs the ROOT file with all the RAW images inside created by `bin/make_root`!
 
     :::bash
-    python python/make_projection_gif.py ROOT_FILE
+    python python/make_projection_gif.py FILE.root
+
+### Draw stack of images along a pixel
+see the evolution of a pixel line by stacking all the slices together.
+Needs the ROOT file with all the RAW images inside created by `bin/make_root`!
+
+    :::bash
+    python python/make_projection_stack.py FILE.root PIXEL
