@@ -17,49 +17,49 @@ class ImageConverter(BaseRootfileAnalyser):
         super(ImageConverter,
                 self).__init__(root_file_name, *args, **kwargs)
         self.extension = extension.lower()
+        self.parent_dir = os.path.dirname(root_file_name)
+        self.image_dir = os.path.join(self.parent_dir, extension)
+
+    def output_name(self):
+        image_file_name = ""
+        if self.extension == "gif":
+            image_file_name = os.path.basename(
+                        os.path.normpath(self.parent_dir))
+            image_file_name = os.path.join(self.image_dir, image_file_name)
+            image_file_name += "." + self.extension
+        else:
+            image_file_name = os.path.join(self.image_dir, "")
+        return image_file_name
+    
+    def output_exists(self, name):
+        print("daughter exists")
+        return os.path.exists(name)
+
+    def if_not_exists(self):
         """Make output folder"""
-        parent_dir = os.path.dirname(root_file_name)
-        image_dir = os.path.join(parent_dir, extension)
-        if not os.path.exists(image_dir):
-            os.makedirs(image_dir)
+        if not os.path.exists(self.image_dir):
+            os.makedirs(self.image_dir)
+        super(ImageConverter, self).if_not_exists()
+        self.width = self.example_histogram.GetNbinsX()
+        self.height = self.example_histogram.GetNbinsY()
+        self.palette = ROOT.gHistImagePalette
+        self.image = ROOT.TASImage(width, height)
 
-        def output_name(self):
-            image_file_name = ""
-            if self.extension == "gif":
-                image_file_name = os.path.basename(
-                            os.path.normpath(parent_dir))
-                image_file_name = os.path.join(image_dir, image_file_name)
-                image_file_name += "." + self.extension
+    def analyse_histogram(self, i, hist):
+        write_as = self.output_name()
+        if self.extension == "gif":
+            if i < (n_images - 1):
+                write_as += "+3" #+30ms per image
             else:
-                image_file_name = os.path.join(image_dir, "")
-            return image_file_name
-        
-        def output_exists(self, name):
-            print("daughter exists")
-            return os.path.exists(name)
-
-        def if_not_exists(self):
-            super(ImageConverter, self).if_not_exists()
-            self.width = example_hist.GetNbinsX()
-            self.height = example_hist.GetNbinsY()
-            self.palette = ROOT.gHistImagePalette
-            self.image = ROOT.TASImage(width, height)
-
-        def analyse_histogram(self, i, hist):
-            write_as = self.output_name()
-            if self.extension == "gif":
-                if i < (n_images - 1):
-                    write_as += "+3" #+30ms per image
-                else:
-                    write_as += "++1" #1 loop
-            else:
-                write_as = self.output_name() + hist.GetName() + "." + self.extension
-            self.image.SetImage(hist.GetBuffer(),
-                    self.width + 2,
-                    self.height + 2,
-                    self.palette)
-            print(write_as)
-            self.image.WriteImage(write_as)
+                write_as += "++1" #1 loop
+        else:
+            write_as = self.output_name() + hist.GetName() + "." + self.extension
+        self.image.SetImage(hist.GetBuffer(),
+                self.width + 2,
+                self.height + 2,
+                self.palette)
+        print(write_as)
+        self.image.WriteImage(write_as)
 
     def __exit__(self, exc_type, exc_value, traceback):
         print()

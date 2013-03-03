@@ -76,6 +76,7 @@ class BaseRootfileAnalyser(object):
             return enumerate(self.iterator)
 
     def output_exists(self, name):
+        print("parent exists")
         self.output_object = self.directory.Get(name)
         "not not trick to convert ROOT object to bool"
         return not not self.output_object
