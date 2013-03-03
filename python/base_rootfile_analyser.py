@@ -26,8 +26,7 @@ class BaseRootfileAnalyser(object):
     (exit) functions, and a loop over all the histograms.
     
     These functions are meant to be redefined in daughter classes."""
-    def __init__(self, root_file_name,
-            open_option="update"):
+    def __init__(self, root_file_name, open_option="update"):
         super(BaseRootfileAnalyser, self).__init__()
         if not os.path.exists(root_file_name):
             print("File not found", root_file_name)
@@ -38,10 +37,7 @@ class BaseRootfileAnalyser(object):
             self.directory = self.root_file.Get(post_processing_dirname)
             if not self.directory:
                 self.directory = self.root_file.mkdir(post_processing_dirname)
-        print("initialized base")
-        
-    def __enter__(self):
-        self.iterator = HistogramIterator(self.root_file)
+        self.iterator = HistogramIterator(root_file_name)
         try:
             self.example_histogram = self.iterator[0]
         except IndexError:
@@ -49,30 +45,58 @@ class BaseRootfileAnalyser(object):
                     self.root_file.GetName())
             raise IOError
         self.n_images = len(self.iterator)
+        
+    def output_name(self):
+        """get name of output ROOT object produced"""
+        return ""
+
+    def if_not_exists(self):
+        """do some initialization if output object was not found in the input file"""
+        self.exists_in_file = False
+
+    def if_exists(self):
+        """do some initialization if output object was  found in the input file"""
+        self.exists_in_file = True
+
+
+    def __iter__(self):
+        "return empty iterator if output object already exists"
+        if self.exists_in_file:
+            print("result already saved in file.")
+            print(progress_bar(1), end="")
+            print()
+            return [].__iter__()
+        else:
+            print("Analysing", self.n_images, "images...")
+            """iterate over 'self' as
+            for i, hist in self:
+                self.analyse_histogram(i, hist)
+                because the index i is always useful,
+                at least for the progress bar"""
+            return enumerate(self.iterator)
+
+    def output_exists(self, name):
+        self.output_object = self.directory.Get(name)
+        "not not trick to convert ROOT object to bool"
+        return not not self.output_object
+
+    def __enter__(self):
+        name = self.output_name()
+        if not self.output_exists(name):
+            self.if_not_exists()
+        else:
+            self.if_exists()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+        """write output object if it did not exist and close file"""
+        if not self.exists_in_file:
+            self.directory.cd()
+            self.output_object.Write()
         print()
         print("Done!")
         print()
-        v = ROOT.TVectorD(1)
-        v[0] = 10
-        print()
-        self.directory.cd()
-        print(v.Write("v", ROOT.TObject.kOverwrite))
-        self.directory.ls()
-        print("closing root file")
         self.root_file.Close()
-
-    def __iter__(self):
-        print()
-        print("Analysing", self.n_images, "images...")
-        """iterate over 'self' as
-        for i, hist in self:
-            self.analyse_histogram(i, hist)
-            because the index i is always useful,
-            at least for the progress bar"""
-        return enumerate(self.iterator)
 
     def analyse_histogram(self, i, hist):
         """base version just prints the progress bar advancement for
@@ -82,6 +106,13 @@ class BaseRootfileAnalyser(object):
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
     root_file_name = args.file[0]
+    print(root_file_name)
     with BaseRootfileAnalyser(root_file_name) as base_analyser:
+        pass
         for i, hist in base_analyser:
             base_analyser.analyse_histogram(i, hist)
+
+    root_file_open = ROOT.TFile(root_file_name)
+    root_file_open.ls()
+    directory = root_file_open.Get(post_processing_dirname)
+    directory.ls()

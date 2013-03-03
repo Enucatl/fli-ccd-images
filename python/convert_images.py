@@ -1,76 +1,83 @@
 #!/usr/bin/env python
-
 from __future__ import division, print_function
-from progress_bar import progress_bar
-from subprocess import check_call
+import array
 import os
-import argparse
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
+from base_rootfile_analyser import BaseRootfileAnalyser, commandline_parser
 from rootstyle import tdrstyle_grayscale
-from iterate_over_histograms import HistogramIterator
 
-parser = argparse.ArgumentParser(description='''convert all images to an image format,
-        and save a GIF with imagemagick convert''')
-parser.add_argument('file', metavar='FILE.root', 
-        nargs=1, help='root file containing the images as TH2D')
-parser.add_argument('--format', metavar='FORMAT',
+tdrstyle_grayscale()
+
+class ImageConverter(BaseRootfileAnalyser):
+    """convert all images to an image format, defaults to GIF"""
+    def __init__(self, extension, root_file_name, *args, **kwargs):
+        super(ImageConverter,
+                self).__init__(root_file_name, *args, **kwargs)
+        self.extension = extension.lower()
+        """Make output folder"""
+        parent_dir = os.path.dirname(root_file_name)
+        image_dir = os.path.join(parent_dir, extension)
+        if not os.path.exists(image_dir):
+            os.makedirs(image_dir)
+
+        def output_name(self):
+            image_file_name = ""
+            if self.extension == "gif":
+                image_file_name = os.path.basename(
+                            os.path.normpath(parent_dir))
+                image_file_name = os.path.join(image_dir, image_file_name)
+                image_file_name += "." + self.extension
+            else:
+                image_file_name = os.path.join(image_dir, "")
+            return image_file_name
+        
+        def output_exists(self, name):
+            print("daughter exists")
+            return os.path.exists(name)
+
+        def if_not_exists(self):
+            super(ImageConverter, self).if_not_exists()
+            self.width = example_hist.GetNbinsX()
+            self.height = example_hist.GetNbinsY()
+            self.palette = ROOT.gHistImagePalette
+            self.image = ROOT.TASImage(width, height)
+
+        def analyse_histogram(self, i, hist):
+            write_as = self.output_name()
+            if self.extension == "gif":
+                if i < (n_images - 1):
+                    write_as += "+3" #+30ms per image
+                else:
+                    write_as += "++1" #1 loop
+            else:
+                write_as = self.output_name() + hist.GetName() + "." + self.extension
+            self.image.SetImage(hist.GetBuffer(),
+                    self.width + 2,
+                    self.height + 2,
+                    self.palette)
+            print(write_as)
+            self.image.WriteImage(write_as)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print()
+        if extension == "gif":
+            print("created gif file", self.output_name())
+        else:
+            print("created image files in", self.output_name())
+        print()
+        self.root_file.Close()
+
+commandline_parser.description = ImageConverter.__doc__
+commandline_parser.add_argument('--format', metavar='FORMAT',
         nargs=1, default="gif", help='format of the images to be stored, default GIF')
 
-args = parser.parse_args()
-root_file_name = args.file[0]
-extension = args.format[0].lower()
-
-
-if not os.path.exists(root_file_name):
-    print("File not found!", root_file_name)
-    print()
-    raise OSError
-
-"""Make output folder"""
-parent_dir = os.path.dirname(root_file_name)
-image_dir = os.path.join(parent_dir, extension)
-if not os.path.exists(image_dir):
-    os.makedirs(image_dir)
-
-"""open ROOT file"""
-root_file = ROOT.TFile(root_file_name)
-tdrstyle_grayscale()
-iterator = HistogramIterator(root_file)
-example_hist = iterator[0]
-width = example_hist.GetNbinsX()
-height = example_hist.GetNbinsY()
-palette = ROOT.gHistImagePalette
-n_images = len(iterator)
-
-image = ROOT.TASImage(width, height)
-print()
-print("drawing images...")
-image_file_name = ""
-if extension == "gif":
-    image_file_name = os.path.basename(
-                os.path.normpath(parent_dir))
-    image_file_name = os.path.join(image_dir, image_file_name)
-    image_file_name += "." + extension
-else:
-    image_file_name = os.path.join(image_dir, "")
-
-for i, hist in enumerate(iterator):
-    print(progress_bar((i + 1) / n_images), end="")
-    write_as = image_file_name
-    if extension == "gif":
-        if i < (n_images - 1):
-            write_as += "+3" #+30ms per image
-        else:
-            write_as += "++1" #1 loop
-    else:
-        write_as = image_file_name + hist.GetName() + "." + extension
-    image.SetImage(hist.GetBuffer(), width, height, palette)
-    image.WriteImage(write_as)
-
-if extension == "gif":
-    print("created gif file", image_file_name)
-else:
-    print("created image files in", image_dir)
+if __name__ == '__main__':
+    args = commandline_parser.parse_args()
+    root_file_name = args.file[0]
+    extension = args.format
+    with ImageConverter(extension, root_file_name) as analyser:
+        for i, hist in analyser:
+            analyser.analyse_histogram(i, hist)

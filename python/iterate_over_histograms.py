@@ -1,19 +1,22 @@
 #!/usr/bin/env python
 from __future__ import division, print_function
-from cache_values import memoize_method
+import os
+
 import ROOT
+
+from cache_values import memoize_method
 
 class HistogramIterator(object):
     """
     Iterator over the TH1 (and daughter types) objects contained in a ROOT file,
     that is passed to the constructor of the iterator"""
 
-    def __init__(self, root_file):
+    def __init__(self, root_file_name):
         super(HistogramIterator, self).__init__()
-        self.root_file = root_file
-        if not root_file.IsOpen():
-            raise OSError("root file is not open!")
-        self.list_of_keys = root_file.GetListOfKeys()
+        if not os.path.exists(root_file_name):
+            raise IOError("File not found", root_file_name)
+        self.root_file = ROOT.TFile(root_file_name)
+        self.list_of_keys = self.root_file.GetListOfKeys()
         self.root_iter = ROOT.TIter(self.list_of_keys)
         
     def __iter__(self):
@@ -51,8 +54,8 @@ class HistogramIterator(object):
 
 if __name__ == '__main__':
     """test"""
-    root_file = ROOT.TFile("test/test.root")
-    histograms = HistogramIterator(root_file)
+    root_file_name = "test/test.root"
+    histograms = HistogramIterator(root_file_name)
     print(len(histograms))
     print(histograms[1])
     print(histograms[0])
