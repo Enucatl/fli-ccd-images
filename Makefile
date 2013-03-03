@@ -53,4 +53,5 @@ $(DICT_FOLDER):
 
 
 clean:
-	-rm -rf $(DICT_FOLDER) $(LIB_FOLDER) $(BIN_FOLDER) python/*.pyc
+	-rm -rf $(DICT_FOLDER) $(LIB_FOLDER) $(BIN_FOLDER) python/*.pyc\
+		test/png test/gif test/test.root

@@ -32,7 +32,6 @@ class ImageConverter(BaseRootfileAnalyser):
         return image_file_name
     
     def output_exists(self, name):
-        print("daughter exists")
         return os.path.exists(name)
 
     def if_not_exists(self):
@@ -42,23 +41,28 @@ class ImageConverter(BaseRootfileAnalyser):
         super(ImageConverter, self).if_not_exists()
         self.width = self.example_histogram.GetNbinsX()
         self.height = self.example_histogram.GetNbinsY()
-        self.palette = ROOT.gHistImagePalette
-        self.image = ROOT.TASImage(width, height)
+        n_colors = 999
+        self.palette = tdrstyle_grayscale(n_colors)
+        self.palette = ROOT.TImagePalette(n_colors,
+                self.palette)
+        self.image = ROOT.TASImage(self.width, self.height)
 
     def analyse_histogram(self, i, hist):
+        super(ImageConverter, self).analyse_histogram(i, hist)
         write_as = self.output_name()
         if self.extension == "gif":
-            if i < (n_images - 1):
-                write_as += "+3" #+30ms per image
+            if i < (self.n_images - 1):
+                write_as += "+30" #+30ms per image
             else:
                 write_as += "++1" #1 loop
         else:
             write_as = self.output_name() + hist.GetName() + "." + self.extension
-        self.image.SetImage(hist.GetBuffer(),
+        """convert th2d to image as in tutorial
+        http://root.cern.ch/root/html534/tutorials/image/hist2image.C.html"""
+        self.image.SetImage(hist.GetArray(),
                 self.width + 2,
                 self.height + 2,
                 self.palette)
-        print(write_as)
         self.image.WriteImage(write_as)
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -72,12 +76,12 @@ class ImageConverter(BaseRootfileAnalyser):
 
 commandline_parser.description = ImageConverter.__doc__
 commandline_parser.add_argument('--format', metavar='FORMAT',
-        nargs=1, default="gif", help='format of the images to be stored, default GIF')
+        nargs=1, default=["gif"], help='format of the images to be stored, default GIF')
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
     root_file_name = args.file[0]
-    extension = args.format
+    extension = args.format[0]
     with ImageConverter(extension, root_file_name) as analyser:
         for i, hist in analyser:
             analyser.analyse_histogram(i, hist)

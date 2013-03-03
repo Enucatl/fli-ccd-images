@@ -112,9 +112,9 @@ def atlasstyle():
     gROOT.SetStyle("atlasStyle")
     gROOT.ForceStyle()
 
-def tdrstyle_grayscale():
+def tdrstyle_grayscale(ncolors=999):
     tdrstyle()
-    set_palette('gray_inverted', 999)
+    return set_palette('gray_inverted', ncolors)
 
 def tdrstyle():
     """
@@ -485,15 +485,18 @@ def set_palette(name='default', ncontours=200):
         green = [0.00, 0.81, 1.00, 0.20, 0.00]
         blue  = [0.51, 1.00, 0.12, 0.00, 0.00]
 
+    colors = [0] * ncontours
     s = array('d', stops)
     r = array('d', red)
     g = array('d', green)
     b = array('d', blue)
 
     npoints = len(s)
-    TColor.CreateGradientColorTable(npoints, s, r, g, b, ncontours)
+    color = TColor.CreateGradientColorTable(npoints, s, r, g, b, ncontours)
     gStyle.SetNumberContours(ncontours)
-    
+    for i in xrange(ncontours):
+        colors[i] = color + i
+    return array('i', colors)
 
 tdrstyle()
 set_palette()

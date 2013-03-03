@@ -76,6 +76,11 @@ reads all images in a folder and convert them from RAW to TH2D in a ROOT file
     :::bash
     ./bin/make_root FOLDER
 
+### Abstract iterator class:
+Inherit from `BaseRootfileAnalyser` in `python/base_rootfile_analyser.py` to
+easily perform the same operation on all the images in the ROOT file saved
+by `bin/make_root`.
+
 ### Convert to images (the default format is GIF)
 reads all images in a folder and convert them from RAW to an image format
 Needs the ROOT file with all the RAW images inside created by `bin/make_root`!
@@ -98,9 +103,10 @@ Needs the ROOT file with all the RAW images inside created by `bin/make_root`!
     :::bash
     python python/make_projection_gif.py FILE.root
 
-### Draw stack of images along a pixel
+### Draw stack of slices along a pixel
 see the evolution of a pixel line by stacking all the slices together.
 Needs the ROOT file with all the RAW images inside created by `bin/make_root`!
 
     :::bash
     python python/make_projection_stack.py FILE.root PIXEL
+
