@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
         image_reader.update_histogram();
         image_reader.Write();
     }
-
+    root_file.Close();
     std::cout << "Done!" << std::endl;
 
     return 0;
