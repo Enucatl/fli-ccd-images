@@ -81,6 +81,8 @@ int main(int argc, char **argv) {
         image_reader.update_histogram();
         image_reader.Write();
     }
+    std::cout << "Saving ROOT file:" << std::endl;
+    std::cout << root_file_name.string() << std::endl;
     root_file.Close();
     std::cout << "Done!" << std::endl;
 
