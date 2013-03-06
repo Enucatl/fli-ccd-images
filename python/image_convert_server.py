@@ -3,23 +3,19 @@ from __future__ import division, print_function
 
 import SocketServer
 import subprocess
+from datetime import datetime
 
 command = "./bin/add_image_to_root_file"
 #programme = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,
         #stdin=subprocess.PIPE)
 
-class ShutdownServer(Exception):
-    pass
+#global control variable to check that the scan is ongoing
+scanning = False
 
-class ImageConvertServer(SocketServer.TCPServer):
-
-    def handle_error(self, *args, **kwargs):
-
-        if self.data == "close_server":
-            print("shutting down server...")
-            self.shutdown()
-        super(ImageConvertServer, self).handle_error(*args, **kwargs)
-
+class ImageConvertTCPServer(SocketServer.TCPServer):
+    """eliminate 'address already in use' error
+    http://stackoverflow.com/questions/10613977/a-simple-python-server-using-simplehttpserver-and-socketserver-how-do-i-close-t?lq=1"""
+    allow_reuse_address = True
 
 class MyTCPHandler(SocketServer.BaseRequestHandler):
     """
@@ -35,24 +31,43 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         self.data = self.request.recv(1024).strip()
         print("{} wrote:".format(self.client_address[0]))
         print(self.data)
+        return_code = 0
         if self.data == "close_server":
-            raise ShutdownServer("got close_server command!")
-        # just send back the same data, but upper-cased
+            global scanning
+            scanning = False
+            return_code = 1
+        elif not os.path.exists(self.data):
+            print(self.data, "not found.")
+            return_code = 2
         #programme.communicate(self.data)
-        programme = "{0} {1}".format(
-            command,
-            self.data)
-        print(programme)
-        return_code = subprocess.call(programme,
-            shell=True)
+        else:
+            programme = "{0} {1}".format(
+                command,
+                self.data)
+            print(programme)
+            return_code = subprocess.call(programme,
+                shell=True)
+        print(datetime.now(), return_code)
+        send_string = str(return_code)
         print("return code", return_code)
-        self.request.sendall(self.data)
+        self.request.sendall(send_string + "\n")
 
 if __name__ == "__main__":
-    HOST, PORT = "", 8888
+    import argparse
 
-    server = ImageConvertServer((HOST, PORT), MyTCPHandler)
+    parser = argparse.ArgumentParser(description='''open server for SPEC
+            that will convert raw images to ROOT format''')
+    parser.add_argument('port', metavar='PORT',
+            nargs='?', default=8961, help='port for the server on localhost')
+    port = parser.parse_args().port
 
-    # Activate the server; this will keep running until you
-    # interrupt the program with Ctrl-C
-    server.serve_forever()
+    host = ""
+    server = ImageConvertTCPServer((host, port), MyTCPHandler)
+    scanning = True
+
+    #scanning changed to False when client sends "close_server" command
+    while scanning:
+        print("ready for request")
+        server.handle_request()
+
+    print("bye")
