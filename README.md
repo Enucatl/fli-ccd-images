@@ -21,6 +21,8 @@ The [ROOT data analysis framework](http://root.cern.ch "ROOT homepage") ≥ 5.34
 
 [GIT](http://git-scm.com/ "GIT homepage") version control system ≥ 1.7
 
+[Pexpect](http://www.noah.org/wiki/pexpect) for the image converting server
+
 
 ## Report Bugs & Request Features
 
@@ -41,6 +43,7 @@ please report any bug or feature request using the [issues webpage](https://bitb
 
     :::bash
     make
+    make install
 
 
 if the compiler cannot find the proper headers and libraries, you are
@@ -114,3 +117,13 @@ Needs the ROOT file with all the RAW images inside created by `bin/make_root`!
     :::bash
     python python/make_projection_stack.py FILE.root PIXEL
 
+### Convert images as they are acquired 
+the images can be converted to the ROOT format as they come by communicating the file name to a python server that takes care of the conversion in C++.
+
+    :::bash
+    python python/image_convert_server.py test 8889 &
+            
+a test client also exists
+
+    :::bash
+    python test/image_convert_server_test.py

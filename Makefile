@@ -1,4 +1,4 @@
-.PHONY: clean all test
+.PHONY: clean all test chmod_python
 .SUFFIXES: .cpp .o
 
 BIN_FOLDER=bin
@@ -23,7 +23,7 @@ LDFLAGS=`root-config --glibs`
 BOOST_LIBS=-lboost_program_options -lboost_filesystem -lboost_system
 BOOST_THREAD_LIBS=-lboost_thread
 
-all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer make_root add_image_to_root_file convert_scan_online)
+all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer make_root add_image_to_root_file convert_scan_online) chmod_python
 
 $(BIN_FOLDER)/ccdfli_viewer: ccdfli_viewer.cpp\
 	$(DICT_FOLDER)/main_frameDict.cpp\
@@ -62,7 +62,15 @@ $(BIN_FOLDER):
 $(DICT_FOLDER):
 	mkdir -p $(DICT_FOLDER)
 
+chmod_python: python/*.py
+	chmod +x python/*.py
+
+install:
+	mkdir -p $${HOME}/bin
+	-rm -f $${HOME}/bin/image_convert_server.py
+	ln -s $$(pwd)/python/image_convert_server.py $${HOME}/bin/image_convert_server.py
 
 clean:
 	-rm -rf $(DICT_FOLDER) $(LIB_FOLDER) $(BIN_FOLDER) python/*.pyc\
-		test/png test/gif test/test.root test.root callgrind.out* *debuglog*
+		test/png test/gif test/test.root test.root callgrind.out* *debuglog*\
+		${HOME}/bin/image_convert_server.py

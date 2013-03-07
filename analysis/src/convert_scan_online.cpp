@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
     }
     readimages::SingleImageReader image_reader;
     std::string image_file_name;
-    std::cout << "next image file_name:" << std::endl;
+    std::cout << "next image file name:" << std::endl;
     while(std::cin >> image_file_name) {
         std::cout << image_file_name << std::endl;
         if (not raw_image_tools::is_image_file(
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
         image_reader.set_path(image_file_name);
         image_reader.update_histogram();
         image_reader.Write();
-        std::cout << "next image file_name:" << std::endl;
+        std::cout << "next image file name:" << std::endl;
     }
     root_file.Close();
     return 0;

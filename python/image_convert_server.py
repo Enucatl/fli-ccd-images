@@ -8,9 +8,6 @@ from datetime import datetime
 #global control variable to check that the scan is ongoing
 scanning = False
 
-command = "./bin/convert_scan_online {0}".format(folder)
-converter = pexpect.spawn(command)
-
 class ImageConvertTCPServer(SocketServer.TCPServer):
     """eliminate 'address already in use' error
     http://stackoverflow.com/questions/10613977/a-simple-python-server-using-simplehttpserver-and-socketserver-how-do-i-close-t?lq=1"""
@@ -35,11 +32,10 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         if self.data == "close_server":
             global scanning
             scanning = False
-            return_code = 1
-        else:
-            global converter
-            converter.expect("next image file name:")
-            converter.sendline(self.data)
+            return_code = "bye"
+        global converter
+        converter.expect("next image file name:")
+        converter.sendline(self.data + "\n")
         print(datetime.now(), return_code)
         send_string = str(return_code)
         print("return code", return_code)
@@ -49,17 +45,27 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description='''open server for SPEC
-            that will convert raw images to ROOT format''')
-    parser.add_argument('port', metavar='PORT',
-            nargs='?', default=8961, help='port for the server on localhost')
+            that will convert raw images to ROOT format
+            
+            Example:
+            python python/image_convert_server.py test 8889 &
+            
+            Test client:
+            python test/image_convert_server_test.py''')
     parser.add_argument('folder', metavar='FOLDER',
-            nargs=1, help='folder where the RAW files will be saved')
+            nargs=1, help='folder corresponding to the output ROOT file')
+    parser.add_argument('port', metavar='PORT', type=int,
+            nargs='?', default=8961, help='port for the server on localhost')
     args = parser.parse_args()
     port = args.port
     folder = args.folder[0]
 
     host = ""
+    print(host, port)
     server = ImageConvertTCPServer((host, port), MyTCPHandler)
+    command = "./bin/convert_scan_online {0}".format(folder)
+    converter = pexpect.spawn(command)
+
     scanning = True
 
     #scanning changed to False when client sends "close_server" command
