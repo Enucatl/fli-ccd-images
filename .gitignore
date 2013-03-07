@@ -7,3 +7,5 @@ test/png
 *root
 *.gif
 *.swp
+callgrind*
+*debuglog*

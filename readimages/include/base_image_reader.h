@@ -42,7 +42,7 @@ public:
     bool Divide(const TH1* h) { return histogram_.Divide(h); }
 
     //Write to a ROOT file
-    int Write(const char* name=0, int option=0, int bufsize=0) {return histogram_.Write(name, option, bufsize);}
+    int Write(const char* name=0, int option=0, int bufsize=0) { return histogram_.Write(name, option, bufsize); }
 
     const TH2D& get_histogram() const {return histogram_;}
 

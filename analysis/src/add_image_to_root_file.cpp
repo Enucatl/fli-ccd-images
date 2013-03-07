@@ -1,9 +1,11 @@
 #include <iostream>
+#include <string>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 
 #include "TFile.h"
 
+#include "raw_image_tools.h"
 #include "single_image_reader.h"
 
 namespace po = boost::program_options;
@@ -36,19 +38,20 @@ int main(int argc, char **argv) {
     std::string image_file_name_string;
     if (vm.count("file")) {
         image_file_name_string = vm["file"].as<std::string>();
+        if (not raw_image_tools::is_image_file(fs::directory_entry(image_file_name_string)))
+            return 2;
     }
     else{
         std::cout << desc << std::endl;
         std::cout << example << std::endl;
-        return 2;
+        return 3;
     }
 
     fs::path image_file_name(image_file_name_string);
-    fs::path output_root_file(image_file_name.parent_path());
-    output_root_file /= output_root_file.filename();
-    output_root_file.replace_extension(".root");
+    std::string output_root_file(image_file_name.parent_path().string());
+    output_root_file = raw_image_tools::get_root_filename(output_root_file);
     std::cout << output_root_file << std::endl;
-    TFile root_file(output_root_file.string().c_str(), "update");
+    TFile root_file(output_root_file.c_str(), "update");
     readimages::SingleImageReader image_reader;
     image_reader.set_path(image_file_name);
     image_reader.update_histogram();

@@ -85,4 +85,11 @@ void get_all_raw_files(const boost::filesystem::path& folder, std::vector<boost:
             );
 }
 
+std::string get_root_filename(std::string folder){
+    if (*folder.rbegin() == '/')
+        //if last character is / erase it
+        folder.erase(folder.begin() + folder.size() - 1);
+    return folder + ".root";
+}
+
 }

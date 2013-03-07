@@ -2,20 +2,20 @@
 from __future__ import division, print_function
 
 import SocketServer
-import subprocess
+import pexpect
 from datetime import datetime
-
-command = "./bin/add_image_to_root_file"
-#programme = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,
-        #stdin=subprocess.PIPE)
 
 #global control variable to check that the scan is ongoing
 scanning = False
+
+command = "./bin/convert_scan_online {0}".format(folder)
+converter = pexpect.spawn(command)
 
 class ImageConvertTCPServer(SocketServer.TCPServer):
     """eliminate 'address already in use' error
     http://stackoverflow.com/questions/10613977/a-simple-python-server-using-simplehttpserver-and-socketserver-how-do-i-close-t?lq=1"""
     allow_reuse_address = True
+    request_queue_size = 10000
 
 class MyTCPHandler(SocketServer.BaseRequestHandler):
     """
@@ -36,17 +36,10 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
             global scanning
             scanning = False
             return_code = 1
-        elif not os.path.exists(self.data):
-            print(self.data, "not found.")
-            return_code = 2
-        #programme.communicate(self.data)
         else:
-            programme = "{0} {1}".format(
-                command,
-                self.data)
-            print(programme)
-            return_code = subprocess.call(programme,
-                shell=True)
+            global converter
+            converter.expect("next image file name:")
+            converter.sendline(self.data)
         print(datetime.now(), return_code)
         send_string = str(return_code)
         print("return code", return_code)
@@ -59,7 +52,11 @@ if __name__ == "__main__":
             that will convert raw images to ROOT format''')
     parser.add_argument('port', metavar='PORT',
             nargs='?', default=8961, help='port for the server on localhost')
-    port = parser.parse_args().port
+    parser.add_argument('folder', metavar='FOLDER',
+            nargs=1, help='folder where the RAW files will be saved')
+    args = parser.parse_args()
+    port = args.port
+    folder = args.folder[0]
 
     host = ""
     server = ImageConvertTCPServer((host, port), MyTCPHandler)
@@ -70,4 +67,5 @@ if __name__ == "__main__":
         print("ready for request")
         server.handle_request()
 
+    converter.sendline("bye")
     print("bye")

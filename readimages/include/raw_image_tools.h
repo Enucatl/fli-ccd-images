@@ -25,12 +25,29 @@ struct Reader {
     }
 };
 
+//load to TH2 the data if file_name, skipping the first header_bytes, as
+//they represent the header, already analysed by
+//raw_image_tools::process_header
 void load_histogram(std::ifstream& file_name, int header_bytes, TH2& image);
+
+//get relevant information from header of raw file: number of rows and
+//columns and the range of the axes.
 int process_header(std::ifstream& file_name, int& rows, int& columns, int& min_x, int& min_y, int& max_x, int& max_y);
+
+//check that the file is a valid image file
 bool is_image_file(const boost::filesystem::directory_entry& path);
+
+//check if p2 is newer than p1
 bool is_file2_newer(const boost::filesystem::path& p1, const boost::filesystem::path& p2);
+
+//watch folder and return the newest of the files in it
 void watch_folder(const boost::filesystem::path folder, boost::filesystem::path& new_name);
+
+//get all .raw files in a folder
 void get_all_raw_files(const boost::filesystem::path& folder, std::vector<boost::filesystem::path>& vector);
+
+//calculate the ROOT file name corresponding to a folder name given by SPEC
+std::string get_root_filename(std::string folder);
 }
 
 #endif /* end of include guard: READ_RAW_IMAGE_H */
