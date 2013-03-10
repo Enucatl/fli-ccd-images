@@ -26,6 +26,30 @@ void load_histogram(std::ifstream& file, int header_bytes, TH2& image) {
     }
 }
 
+void load_histogram_short(std::ifstream& file, int header_bytes, TH2S& image) {
+    //get size of image
+    short* matrix = image.fArray;
+    int columns = image.GetNbinsX();
+    int rows = image.GetNbinsY();
+    int number_of_pixels = columns * rows;
+    std::vector<short>(number_of_pixels, 0);
+    file.seekg(header_bytes);
+
+    //read transposed data, then switch back
+    int j = rows + 2;
+    for (int i = 0; i < columns; i++) {
+        j++;
+        file.read(reinterpret_cast<char*>(matrix + j), rows * sizeof(uint16_t));
+        j += rows + 1;
+    }
+    //fix total integral
+    int sum = std::accumulate(matrix, matrix + number_of_pixels, 0);
+    image.SetEntries(sum);
+
+    //transposition taking into account under/overflow bins
+    transpose(matrix, rows + 2, columns + 2);
+}
+
 int process_header(std::ifstream& file, int& rows, int& columns, int& min_x, int& min_y, int& max_x, int& max_y) {
     Reader<char> reader;
     char value;
@@ -92,4 +116,19 @@ std::string get_root_filename(std::string folder){
     return folder + ".root";
 }
 
+template<typename T>
+void transpose(T* matrix, int width, int height) {
+    int count= width*height;
+    for (int x= 0; x<width; ++x) {
+        int count_adjustment= width - x - 1;
+
+        for (int y= 0, step= 1; y<height; ++y, step+= count_adjustment)
+        {
+            int last= count - (y+x*height);
+            int first= last - step;
+
+            std::rotate(matrix + first, matrix + first + 1, matrix + last);
+        }
+    }
+}
 }

@@ -7,6 +7,7 @@
 #include <vector>
 #include <iterator>
 #include <algorithm>
+#include <numeric>
 #include <inttypes.h>
 
 #include <boost/filesystem.hpp>
@@ -28,7 +29,9 @@ struct Reader {
 //load to TH2 the data if file_name, skipping the first header_bytes, as
 //they represent the header, already analysed by
 //raw_image_tools::process_header
-void load_histogram(std::ifstream& file_name, int header_bytes, TH2& image);
+void load_histogram(std::ifstream& file, int header_bytes, TH2& image);
+
+void load_histogram_short(std::ifstream& file, int header_bytes, TH2S& image);
 
 //get relevant information from header of raw file: number of rows and
 //columns and the range of the axes.
@@ -48,6 +51,11 @@ void get_all_raw_files(const boost::filesystem::path& folder, std::vector<boost:
 
 //calculate the ROOT file name corresponding to a folder name given by SPEC
 std::string get_root_filename(std::string folder);
+
+//transpose matrix as explained here
+//http://stackoverflow.com/a/8733699/2143847
+template<typename T>
+void transpose(T* array, int width, int height);
 }
 
 #endif /* end of include guard: READ_RAW_IMAGE_H */
