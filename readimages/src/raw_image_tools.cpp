@@ -32,22 +32,18 @@ void load_histogram_short(std::ifstream& file, int header_bytes, TH2S& image) {
     int columns = image.GetNbinsX();
     int rows = image.GetNbinsY();
     int number_of_pixels = columns * rows;
-    std::vector<short>(number_of_pixels, 0);
+    std::vector<short> temp_vector(number_of_pixels, 0);
     file.seekg(header_bytes);
-
-    //read transposed data, then switch back
-    int j = rows + 2;
-    for (int i = 0; i < columns; i++) {
-        j++;
-        file.read(reinterpret_cast<char*>(matrix + j), rows * sizeof(uint16_t));
-        j += rows + 1;
-    }
+    file.read(reinterpret_cast<char*>(&temp_vector[0]), number_of_pixels * sizeof(uint16_t));
     //fix total integral
-    int sum = std::accumulate(matrix, matrix + number_of_pixels, 0);
-    image.SetEntries(sum);
+    image.SetEntries(number_of_pixels);
 
-    //transposition taking into account under/overflow bins
-    transpose(matrix, rows + 2, columns + 2);
+    //set transposed data:
+    for (int u = 0; u < rows; u++) {
+        for (int v = 0; v < columns; v++) {
+            matrix[columns + 2 + u * (columns + 2) + v + 1] = temp_vector[u + rows * v];
+        }
+    }
 }
 
 int process_header(std::ifstream& file, int& rows, int& columns, int& min_x, int& min_y, int& max_x, int& max_y) {
@@ -117,18 +113,18 @@ std::string get_root_filename(std::string folder){
 }
 
 template<typename T>
-void transpose(T* matrix, int width, int height) {
-    int count= width*height;
-    for (int x= 0; x<width; ++x) {
-        int count_adjustment= width - x - 1;
+    void transpose(T* matrix, int width, int height) {
+        int count= width*height;
+        for (int x= 0; x<width; ++x) {
+            int count_adjustment= width - x - 1;
 
-        for (int y= 0, step= 1; y<height; ++y, step+= count_adjustment)
-        {
-            int last= count - (y+x*height);
-            int first= last - step;
+            for (int y= 0, step= 1; y<height; ++y, step+= count_adjustment)
+            {
+                int last= count - (y+x*height);
+                int first= last - step;
 
-            std::rotate(matrix + first, matrix + first + 1, matrix + last);
+                std::rotate(matrix + first, matrix + first + 1, matrix + last);
+            }
         }
     }
-}
 }
