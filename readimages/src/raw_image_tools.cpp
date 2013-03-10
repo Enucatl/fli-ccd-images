@@ -2,33 +2,8 @@
 
 namespace raw_image_tools {
 
-void load_histogram(std::ifstream& file, int header_bytes, TH2& image) {
+void load_histogram(std::ifstream& file, int header_bytes, TH2Type& image) {
     //get size of image
-    int columns = image.GetNbinsX();
-    int rows = image.GetNbinsY();
-    //skip header bytes
-    file.seekg(header_bytes);
-    Reader<uint16_t> reader;
-    uint16_t value = 0;
-    int i = 1;
-    int j = 0;
-    //load the values into the histogram
-    while(reader(file, value)) {
-        if (j < rows)
-            j++;
-        else {
-            j = 1;
-            if (i < columns) i++;
-            else i = 1;
-        }
-        //std::cout << value << std::endl;
-        image.SetBinContent(i, j, value);
-    }
-}
-
-void load_histogram_short(std::ifstream& file, int header_bytes, TH2S& image) {
-    //get size of image
-    short* matrix = image.fArray;
     int columns = image.GetNbinsX();
     int rows = image.GetNbinsY();
     int number_of_pixels = columns * rows;
@@ -41,7 +16,7 @@ void load_histogram_short(std::ifstream& file, int header_bytes, TH2S& image) {
     //set transposed data:
     for (int u = 0; u < rows; u++) {
         for (int v = 0; v < columns; v++) {
-            matrix[columns + 2 + u * (columns + 2) + v + 1] = temp_vector[u + rows * v];
+            image.fArray[columns + 2 + u * (columns + 2) + v + 1] = temp_vector[u + rows * v];
         }
     }
 }
@@ -112,19 +87,4 @@ std::string get_root_filename(std::string folder){
     return folder + ".root";
 }
 
-template<typename T>
-    void transpose(T* matrix, int width, int height) {
-        int count= width*height;
-        for (int x= 0; x<width; ++x) {
-            int count_adjustment= width - x - 1;
-
-            for (int y= 0, step= 1; y<height; ++y, step+= count_adjustment)
-            {
-                int last= count - (y+x*height);
-                int first= last - step;
-
-                std::rotate(matrix + first, matrix + first + 1, matrix + last);
-            }
-        }
-    }
 }

@@ -52,7 +52,7 @@ $(BIN_FOLDER)/convert_scan_online: convert_scan_online.cpp\
 	| $(BIN_FOLDER)
 	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
 
-$(LIB_FOLDER)/%.o: %.cpp %.h | $(LIB_FOLDER)
+$(LIB_FOLDER)/%.o: %.cpp %.h raw_image_tools.h | $(LIB_FOLDER)
 	g++ -c $(CFLAGS) -o $@ $< 
 
 $(DICT_FOLDER)/%Dict.cpp: %.h %LinkDef.h | $(DICT_FOLDER)
