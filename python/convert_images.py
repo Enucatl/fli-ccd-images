@@ -41,7 +41,7 @@ class ImageConverter(BaseRootfileAnalyser):
         super(ImageConverter, self).if_not_exists()
         self.width = self.example_histogram.GetNbinsX()
         self.height = self.example_histogram.GetNbinsY()
-        n_colors = 999
+        n_colors = 256
         self.palette = tdrstyle_grayscale(n_colors)
         self.palette = ROOT.TImagePalette(n_colors,
                 self.palette)
@@ -59,7 +59,10 @@ class ImageConverter(BaseRootfileAnalyser):
             write_as = self.output_name() + hist.GetName() + "." + self.extension
         """convert th2d to image as in tutorial
         http://root.cern.ch/root/html534/tutorials/image/hist2image.C.html"""
-        self.image.SetImage(hist.GetArray(),
+
+        hist_array = array.array("d",
+                (hist.fArray[i] for i in xrange(hist.fN)))
+        self.image.SetImage(hist_array,
                 self.width + 2,
                 self.height + 2,
                 self.palette)
