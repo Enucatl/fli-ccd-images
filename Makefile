@@ -25,6 +25,12 @@ BOOST_THREAD_LIBS=-lboost_thread
 
 all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer make_root add_image_to_root_file convert_scan_online) chmod_python
 
+test: $(addprefix $(TEST_FOLDER)/, test_load_short)
+
+$(TEST_FOLDER)/test_load_short: test_load_short.cpp\
+	$(addprefix $(LIB_FOLDER)/, raw_image_tools.o)
+	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS)
+
 $(BIN_FOLDER)/ccdfli_viewer: ccdfli_viewer.cpp\
 	$(DICT_FOLDER)/main_frameDict.cpp\
 	$(addprefix $(LIB_FOLDER)/, rootstyle.o main_frame.o base_image_reader.o newest_image_reader.o single_image_reader.o raw_image_tools.o contrast_adjuster.o)\
@@ -46,7 +52,7 @@ $(BIN_FOLDER)/convert_scan_online: convert_scan_online.cpp\
 	| $(BIN_FOLDER)
 	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
 
-$(LIB_FOLDER)/%.o: %.cpp %.h | $(LIB_FOLDER)
+$(LIB_FOLDER)/%.o: %.cpp %.h raw_image_tools.h | $(LIB_FOLDER)
 	g++ -c $(CFLAGS) -o $@ $< 
 
 $(DICT_FOLDER)/%Dict.cpp: %.h %LinkDef.h | $(DICT_FOLDER)

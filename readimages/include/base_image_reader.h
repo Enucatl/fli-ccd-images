@@ -36,7 +36,7 @@ public:
     double get_histogram_x_max() {return histogram_.GetXaxis()->GetXmax();}
 
     //get the projection
-    //just a layer on TH2D::ProjectionX
+    //just a layer on TH2::ProjectionX
     TH1D* ProjectionX(const char* name="_px", int firstybin=0, int lastybin=-1, const char* option="") {return histogram_.ProjectionX(name, firstybin, lastybin, option);}
     //expose TH1::Divide
     bool Divide(const TH1* h) { return histogram_.Divide(h); }
@@ -44,7 +44,7 @@ public:
     //Write to a ROOT file
     int Write(const char* name=0, int option=0, int bufsize=0) { return histogram_.Write(name, option, bufsize); }
 
-    const TH2D& get_histogram() const {return histogram_;}
+    const raw_image_tools::TH2Type& get_histogram() const {return histogram_;}
 
     boost::mutex mutex_; //for the threads
     boost::condition_variable file_found_; //signals that a file has been found
@@ -53,7 +53,7 @@ public:
 protected:
     void read_file(); //loads file (path_) into histogram
     fs::path path_;
-    TH2D histogram_;
+    raw_image_tools::TH2Type histogram_;
 };
 
 }

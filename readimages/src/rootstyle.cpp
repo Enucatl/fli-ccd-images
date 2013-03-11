@@ -126,7 +126,7 @@ TStyle setTDRStyle() {
     tdrStyle.SetOptLogz(0);
 
     const int NRGBs = 5;
-    const int NCont = 999;
+    const int NCont = 256;
 
     Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
     Double_t red[NRGBs]   = { 0.00, 0.34, 0.61, 0.84, 1.00 };

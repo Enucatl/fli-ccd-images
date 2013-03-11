@@ -2,27 +2,22 @@
 
 namespace raw_image_tools {
 
-void load_histogram(std::ifstream& file, int header_bytes, TH2& image) {
+void load_histogram(std::ifstream& file, int header_bytes, TH2Type& image) {
     //get size of image
     int columns = image.GetNbinsX();
     int rows = image.GetNbinsY();
-    //skip header bytes
+    int number_of_pixels = columns * rows;
+    std::vector<short> temp_vector(number_of_pixels, 0);
     file.seekg(header_bytes);
-    Reader<uint16_t> reader;
-    uint16_t value = 0;
-    int i = 1;
-    int j = 0;
-    //load the values into the histogram
-    while(reader(file, value)) {
-        if (j < rows)
-            j++;
-        else {
-            j = 1;
-            if (i < columns) i++;
-            else i = 1;
+    file.read(reinterpret_cast<char*>(&temp_vector[0]), number_of_pixels * sizeof(uint16_t));
+    //fix total integral
+    image.SetEntries(number_of_pixels);
+
+    //set transposed data:
+    for (int u = 0; u < rows; u++) {
+        for (int v = 0; v < columns; v++) {
+            image.fArray[columns + 2 + u * (columns + 2) + v + 1] = temp_vector[u + rows * v];
         }
-        //std::cout << value << std::endl;
-        image.SetBinContent(i, j, value);
     }
 }
 
