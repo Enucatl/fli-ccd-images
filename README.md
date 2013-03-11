@@ -3,11 +3,6 @@
 ROOT GUI programme to view the files recorded by the CCD
 FLI camera in OFLG/U210.
 
-version tags ≥ v2.00 mark the development of the newer (but less stable) GUI app.
-If you want the stable versions stick with v1.XX.
-
-To back up to e.g. v1.23 just type `git checkout v1.23`
-
 
 ## Requirements
 

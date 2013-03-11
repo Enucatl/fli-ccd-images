@@ -4,13 +4,10 @@
 
 #include "TApplication.h"
 #include "TCanvas.h"
-#include "TROOT.h"
-#include "TStyle.h"
 #include "TFile.h"
 
 #include "raw_image_tools.h"
 #include "single_image_reader.h"
-#include "rootstyle.h"
 
 namespace po = boost::program_options;
 
@@ -61,13 +58,6 @@ int main(int argc, char **argv) {
     std::vector<fs::path> files;
 
     raw_image_tools::get_all_raw_files(folder, files);
-
-    //save in separate png folder
-    //begin string operations to build the new filename
-
-    TStyle style = setTDRStyle();
-    gROOT->SetStyle("tdrStyle");
-    gROOT->ForceStyle();
 
     int n = files.size();
     std::cout << std::endl;
