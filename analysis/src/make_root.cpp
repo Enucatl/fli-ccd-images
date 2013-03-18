@@ -8,6 +8,7 @@
 
 #include "raw_image_tools.h"
 #include "single_image_reader.h"
+#include "root_image_writer.h"
 
 namespace po = boost::program_options;
 
@@ -47,14 +48,14 @@ int main(int argc, char **argv) {
 
     //file will not be opened if it already exists: exit with return 3
     std::string root_file_name = raw_image_tools::get_root_filename(folder);
-    TFile root_file(root_file_name.c_str(), "create");
-    if (not root_file.IsOpen()) {
-        std::cout << "ROOT file already exists or failed to open, exiting:" << std::endl;
-        std::cout << root_file_name << std::endl;
+    readimages::SingleImageReader image_reader;
+    readimages::RootImageWriter image_writer(root_file_name,
+            image_reader.get_image_info_ptr(),
+            image_reader.get_histogram_ptr());
+    if (image_writer.open_failed()) {
         return 3;
     }
-    root_file.cd();
-    readimages::SingleImageReader image_reader;
+
     std::vector<fs::path> files;
 
     raw_image_tools::get_all_raw_files(folder, files);
@@ -68,11 +69,11 @@ int main(int argc, char **argv) {
         ++progress;
         image_reader.set_path(*file_name);
         image_reader.update_histogram();
-        image_reader.Write();
+        image_writer.Fill();
     }
     std::cout << "Saving ROOT file:" << std::endl;
     std::cout << root_file_name << std::endl;
-    root_file.Close();
+    image_writer.Write();
     std::cout << "Done!" << std::endl;
 
     return 0;

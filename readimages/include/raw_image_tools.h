@@ -19,7 +19,7 @@
 
 namespace raw_image_tools {
 
-typedef TH2S TH2Type;
+typedef TH2S Image;
 
 template<typename T> 
 struct Reader {
@@ -28,14 +28,29 @@ struct Reader {
     }
 };
 
+struct ImageInfo {
+    int rows;
+    int columns;
+    int min_x;
+    int max_x;
+    int min_y;
+    int max_y;
+    double exposure_time;
+    double exposure_time_measured;
+    long int timestamp;
+};
+
+extern const char* kImageInfoDescription;
+
+
 //load to TH2S the data in file_name, skipping the first header_bytes, as
 //they represent the header, already analysed by
 //raw_image_tools::process_header
-void load_histogram(std::ifstream& file, int header_bytes, TH2Type& image);
+void load_histogram(std::ifstream& file, int header_bytes, Image& image);
 
 //get relevant information from header of raw file: number of rows and
 //columns and the range of the axes.
-int process_header(std::ifstream& file_name, int& rows, int& columns, int& min_x, int& min_y, int& max_x, int& max_y);
+int process_header(std::ifstream& file_name, ImageInfo& image_info);
 
 //check that the file is a valid image file
 bool is_image_file(const boost::filesystem::directory_entry& path);

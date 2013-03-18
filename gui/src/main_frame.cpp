@@ -213,7 +213,7 @@ void MainFrame::DrawImage() {
     boost::mutex::scoped_lock lock(drawing_mutex_);
     embedded_canvas_.GetCanvas()->cd();
     if (image_reader_divide_ != 0)
-        image_reader_->Divide(&image_reader_divide_->get_histogram());
+        image_reader_->Divide(image_reader_divide_->get_histogram_ptr());
     image_reader_->Draw("col");
     embedded_canvas_.GetCanvas()->Modified();
     embedded_canvas_.GetCanvas()->Update();
@@ -248,7 +248,7 @@ void MainFrame::SpawnContrastAdjustment() {
     contrast_adjuster_->set_parent_canvas(embedded_canvas_.GetCanvas());
     contrast_adjuster_->set_my_canvas(contrast_adjuster_canvas_.get());
     contrast_adjuster_->set_style(&style_);
-    contrast_adjuster_->get_intensity_distribution(image_reader_->get_histogram());
+    contrast_adjuster_->get_intensity_distribution(*(image_reader_->get_histogram_ptr()));
     contrast_adjuster_->Draw();
 }
 

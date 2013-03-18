@@ -44,7 +44,8 @@ public:
     //Write to a ROOT file
     int Write(const char* name=0, int option=0, int bufsize=0) { return histogram_.Write(name, option, bufsize); }
 
-    const raw_image_tools::TH2Type& get_histogram() const {return histogram_;}
+    raw_image_tools::ImageInfo* get_image_info_ptr() {return &image_info_;}
+    raw_image_tools::Image* get_histogram_ptr() {return &histogram_;}
 
     boost::mutex mutex_; //for the threads
     boost::condition_variable file_found_; //signals that a file has been found
@@ -53,7 +54,8 @@ public:
 protected:
     void read_file(); //loads file (path_) into histogram
     fs::path path_;
-    raw_image_tools::TH2Type histogram_;
+    raw_image_tools::Image histogram_;
+    raw_image_tools::ImageInfo image_info_;
 };
 
 }

@@ -38,7 +38,7 @@ $(BIN_FOLDER)/ccdfli_viewer: ccdfli_viewer.cpp\
 	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
 
 $(BIN_FOLDER)/make_root: make_root.cpp\
-	$(addprefix $(LIB_FOLDER)/, single_image_reader.o base_image_reader.o raw_image_tools.o)\
+	$(addprefix $(LIB_FOLDER)/, root_image_writer.o single_image_reader.o base_image_reader.o raw_image_tools.o)\
 	| $(BIN_FOLDER)
 	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
 

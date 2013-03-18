@@ -2,7 +2,9 @@
 
 namespace raw_image_tools {
 
-void load_histogram(std::ifstream& file, int header_bytes, TH2Type& image) {
+const char* kImageInfoDescription = "rows/I:columns:min_x:max_x:min_y:max_y:exposure_time/D:exposure_time_measured:timestamp/L";
+
+void load_histogram(std::ifstream& file, int header_bytes, Image& image) {
     //get size of image
     int columns = image.GetNbinsX();
     int rows = image.GetNbinsY();
@@ -21,7 +23,7 @@ void load_histogram(std::ifstream& file, int header_bytes, TH2Type& image) {
     }
 }
 
-int process_header(std::ifstream& file, int& rows, int& columns, int& min_x, int& min_y, int& max_x, int& max_y) {
+int process_header(std::ifstream& file, ImageInfo& image_info) {
     Reader<char> reader;
     char value;
     int header_byte_counter = 0;
@@ -36,21 +38,30 @@ int process_header(std::ifstream& file, int& rows, int& columns, int& min_x, int
             //std::cout << line;
             if (boost::algorithm::contains(line, "rows")) {
                 boost::algorithm::split(split_line, line, boost::algorithm::is_space());
-                rows = boost::lexical_cast<int>(split_line.at(2));
-                //std::cout << "rows = " << rows << std::endl;
+                image_info.rows = boost::lexical_cast<int>(split_line.at(2));
             }
             else if (boost::algorithm::contains(line, "columns")) {
                 boost::algorithm::split(split_line, line, boost::algorithm::is_space());
-                columns = boost::lexical_cast<int>(split_line.at(2));
-                //std::cout << "columns = " << columns << std::endl;
+                image_info.columns = boost::lexical_cast<int>(split_line.at(2));
+            }
+            else if (boost::algorithm::contains(line, "exptimesec_client")) {
+                boost::algorithm::split(split_line, line, boost::algorithm::is_space());
+                image_info.exposure_time = boost::lexical_cast<double>(split_line.at(2));
+            }
+            else if (boost::algorithm::contains(line, "exptimesec_measured")) {
+                boost::algorithm::split(split_line, line, boost::algorithm::is_space());
+                image_info.exposure_time_measured = boost::lexical_cast<double>(split_line.at(2));
             }
             else if (boost::algorithm::contains(line, "ROI")) {
                 boost::algorithm::split(split_line, line, boost::algorithm::is_space());
-                min_y = boost::lexical_cast<int>(split_line.at(2));
-                min_x = boost::lexical_cast<int>(split_line.at(3));
-                max_y = boost::lexical_cast<int>(split_line.at(4));
-                max_x = boost::lexical_cast<int>(split_line.at(5));
-                //std::cout << "roi = " << min_x << " " << min_y << " " << max_x << " " << max_y << std::endl;
+                image_info.min_y = boost::lexical_cast<int>(split_line.at(2));
+                image_info.min_x = boost::lexical_cast<int>(split_line.at(3));
+                image_info.max_y = boost::lexical_cast<int>(split_line.at(4));
+                image_info.max_x = boost::lexical_cast<int>(split_line.at(5));
+            }
+            else if (boost::algorithm::contains(line, "timestamp_integer")) {
+                boost::algorithm::split(split_line, line, boost::algorithm::is_space());
+                image_info.timestamp = boost::lexical_cast<long int>(split_line.at(2));
             }
             else if (boost::algorithm::contains(line, "EOH")) {
                 header_byte_counter++;
@@ -59,6 +70,15 @@ int process_header(std::ifstream& file, int& rows, int& columns, int& min_x, int
             line.erase();
         }
     }
+    //std::cout << "columns " << image_info.columns << std::endl;
+    //std::cout << "rows " << image_info.rows << std::endl;
+    //std::cout << "min_x " << image_info.min_x << std::endl;
+    //std::cout << "max_x " << image_info.max_x << std::endl;
+    //std::cout << "min_y " << image_info.min_y << std::endl;
+    //std::cout << "max_y " << image_info.max_y << std::endl;
+    //std::cout << "exposure_time " << image_info.exposure_time << std::endl;
+    //std::cout << "exposure_time_measured " << image_info.exposure_time_measured << std::endl;
+    //std::cout << "timestamp " << image_info.timestamp << std::endl;
     return header_byte_counter;
 }
 
