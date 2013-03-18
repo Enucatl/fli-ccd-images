@@ -8,7 +8,6 @@ import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 from rootstyle import tdrstyle_grayscale
-from iterate_over_histograms import HistogramIterator
 from progress_bar import progress_bar
 
 tdrstyle_grayscale()
@@ -19,6 +18,18 @@ commandline_parser.add_argument('file', metavar='FILE.root',
 
 """save results of calculations in this TDirectory inside the ROOT file"""
 post_processing_dirname = "postprocessing"
+
+ImageInfoStruct = "struct ImageInfo {\
+    int rows;\
+    int columns;\
+    int min_x;\
+    int max_x;\
+    int min_y;\
+    int max_y;\
+    double exposure_time;\
+    double exposure_time_measured;\
+    long int timestamp;\
+  };"
 
 class BaseRootfileAnalyser(object):
     """abstract base class to perform the same operation over all the TH2
@@ -32,23 +43,22 @@ class BaseRootfileAnalyser(object):
             print("File not found", root_file_name)
             raise IOError
         self.root_file = ROOT.TFile(root_file_name, open_option)
+        self.tree = self.root_file.Get("root_image_tree")
+        if not self.tree:
+            print("Tree not found", "root_image_tree")
+            raise IOError
+        ROOT.gROOT.ProcessLine(ImageInfoStruct)
+
         "create directory for output if not in read mode"
         if open_option != "read":
             self.directory = self.root_file.Get(post_processing_dirname)
             if not self.directory:
                 self.directory = self.root_file.mkdir(post_processing_dirname)
-        self.iterator = HistogramIterator(root_file_name)
-        try:
-            self.example_histogram = self.iterator[0]
-        except IndexError:
-            print("No images found in file",
-                    self.root_file.GetName())
-            raise IOError
-        self.n_images = len(self.iterator)
+        self.n_images = self.tree.GetEntriesFast()
         
     def output_name(self):
         """get name of output ROOT object produced"""
-        return ""
+        return "NotImplemented"
 
     def if_not_exists(self):
         """do some initialization if output object was not found in the input file"""
@@ -56,24 +66,13 @@ class BaseRootfileAnalyser(object):
 
     def if_exists(self):
         """do some initialization if output object was  found in the input file"""
+        self.dont_start()
         self.exists_in_file = True
 
-
-    def __iter__(self):
-        "return empty iterator if output object already exists"
-        if self.exists_in_file:
-            print("result already saved in file.")
-            print(progress_bar(1), end="")
-            print()
-            return [].__iter__()
-        else:
-            print("Analysing", self.n_images, "images...")
-            """iterate over 'self' as
-            for i, hist in self:
-                self.analyse_histogram(i, hist)
-                because the index i is always useful,
-                at least for the progress bar"""
-            return enumerate(self.iterator)
+    def dont_start(self):
+        print("result already saved in file.")
+        print(progress_bar(1), end="")
+        print()
 
     def output_exists(self, name):
         self.output_object = self.directory.Get(name)
@@ -88,9 +87,12 @@ class BaseRootfileAnalyser(object):
             self.if_exists()
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, tb):
         """write output object if it did not exist and close file"""
+        #import traceback
+        #print("exiting", exc_type, exc_value, traceback.print_tb(tb))
         if not self.exists_in_file:
+            print("writing!")
             self.directory.cd()
             self.output_object.Write()
         print()
@@ -106,11 +108,9 @@ class BaseRootfileAnalyser(object):
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
     root_file_name = args.file[0]
-    print(root_file_name)
     with BaseRootfileAnalyser(root_file_name) as base_analyser:
-        pass
-        for i, hist in base_analyser:
-            base_analyser.analyse_histogram(i, hist)
+        for i, event in enumerate(base_analyser.tree):
+            base_analyser.analyse_histogram(i, event.image)
 
     root_file_open = ROOT.TFile(root_file_name)
     root_file_open.ls()

@@ -73,5 +73,5 @@ if __name__ == '__main__':
     pixel = commandline_parser.parse_args().pixel
 
     with ProjectionStackMaker(pixel, root_file_name) as analyser:
-        for i, hist in analyser:
-            analyser.analyse_histogram(i, hist)
+        for i, entry in enumerate(analyser.tree):
+            analyser.analyse_histogram(i, entry.image)

@@ -39,8 +39,16 @@ class ImageConverter(BaseRootfileAnalyser):
         if not os.path.exists(self.image_dir):
             os.makedirs(self.image_dir)
         super(ImageConverter, self).if_not_exists()
-        self.width = self.example_histogram.GetNbinsX()
-        self.height = self.example_histogram.GetNbinsY()
+        image_info = ROOT.ImageInfo()
+        print("setting address")
+        self.tree.SetBranchAddress("image_info", image_info)
+        print("getting entry")
+        self.tree.GetEntry(1)
+        print("read entry")
+        print(image_info)
+        self.width = image_info.rows
+        self.height = image_info.columns
+        print(self.width, self.height)
         n_colors = 256
         self.palette = tdrstyle_grayscale(n_colors)
         self.palette = ROOT.TImagePalette(n_colors,
@@ -86,5 +94,8 @@ if __name__ == '__main__':
     root_file_name = args.file[0]
     extension = args.format[0]
     with ImageConverter(extension, root_file_name) as analyser:
-        for i, hist in analyser:
-            analyser.analyse_histogram(i, hist)
+        if not analyser.exists_in_file:
+            for i, entry in enumerate(analyser.tree):
+                analyser.analyse_histogram(i, entry.image)
+        else:
+            analyser.dont_start()

@@ -100,5 +100,5 @@ if __name__ == '__main__':
     root_file_name = args.file[0]
     roi = args.roi
     with IntensityScan(roi, root_file_name) as analyser:
-        for i, hist in analyser:
-            analyser.analyse_histogram(i, hist)
+        for i, entry in enumerate(analyser.tree):
+            analyser.analyse_histogram(i, entry.image)
