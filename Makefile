@@ -23,7 +23,7 @@ LDFLAGS=`root-config --glibs`
 BOOST_LIBS=-lboost_program_options -lboost_filesystem -lboost_system
 BOOST_THREAD_LIBS=-lboost_thread
 
-all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer make_root add_image_to_root_file convert_scan_online) chmod_python
+all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer make_root) chmod_python
 
 test: $(addprefix $(TEST_FOLDER)/, test_load_short)
 

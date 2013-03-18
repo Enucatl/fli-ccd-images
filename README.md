@@ -111,14 +111,3 @@ Needs the ROOT file with all the RAW images inside created by `bin/make_root`!
 
     :::bash
     python python/make_projection_stack.py FILE.root PIXEL
-
-### Convert images as they are acquired 
-the images can be converted to the ROOT format as they come by communicating the file name to a python server that takes care of the conversion in C++.
-
-    :::bash
-    python python/image_convert_server.py test 8889 &
-            
-a test client also exists
-
-    :::bash
-    python test/image_convert_server_test.py
