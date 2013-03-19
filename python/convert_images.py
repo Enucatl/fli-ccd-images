@@ -25,6 +25,8 @@ class ImageConverter(BaseRootfileAnalyser):
         if self.extension == "gif":
             image_file_name = os.path.basename(
                         os.path.normpath(self.parent_dir))
+            if image_file_name == ".":
+                image_file_name, _ = os.path.splitext(self.root_file.GetName())
             image_file_name = os.path.join(self.image_dir, image_file_name)
             image_file_name += "." + self.extension
         else:
@@ -39,16 +41,9 @@ class ImageConverter(BaseRootfileAnalyser):
         if not os.path.exists(self.image_dir):
             os.makedirs(self.image_dir)
         super(ImageConverter, self).if_not_exists()
-        image_info = ROOT.ImageInfo()
-        print("setting address")
-        self.tree.SetBranchAddress("image_info", image_info)
-        print("getting entry")
-        self.tree.GetEntry(1)
-        print("read entry")
-        print(image_info)
-        self.width = image_info.rows
-        self.height = image_info.columns
-        print(self.width, self.height)
+        self.tree.GetEntry(0)
+        self.width = self.tree.rows
+        self.height = self.tree.columns
         n_colors = 256
         self.palette = tdrstyle_grayscale(n_colors)
         self.palette = ROOT.TImagePalette(n_colors,

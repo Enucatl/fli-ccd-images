@@ -28,18 +28,20 @@ class ProjectionStackMaker(BaseRootfileAnalyser):
 
     def if_not_exists(self):
         super(ProjectionStackMaker, self).if_not_exists()
+        self.tree.GetEntry(0)
+        example_image = self.tree.image
         title = "{0} along pixel {1[0]}-{1[1]}; x pixel; image number".format(
                 self.root_file.GetName(),
                 self.pixel)
-        self.n_bins_x = self.example_histogram.GetNbinsX()
+        self.n_bins_x = example_image.GetNbinsX()
         self.output_object = ROOT.TH2D(self.output_name(), title,
                 self.n_bins_x,
-                self.example_histogram.GetXaxis().GetXmin(),
-                self.example_histogram.GetXaxis().GetXmax(),
+                example_image.GetXaxis().GetXmin(),
+                example_image.GetXaxis().GetXmax(),
                 self.n_images,
                 0,
                 self.n_images)
-        first_pixel = int(self.example_histogram.GetYaxis().GetBinLowEdge(1))
+        first_pixel = int(example_image.GetYaxis().GetBinLowEdge(1))
         self.pixel = [int(x) - first_pixel for x in self.pixel]
 
     def analyse_histogram(self, i, hist):

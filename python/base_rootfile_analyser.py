@@ -19,18 +19,6 @@ commandline_parser.add_argument('file', metavar='FILE.root',
 """save results of calculations in this TDirectory inside the ROOT file"""
 post_processing_dirname = "postprocessing"
 
-ImageInfoStruct = "struct ImageInfo {\
-    int rows;\
-    int columns;\
-    int min_x;\
-    int max_x;\
-    int min_y;\
-    int max_y;\
-    double exposure_time;\
-    double exposure_time_measured;\
-    long int timestamp;\
-  };"
-
 class BaseRootfileAnalyser(object):
     """abstract base class to perform the same operation over all the TH2
     in the same ROOT file, with appropriate setup (enter) and cleanup
@@ -44,10 +32,9 @@ class BaseRootfileAnalyser(object):
             raise IOError
         self.root_file = ROOT.TFile(root_file_name, open_option)
         self.tree = self.root_file.Get("root_image_tree")
-        if not self.tree:
-            print("Tree not found", "root_image_tree")
+        if not self.tree and not self.tree.GetEntriesFast():
+            print("Tree not found or empty", "root_image_tree")
             raise IOError
-        ROOT.gROOT.ProcessLine(ImageInfoStruct)
 
         "create directory for output if not in read mode"
         if open_option != "read":
@@ -88,11 +75,13 @@ class BaseRootfileAnalyser(object):
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
+        if exc_type is not None:
+            import traceback
+            print(exc_type, exc_value, print_tb(tb))
         """write output object if it did not exist and close file"""
         #import traceback
         #print("exiting", exc_type, exc_value, traceback.print_tb(tb))
         if not self.exists_in_file:
-            print("writing!")
             self.directory.cd()
             self.output_object.Write()
         print()

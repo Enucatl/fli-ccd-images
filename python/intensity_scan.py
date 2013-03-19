@@ -26,22 +26,23 @@ class IntensityScan(BaseRootfileAnalyser):
     def check_roi(self, x_min, x_max, y_min, y_max):
         """check that the passed arguments are sensible and inside the image
         range"""
+        self.tree.GetEntry(0)
         if x_min > x_max:
             print("x_min must be less than x_max")
             raise IOError
         if y_min > y_max:
             print("y_min must be less than y_max")
             raise IOError
-        if x_min < self.example_histogram.GetXaxis().GetXmin():
+        if x_min < self.tree.min_x:
             print("x_min out of the range of the image")
             raise IOError
-        if x_max > self.example_histogram.GetXaxis().GetXmax():
+        if x_max > self.tree.max_x:
             print("x_max out of the range of the image")
             raise IOError
-        if y_min < self.example_histogram.GetYaxis().GetXmin():
+        if y_min < self.tree.min_y:
             print("y_min out of the range of the image")
             raise IOError
-        if y_max > self.example_histogram.GetYaxis().GetXmax():
+        if y_max > self.tree.max_y:
             print("y_max out of the range of the image")
             raise IOError
 
@@ -50,15 +51,17 @@ class IntensityScan(BaseRootfileAnalyser):
 
     def if_not_exists(self):
         super(IntensityScan, self).if_not_exists()
+        self.tree.GetEntry(0)
+        example_image = self.tree.image
         self.title = "intensity in roi {0}-{1} x {2}-{3};\
         file number;\
         intensity (integral)".format(*self.roi)
         self.x = []
         self.y = []
-        self.x1 = self.example_histogram.GetXaxis().FindFixBin(self.x_min)
-        self.x2 = self.example_histogram.GetXaxis().FindFixBin(self.x_max)
-        self.y1 = self.example_histogram.GetYaxis().FindFixBin(self.y_min)
-        self.y2 = self.example_histogram.GetYaxis().FindFixBin(self.y_max)
+        self.x1 = example_image.GetXaxis().FindFixBin(self.x_min)
+        self.x2 = example_image.GetXaxis().FindFixBin(self.x_max)
+        self.y1 = example_image.GetYaxis().FindFixBin(self.y_min)
+        self.y2 = example_image.GetYaxis().FindFixBin(self.y_max)
 
     def analyse_histogram(self, i, hist):
         """add integral and image number to graph"""
@@ -92,7 +95,8 @@ class IntensityScan(BaseRootfileAnalyser):
                 exc_type, exc_value, traceback)
 
 commandline_parser.description = IntensityScan.__doc__
-commandline_parser.add_argument('--roi', metavar=('min_x', 'max_x', 'min_y', 'max_y'),
+commandline_parser.add_argument('--roi',
+        metavar=('min_x', 'max_x', 'min_y', 'max_y'),
         nargs=4, help='min_x max_x min_y max_y')
 
 if __name__ == '__main__':
