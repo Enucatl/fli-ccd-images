@@ -98,13 +98,6 @@ Needs the ROOT file with all the RAW images inside created by `bin/make_root`!
     :::bash
     python python/intensity_scan.py FILE.root --roi min_x max_x min_y max_y
 
-### GIF of profile along a pixel
-see the evolution of a profile in a folder along a pixel.
-Needs the ROOT file with all the RAW images inside created by `bin/make_root`!
-
-    :::bash
-    python python/make_projection_gif.py FILE.root
-
 ### Draw stack of slices along a pixel
 see the evolution of a pixel line by stacking all the slices together.
 Needs the ROOT file with all the RAW images inside created by `bin/make_root`!
