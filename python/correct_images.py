@@ -19,8 +19,8 @@ class CorrectedTree(BaseRootfileAnalyser):
 
         """
         BaseRootfileAnalyser.__init__(self, *args, **kwargs)
-        self.dark_image = self.directory.Get(dark_image_name(config, "dark"))
-        self.flat_image = self.directory.Get(flat_image_name(config, "flat"))
+        self.dark_image = self.directory.Get(image_name(config, "dark"))
+        self.flat_image = self.directory.Get(image_name(config, "flat"))
 
         if not self.dark_image or not self.flat_image:
             raise IOError("No dark or flat in file!")
@@ -60,7 +60,28 @@ commandline_parser.add_argument('--config',
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
     root_file_name = args.file[0]
+    config_file_name = args.config
     from ConfigParser import ConfigParser
+    config = ConfigParser()
+    config.read(config_file_name)
+    from dark_image import DarkImageCalculator
+    from flat_image import FlatImageCalculator
+    dark_image_calculator = DarkImageCalculator(
+            root_file_name,
+            config.getint("dark", "first_image"),
+            config.getint("dark", "last_image"))
+    dark_image_calculator.open()
+    dark_image_calculator.calculate_output()
+    dark_image_calculator.close()
+    flat_image_calculator = FlatImageCalculator(
+            dark_image_calculator.output_name(),
+            root_file_name,
+            config.getint("flat", "first_image"),
+            config.getint("flat", "last_image"))
+    flat_image_calculator.open()
+    flat_image_calculator.calculate_output()
+    flat_image_calculator.close()
+
     with CorrectedTree(config, root_file_name) as analyser:
         if not analyser.exists_in_file:
             for i, entry in enumerate(analyser.tree):

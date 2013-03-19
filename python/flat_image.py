@@ -9,13 +9,11 @@ class FlatImageCalculator(ImageCombination):
     """Calculate flat image from consecutive images stored in a tree.
     It also needs a master dark to be subtracted!"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, dark_image_name, *args, **kwargs):
         ImageCombination.__init__(self, *args, **kwargs)
-        self.master_dark = self.directory.Get(
-                self.output_name().replace("flat", "dark"))
+        self.master_dark = self.directory.Get(dark_image_name)
         if not self.master_dark:
-            print("Couldn't find dark!")
-            self.master_dark = self.output_object.Clone()
+            raise IOError("Couldn't find dark!")
 
     def output_name(self):
         return "flat_image_{0}_{1}".format(
