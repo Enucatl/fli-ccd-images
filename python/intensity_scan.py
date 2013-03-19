@@ -74,7 +74,7 @@ class IntensityScan(BaseRootfileAnalyser):
         self.x.append(i + 1)
         self.y.append(integral)
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def close(self):
         if not self.exists_in_file:
             x = array.array("d", self.x)
             y = array.array("d", self.y)
@@ -91,8 +91,7 @@ class IntensityScan(BaseRootfileAnalyser):
             print()
             print("Got CTRL+C, closing...")
         finally:
-            super(IntensityScan, self).__exit__(
-                exc_type, exc_value, traceback)
+            super(IntensityScan, self).close()
 
 commandline_parser.description = IntensityScan.__doc__
 commandline_parser.add_argument('--roi',
@@ -108,4 +107,4 @@ if __name__ == '__main__':
             for i, entry in enumerate(analyser.tree):
                 analyser.analyse_histogram(i, entry.image)
         else:
-            analyser.dont_start()
+            pass

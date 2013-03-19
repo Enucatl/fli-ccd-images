@@ -66,21 +66,19 @@ class BaseRootfileAnalyser(object):
         "not not trick to convert ROOT object to bool"
         return not not self.output_object
 
-    def __enter__(self):
+    def open(self):
         name = self.output_name()
         if not self.output_exists(name):
             self.if_not_exists()
         else:
             self.if_exists()
+
+    def __enter__(self):
+        self.open()
         return self
 
-    def __exit__(self, exc_type, exc_value, tb):
-        if exc_type is not None:
-            import traceback
-            print(exc_type, exc_value, print_tb(tb))
+    def close(self):
         """write output object if it did not exist and close file"""
-        #import traceback
-        #print("exiting", exc_type, exc_value, traceback.print_tb(tb))
         if not self.exists_in_file:
             self.directory.cd()
             self.output_object.Write()
@@ -88,6 +86,12 @@ class BaseRootfileAnalyser(object):
         print("Done!")
         print()
         self.root_file.Close()
+
+    def __exit__(self, exc_type, exc_value, tb):
+        if exc_type is not None:
+            import traceback
+            print(exc_type, exc_value, traceback.print_tb(tb))
+        self.close()
 
     def analyse_histogram(self, i, hist):
         """base version just prints the progress bar advancement for

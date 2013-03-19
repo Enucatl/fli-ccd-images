@@ -71,7 +71,7 @@ class ImageConverter(BaseRootfileAnalyser):
                 self.palette)
         self.image.WriteImage(write_as)
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def close(self):
         print()
         if extension == "gif":
             print("created gif file", self.output_name())
@@ -93,4 +93,4 @@ if __name__ == '__main__':
             for i, entry in enumerate(analyser.tree):
                 analyser.analyse_histogram(i, entry.image)
         else:
-            analyser.dont_start()
+            pass

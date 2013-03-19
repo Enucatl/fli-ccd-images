@@ -52,7 +52,7 @@ class ProjectionStackMaker(BaseRootfileAnalyser):
             self.output_object.SetBinContent(j + 1, i + 1,
                     projection.GetBinContent(j + 1))
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def close(self):
         self.canvas = ROOT.TCanvas("canvas", "canvas")
         self.output_object.Draw("col")
         try:
@@ -62,9 +62,8 @@ class ProjectionStackMaker(BaseRootfileAnalyser):
             print()
             print("Got CTRL+C, closing...")
         finally:
-            super(ProjectionStackMaker, self).__exit__(
-                exc_type, exc_value, traceback)
-        
+            super(ProjectionStackMaker, self).close()
+
 commandline_parser.description = ProjectionStackMaker.__doc__
 commandline_parser.add_argument('pixel', metavar='PIXEL',
         nargs='+', help='pixel number(s)')
@@ -79,4 +78,4 @@ if __name__ == '__main__':
             for i, entry in enumerate(analyser.tree):
                 analyser.analyse_histogram(i, entry.image)
         else:
-            analyser.dont_start()
+            pass
