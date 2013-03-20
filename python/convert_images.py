@@ -17,7 +17,7 @@ class ImageConverter(BaseRootfileAnalyser):
         super(ImageConverter,
                 self).__init__(root_file_name, *args, **kwargs)
         self.extension = extension.lower()
-        self.parent_dir = os.path.dirname(root_file_name)
+        self.parent_dir, _ = os.path.splitext(root_file_name)
         self.image_dir = os.path.join(self.parent_dir, extension)
 
     def output_name(self):
