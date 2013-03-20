@@ -4,6 +4,7 @@
 #include <iostream>
 #include "TFile.h"
 #include "TTree.h"
+#include "TBranch.h"
 
 #include "raw_image_tools.h"
 

@@ -17,7 +17,7 @@ TEST_FOLDER=test
 vpath %.cpp $(SRC_FOLDER) $(GUI_SRC_FOLDER) $(TEST_FOLDER) $(DICT_FOLDER) $(ANA_SRC_FOLDER)
 vpath %.h $(INC_FOLDER) $(GUI_INC_FOLDER)
 
-PROFILING=
+PROFILING=-g
 CFLAGS=-Wall `root-config --cflags` -I$(INC_FOLDER)/ -I$(GUI_INC_FOLDER) -I$(DICT_FOLDER) -I. $(PROFILING)
 LDFLAGS=`root-config --glibs`
 BOOST_LIBS=-lboost_program_options -lboost_filesystem -lboost_system
