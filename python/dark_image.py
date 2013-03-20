@@ -5,41 +5,30 @@ from __future__ import division, print_function
 from image_combination import ImageCombination
 import numpy
 
+def calculate_dark(list_of_images):
+    """Calculate the master dark image as the MEDIAN of the indicated
+    dark images.
+
+    """
+    arrays = []
+    result = list_of_images[0].Clone()
+    n_bins = result.fN
+    for image in list_of_images:
+        arrays.append(numpy.array(
+            [image.fArray[i] for i in range(n_bins)],
+            dtype=numpy.int16))
+    median_array = numpy.median(arrays, axis=0)
+    for i in range(n_bins):
+        result.fArray[i] = median_array[i]
+    result.SetEntries(n_bins)
+    return result
+
 class DarkImageCalculator(ImageCombination):
-    """Calculate dark image from consecutive images stored in a tree."""
+    """Descriptor.
+    Calculate dark image from a list of images."""
 
-    def __init__(self, *args, **kwargs):
-        ImageCombination.__init__(self, *args, **kwargs)
+    def __init__(self):
+        ImageCombination.__init__(self)
 
-    def output_name(self):
-        return "dark_image_{0}_{1}".format(
-                self.first_index,
-                self.last_index)
-
-    def calculate_output(self):
-        """Calculate the master dark image as the MEDIAN of the indicated
-        dark images.
-
-        """
-        arrays = []
-        for i in range(self.first_index, self.last_index + 1):
-            super(ImageCombination, self).analyse_histogram(i, 0)
-            self.tree.GetEntry(i)
-            cpp_array = self.tree.image.fArray
-            arrays.append(numpy.array(
-                [cpp_array[i] for i in range(self.n_bins)],
-                dtype=numpy.int16))
-        median_array = numpy.median(arrays, axis=0)
-        for i in range(self.n_bins):
-            self.output_object.fArray[i] = median_array[i]
-        self.output_object.SetEntries(self.n_bins)
-
-if __name__ == '__main__':
-    root_file_name = "test.root"
-    first_index = 0
-    last_index = 1
-    with DarkImageCalculator(
-            root_file_name,
-            first_index,
-            last_index) as dic:
-        pass
+    def __set__(self, obj, list_of_images):
+        return calculate_dark(list_of_images)

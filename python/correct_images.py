@@ -3,27 +3,25 @@
 
 from __future__ import division, print_function
 from base_rootfile_analyser import BaseRootfileAnalyser, commandline_parser
+from dark_image import DarkImageCalculator
+from flat_image import FlatImageCalculator
 import ROOT
-
-def image_name(config, section):
-    first = config.getint(section, "first_image")
-    last = config.getint(section, "last_image")
-    return "{0}_image_{1}_{2}".format(section, first, last)
 
 class CorrectedTree(BaseRootfileAnalyser):
     """Add a tree with corrected images to the file."""
 
-    def __init__(self, config, *args, **kwargs):
-        """the ConfigParser should contain the information needed to find
-        dark and a flat images. These should be already saved in the file!
+    dark_image = DarkImageCalculator()
+    flat_image = FlatImageCalculator()
+
+    def __init__(self, config, root_file_name, open_option="update"):
+        """the ConfigParser should contain the information needed to 
+        tell which images are dark or flat images.
 
         """
-        BaseRootfileAnalyser.__init__(self, *args, **kwargs)
-        self.dark_image = self.directory.Get(image_name(config, "dark"))
-        self.flat_image = self.directory.Get(image_name(config, "flat"))
-
-        if not self.dark_image or not self.flat_image:
-            raise IOError("No dark or flat in file!")
+        BaseRootfileAnalyser.__init__(self, root_file_name, open_option)
+        self.list_of_indices = get_dark_flat_images(config)
+        self.dark_images = []
+        self.flat_images = []
 
     def output_name(self):
         return "corrected_image_tree"
@@ -44,10 +42,21 @@ class CorrectedTree(BaseRootfileAnalyser):
         super(CorrectedTree, self).analyse_histogram(i, hist)
         self.tree.GetEntry(i)
         non_corrected_image = self.tree.image
-        self.corrected_image.Add(non_corrected_image, self.dark_image,
-                1, -1)
-        self.corrected_image.Divide(self.flat_image)
-        self.output_object.Fill()
+        if self.list_of_indices[i] == "is_dark":
+            self.dark_images.append(non_corrected_image)
+            if self.list_of_indices[i + 1] != "is_dark":
+                self.dark_image = self.dark_images
+                self.dark_images = []
+        elif self.list_of_indices[i] == "is_flat":
+            self.flat_images.append(non_corrected_image)
+            if self.list_of_indices[i + 1] != "is_dark":
+                self.flat_image = self.flat_images
+                self.flat_images = []
+        else:
+            self.corrected_image.Add(non_corrected_image, self.dark_image,
+                    1, -1)
+            self.corrected_image.Divide(self.flat_image)
+            self.output_object.Fill()
 
     def close(self):
         self.tree.AddFriend(self.output_object.GetName())
@@ -64,23 +73,6 @@ if __name__ == '__main__':
     from ConfigParser import ConfigParser
     config = ConfigParser()
     config.read(config_file_name)
-    from dark_image import DarkImageCalculator
-    from flat_image import FlatImageCalculator
-    dark_image_calculator = DarkImageCalculator(
-            root_file_name,
-            config.getint("dark", "first_image"),
-            config.getint("dark", "last_image"))
-    dark_image_calculator.open()
-    dark_image_calculator.calculate_output()
-    dark_image_calculator.close()
-    flat_image_calculator = FlatImageCalculator(
-            dark_image_calculator.output_name(),
-            root_file_name,
-            config.getint("flat", "first_image"),
-            config.getint("flat", "last_image"))
-    flat_image_calculator.open()
-    flat_image_calculator.calculate_output()
-    flat_image_calculator.close()
 
     with CorrectedTree(config, root_file_name) as analyser:
         if not analyser.exists_in_file:

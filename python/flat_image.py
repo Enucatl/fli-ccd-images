@@ -5,58 +5,38 @@ from __future__ import division, print_function
 from image_combination import ImageCombination
 import numpy
 
+def calculate_flat(list_of_images, dark_image):
+    """Calculate the master flat image:
+        - a master dark is subtracted from each flat image
+        - a mean light level is calculated for every flat image
+        - the flat images are rescaled so that they have the same mean
+        - the "corrected" flat images are averaged to get a master flat
+
+    """
+    n_images = len(list_of_images)
+    if dark_image:
+        for image in list_of_images:
+            image.Add(dark_image, -1)
+    integrals = [image.Integral() for image in list_of_images]
+    mean_integral = numpy.mean(integrals)
+    result = list_of_images[0].Clone()
+    for image, integral in zip(list_of_images, integrals):
+        image.Scale(mean_integral / integral)
+        result.Add(image)
+    result.Scale(1 / n_images)
+    return result
+
 class FlatImageCalculator(ImageCombination):
-    """Calculate flat image from consecutive images stored in a tree.
-    It also needs a master dark to be subtracted!"""
+    """Descriptor. Calculate flat image.
+    It can take a master dark to be subtracted,
+    from object.dark_image!"""
 
-    def __init__(self, dark_image_name, *args, **kwargs):
-        ImageCombination.__init__(self, *args, **kwargs)
-        self.master_dark = self.directory.Get(dark_image_name)
-        if not self.master_dark:
-            raise IOError("Couldn't find dark!")
+    def __init__(self):
+        ImageCombination.__init__(self)
 
-    def output_name(self):
-        return "flat_image_{0}_{1}".format(
-                self.first_index,
-                self.last_index)
-
-    def calculate_output(self):
-        """Calculate the master flat image:
-            - a master dark is subtracted from each flat image
-            - a mean light level is calculated for every flat image
-            - the flat images are rescaled so that they have the same mean
-            - the "corrected" flat images are averaged to get a master flat
-
-        """
-        integrals = []
-        for i in range(self.first_index, self.last_index + 1):
-            self.tree.GetEntry(i)
-            integrals.append(self.tree.image.Integral())
-        mean_integral = numpy.mean(integrals)
-
-        for i in range(self.first_index, self.last_index + 1):
-            super(ImageCombination, self).analyse_histogram(i, 0)
-            self.tree.GetEntry(i)
-            image = self.tree.image
-            image.Add(self.master_dark, -1)
-            image.Scale(mean_integral / integrals[i])
-            self.output_object.Add(image)
-
-        self.output_object.Scale(1 / self.n_images)
-
-if __name__ == '__main__':
-    from dark_image import DarkImageCalculator
-    root_file_name = "test.root"
-    first_index = 0
-    last_index = 1
-    dark_image_calculator = DarkImageCalculator(root_file_name,
-            first_index, last_index)
-    dark_image_calculator.open()
-    dark_image_calculator.calculate_output()
-    dark_image_calculator.close()
-    with FlatImageCalculator(
-                root_file_name,
-                first_index,
-                last_index) as flat_image_calculator:
-            flat_image_calculator.output_object.Draw("col")
-            #raw_input()
+    def __set__(self, obj, list_of_images):
+        """The object can provide a dark_image."""
+        dark_image = None
+        if hasattr(obj, "dark_image"):
+            dark_image = obj.dark_image
+        return calculate_flat(list_of_images, dark_image)
