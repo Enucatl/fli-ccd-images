@@ -16,7 +16,7 @@ RootImageWriter::RootImageWriter(const std::string root_output_name,
     else {
         tree_.Branch("image_info", image_info, raw_image_tools::kImageInfoDescription);
         TBranch* image_branch = tree_.Branch("image", image);
-        image_branch->SetBasketSize(1024000);
+        image_branch->SetBasketSize(256000);
     }
 }
 
