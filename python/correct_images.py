@@ -5,7 +5,49 @@ from __future__ import division, print_function
 from base_rootfile_analyser import BaseRootfileAnalyser, commandline_parser
 from dark_image import DarkImageCalculator
 from flat_image import FlatImageCalculator
+import operator
 import ROOT
+
+def get_dark_flat_images(config):
+    """Return a list whose indices are the indices of the images in the
+    tree,
+    the values are "is_dark" if the image is a dark image
+    "is_flat" if the image is a flat image,
+    "is_normal" otherwise.
+
+    :config: a ConfigParser object used to take the scan
+    :returns: the list
+
+    """
+    section = "scan"
+    n_dark_images = config.getint(section, "n_dark_images")
+    take_flat_every = config.getint(section, "take_flat_every")
+    n_flat_images = config.getint(section, "n_flat_images")
+    raw_scan_parameters = [line.strip.split()
+                for line in config.get(section,
+                    "scan_motors").splitlines()]
+    images_per_motor = [
+            int(intervals) + 1
+            for motor_name, begin, end, intervals in raw_scan_parameters]
+    flat_counter = 0
+    n_flat_images = 0
+    if take_flat_every:
+        flat_counter = reduce(operator.mul, images_per_motor[:-1])
+        flat_counter *= take_flat_every
+        steps_in_outermost_loop = images_per_motor[-1]
+        n_flats = (steps_in_outermost_loop) // take_flat_every
+        n_flat_images = n_flats * n_flat_images
+    n_images = reduce(operator.mul, images_per_motor)
+    n_images += n_dark_images + n_flat_images
+
+    result = ["is_normal" for _ in range(n_images)]
+    for i in range(n_dark_images):
+        result[i] = "is_dark"
+    if flat_counter:
+        for i in range(n_images - n_dark_images):
+            if not i % flat_counter:
+                result[i] = "is_flat"
+    return result
 
 class CorrectedTree(BaseRootfileAnalyser):
     """Add a tree with corrected images to the file."""
