@@ -34,11 +34,11 @@ class BaseRootfileAnalyser(object):
         self.root_file = ROOT.TFile(root_file_name, open_option)
         self.tree = self.root_file.Get(os.path.join(
             post_processing_dirname, "corrected_image_tree"))
-        if not self.tree and not self.tree.GetEntriesFast():
+        if not self.tree or not self.tree.GetEntriesFast():
             warnings.warn("""Could not find corrected images!
             Using the raw ones.""")
             self.tree = self.root_file.Get("root_image_tree")
-        if not self.tree and not self.tree.GetEntriesFast():
+        if not self.tree or not self.tree.GetEntriesFast():
             print("Tree not found or empty", "root_image_tree")
             raise IOError
 

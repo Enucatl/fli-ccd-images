@@ -22,31 +22,29 @@ def get_dark_flat_images(config):
     section = "scan"
     n_dark_images = config.getint(section, "n_dark_images")
     take_flat_every = config.getint(section, "take_flat_every")
-    n_flat_images = config.getint(section, "n_flat_images")
-    raw_scan_parameters = [line.strip.split()
+    raw_scan_parameters = [line.strip().split()
                 for line in config.get(section,
                     "scan_motors").splitlines()]
     images_per_motor = [
             int(intervals) + 1
             for motor_name, begin, end, intervals in raw_scan_parameters]
     flat_counter = 0
-    n_flat_images = 0
+    n_flat_images = config.getint(section, "n_flat_images")
     if take_flat_every:
         flat_counter = reduce(operator.mul, images_per_motor[:-1])
         flat_counter *= take_flat_every
         steps_in_outermost_loop = images_per_motor[-1]
         n_flats = (steps_in_outermost_loop) // take_flat_every
-        n_flat_images = n_flats * n_flat_images
+        total_flat_images = n_flats * n_flat_images
     n_images = reduce(operator.mul, images_per_motor)
-    n_images += n_dark_images + n_flat_images
 
-    result = ["is_normal" for _ in range(n_images)]
-    for i in range(n_dark_images):
-        result[i] = "is_dark"
-    if flat_counter:
-        for i in range(n_images - n_dark_images):
-            if not i % flat_counter:
-                result[i] = "is_flat"
+    result = ["is_dark" for _ in range(n_dark_images)]
+    for i in range(n_images):
+        if flat_counter and not i % flat_counter:
+            result += ["is_flat"] * n_flat_images
+        result.append("is_normal")
+    for i, item in enumerate(result):
+        print(i, item)
     return result
 
 class CorrectedTree(BaseRootfileAnalyser):
@@ -106,7 +104,7 @@ class CorrectedTree(BaseRootfileAnalyser):
 
 commandline_parser.description = CorrectedTree.__doc__
 commandline_parser.add_argument('--config',
-        nargs='?', default='config/config.ini', help='config.ini file with dark/flat info')
+        nargs='?', default='../spec_macros/python/config/default_config.ini', help='config.ini file with dark/flat info')
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
