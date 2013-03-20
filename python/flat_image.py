@@ -39,4 +39,4 @@ class FlatImageCalculator(ImageCombination):
         dark_image = None
         if hasattr(obj, "dark_image"):
             dark_image = obj.dark_image
-        return calculate_flat(list_of_images, dark_image)
+        self.image = calculate_flat(list_of_images, dark_image)

@@ -5,6 +5,7 @@ from __future__ import division, print_function
 from base_rootfile_analyser import BaseRootfileAnalyser, commandline_parser
 from dark_image import DarkImageCalculator
 from flat_image import FlatImageCalculator
+import numpy
 import operator
 import ROOT
 
@@ -43,8 +44,8 @@ def get_dark_flat_images(config):
         if flat_counter and not i % flat_counter:
             result += ["is_flat"] * n_flat_images
         result.append("is_normal")
-    for i, item in enumerate(result):
-        print(i, item)
+    #for i, item in enumerate(result):
+        #print(i, item)
     return result
 
 class CorrectedTree(BaseRootfileAnalyser):
@@ -75,7 +76,10 @@ class CorrectedTree(BaseRootfileAnalyser):
         self.tree.GetEntry(0)
         self.corrected_image = self.tree.image
 
+        self.is_dark_or_flat = numpy.array([True], dtype=numpy.bool_)
         self.output_object.Branch("corrected_image", self.corrected_image)
+        self.output_object.Branch("is_dark_or_flat", self.is_dark_or_flat,
+                "is_dark_or_flat/O")
 
     def analyse_histogram(self, i, hist):
         """Subtract dark and divide by flat."""
@@ -83,23 +87,26 @@ class CorrectedTree(BaseRootfileAnalyser):
         self.tree.GetEntry(i)
         non_corrected_image = self.tree.image
         if self.list_of_indices[i] == "is_dark":
+            self.is_dark_or_flat = True
             self.dark_images.append(non_corrected_image)
             if self.list_of_indices[i + 1] != "is_dark":
                 self.dark_image = self.dark_images
                 self.dark_images = []
         elif self.list_of_indices[i] == "is_flat":
+            self.is_dark_or_flat = True
             self.flat_images.append(non_corrected_image)
             if self.list_of_indices[i + 1] != "is_dark":
                 self.flat_image = self.flat_images
                 self.flat_images = []
         else:
+            self.is_dark_or_flat = False
             self.corrected_image.Add(non_corrected_image, self.dark_image,
                     1, -1)
             self.corrected_image.Divide(self.flat_image)
-            self.output_object.Fill()
+        self.output_object.Fill()
 
     def close(self):
-        self.tree.AddFriend(self.output_object.GetName())
+        self.output_object.AddFriend(self.tree.GetName())
         super(CorrectedTree, self).close()
 
 commandline_parser.description = CorrectedTree.__doc__

@@ -31,4 +31,4 @@ class DarkImageCalculator(ImageCombination):
         ImageCombination.__init__(self)
 
     def __set__(self, obj, list_of_images):
-        return calculate_dark(list_of_images)
+        self.image = calculate_dark(list_of_images)

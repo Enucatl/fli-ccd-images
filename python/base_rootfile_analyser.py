@@ -35,7 +35,8 @@ class BaseRootfileAnalyser(object):
         self.tree = self.root_file.Get(os.path.join(
             post_processing_dirname, "corrected_image_tree"))
         if not self.tree or not self.tree.GetEntriesFast():
-            warnings.warn("""Could not find corrected images!
+            warnings.warn("""
+            Could not find corrected images!
             Using the raw ones.""")
             self.tree = self.root_file.Get("root_image_tree")
         if not self.tree or not self.tree.GetEntriesFast():
