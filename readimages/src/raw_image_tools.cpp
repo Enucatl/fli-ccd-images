@@ -9,7 +9,7 @@ void load_histogram(std::ifstream& file, int header_bytes, Image& image) {
     int columns = image.GetNbinsX();
     int rows = image.GetNbinsY();
     int number_of_pixels = columns * rows;
-    std::vector<short> temp_vector(number_of_pixels, 0);
+    std::vector<unsigned short> temp_vector(number_of_pixels, 0);
     file.seekg(header_bytes);
     file.read(reinterpret_cast<char*>(&temp_vector[0]), number_of_pixels * sizeof(uint16_t));
     //fix total integral

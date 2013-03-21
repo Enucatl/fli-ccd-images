@@ -19,7 +19,7 @@
 
 namespace raw_image_tools {
 
-typedef TH2S Image;
+typedef TH2I Image;
 
 template<typename T> 
 struct Reader {
