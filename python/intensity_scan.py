@@ -105,6 +105,8 @@ if __name__ == '__main__':
     with IntensityScan(roi, root_file_name) as analyser:
         if not analyser.exists_in_file:
             for i, entry in enumerate(analyser.tree):
-                analyser.analyse_histogram(i, entry.image)
+                branch_name = analyser.branch_name
+                histogram = getattr(entry, branch_name)
+                analyser.analyse_histogram(i, histogram)
         else:
             pass
