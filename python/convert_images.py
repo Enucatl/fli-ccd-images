@@ -44,7 +44,7 @@ class ImageConverter(BaseRootfileAnalyser):
         self.tree.GetEntry(0)
         self.width = self.tree.rows
         self.height = self.tree.columns
-        n_colors = 256
+        n_colors = 900
         self.palette = tdrstyle_grayscale(n_colors)
         self.palette = ROOT.TImagePalette(n_colors,
                 self.palette)
