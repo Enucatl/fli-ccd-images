@@ -54,7 +54,9 @@ class CorrectedTree(BaseRootfileAnalyser):
     dark_image = DarkImageCalculator()
     flat_image = FlatImageCalculator()
 
-    def __init__(self, config, root_file_name, open_option="update"):
+    def __init__(self, config, root_file_name, open_option="update",
+            use_corrected=False,
+            overwrite=False):
         """the ConfigParser should contain the information needed to 
         tell which images are dark or flat images.
 

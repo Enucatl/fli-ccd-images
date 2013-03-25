@@ -75,7 +75,7 @@ class IntensityScan(BaseRootfileAnalyser):
         self.y.append(integral)
 
     def close(self):
-        if not self.exists_in_file:
+        if self.overwrite or not self.exists_in_file:
             x = array.array("d", self.x)
             y = array.array("d", self.y)
             self.output_object = ROOT.TGraph(self.n_images, x, y)

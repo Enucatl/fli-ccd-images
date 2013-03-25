@@ -18,7 +18,9 @@ class ExternalFlatDarkImporter(BaseRootfileAnalyser):
 
     def __init__(self, root_file_name,
             flat_file_name,
-            dark_file_name="", open_option="update"):
+            dark_file_name="", open_option="update",
+            use_corrected=False,
+            overwrite=False):
         """Get flat and (optionally) dark images from other root files.
 
         """

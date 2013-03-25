@@ -16,6 +16,12 @@ commandline_parser = argparse.ArgumentParser(description='''Base class for doing
         something with all the TH2 in a ROOT file.''')
 commandline_parser.add_argument('file', metavar='FILE.root',
         nargs=1, help='ROOT file with the TH2 histograms')
+commandline_parser.add_argument('--corrected', '-c', 
+        action=argparse.store_false,
+        help='use dark and flat corrected images.')
+commandline_parser.add_argument('--overwrite', '-o', 
+        action=argparse.store_false,
+        help='overwrite target if it exists')
 
 """save results of calculations in this TDirectory inside the ROOT file"""
 post_processing_dirname = "postprocessing"
@@ -26,24 +32,29 @@ class BaseRootfileAnalyser(object):
     (exit) functions, and a loop over all the histograms.
     
     These functions are meant to be redefined in daughter classes."""
-    def __init__(self, root_file_name, open_option="update"):
+    def __init__(self, root_file_name, open_option="update",
+    use_corrected=False,
+    overwrite=False):
         super(BaseRootfileAnalyser, self).__init__()
         if not os.path.exists(root_file_name):
             print("File not found", root_file_name)
             raise IOError
+        self.overwrite = overwrite
         self.root_file = ROOT.TFile(root_file_name, open_option)
         self.tree = self.root_file.Get(os.path.join(
             post_processing_dirname, "corrected_image_tree"))
-        self.branch_name = "corrected_image"
-        if not self.tree or not self.tree.GetEntriesFast():
-            warnings.warn("""
-            Could not find corrected images!
-            Using the raw ones.""")
-            self.tree = self.root_file.Get("root_image_tree")
-            self.branch_name = "image"
-        if not self.tree or not self.tree.GetEntriesFast():
-            print("Tree not found or empty", "root_image_tree")
-            raise IOError
+        if use_corrected:
+            self.branch_name = "corrected_image"
+            if not self.tree or not self.tree.GetEntriesFast():
+                warnings.warn("""
+                Could not find corrected images!
+                Using the raw ones.""")
+                self.tree = self.root_file.Get("root_image_tree")
+                self.branch_name = "image"
+        else: 
+            if not self.tree or not self.tree.GetEntriesFast():
+                print("Tree not found or empty", "root_image_tree")
+                raise IOError
 
         "create directory for output if not in read mode"
         if open_option != "read":
@@ -77,7 +88,7 @@ class BaseRootfileAnalyser(object):
 
     def open(self):
         name = self.output_name()
-        if not self.output_exists(name):
+        if self.overwrite or not self.output_exists(name):
             self.if_not_exists()
         else:
             self.if_exists()
@@ -88,9 +99,9 @@ class BaseRootfileAnalyser(object):
 
     def close(self):
         """write output object if it did not exist and close file"""
-        if not self.exists_in_file:
+        if self.overwrite or not self.exists_in_file:
             self.directory.cd()
-            self.output_object.Write()
+            self.output_object.Write(ROOT.TObject.kOverwrite)
         print()
         print("Done!")
         print()
