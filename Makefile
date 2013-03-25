@@ -23,7 +23,7 @@ LDFLAGS=`root-config --glibs`
 BOOST_LIBS=-lboost_program_options -lboost_filesystem -lboost_system
 BOOST_THREAD_LIBS=-lboost_thread
 
-all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer make_root) chmod_python
+all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer make_root) chmod
 
 test: $(addprefix $(TEST_FOLDER)/, test_load_short)
 
@@ -68,13 +68,12 @@ $(BIN_FOLDER):
 $(DICT_FOLDER):
 	mkdir -p $(DICT_FOLDER)
 
-chmod_python: python/*.py
+chmod: python/*.py bash/*.sh
 	chmod +x python/*.py
+	chmod +x bash/*.sh
 
 install:
 	mkdir -p $${HOME}/bin
-	-rm -f $${HOME}/bin/image_convert_server.py
-	ln -s $$(pwd)/python/image_convert_server.py $${HOME}/bin/image_convert_server.py
 
 clean:
 	-rm -rf $(DICT_FOLDER) $(LIB_FOLDER) $(BIN_FOLDER) python/*.pyc\
