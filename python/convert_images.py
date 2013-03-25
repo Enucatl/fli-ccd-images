@@ -2,6 +2,7 @@
 from __future__ import division, print_function
 import array
 import os
+from itertools import islice
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
@@ -63,11 +64,15 @@ class ImageConverter(BaseRootfileAnalyser):
         """convert th2d to image as in tutorial
         http://root.cern.ch/root/html534/tutorials/image/hist2image.C.html"""
 
-        hist_array = array.array("d",
-                (hist.fArray[i] for i in xrange(hist.fN)))
+        hist_array = array.array("d")
+        for i in range(self.height):
+            start = 1 + (i + 1) * (self.width + 2)
+            sliced = islice(histogram.fArray, start,
+                    start + self.width)
+            hist_array.extend(sliced)
         self.image.SetImage(hist_array,
-                self.width + 2,
-                self.height + 2,
+                self.width,
+                self.height,
                 self.palette)
         self.image.WriteImage(write_as)
 

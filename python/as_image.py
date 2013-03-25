@@ -10,6 +10,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 from rootstyle import tdrstyle_grayscale
 from progress_bar import progress_bar
+from itertools import islice
 
 tdrstyle_grayscale()
 commandline_parser = argparse.ArgumentParser(description='''
@@ -20,7 +21,6 @@ commandline_parser.add_argument('object', metavar='OBJECT',
         nargs=1, help='name of the histogram')
 commandline_parser.add_argument('--format', metavar='FORMAT',
         nargs=1, default=["png"], help='output format')
-
 
 
 if __name__ == '__main__':
@@ -43,11 +43,13 @@ if __name__ == '__main__':
     palette = tdrstyle_grayscale(n_colors)
     palette = ROOT.TImagePalette(n_colors,
             palette)
-    image_array = array.array("d",
-            (histogram.fArray[i]
-                for i in range(histogram.fN)))
+    image_array = array.array("d")
+    for i in range(height):
+        start = 1 + (i + 1) * (width + 2)
+        sliced = islice(histogram.fArray, start, start + width)
+        image_array.extend(sliced)
     image.SetImage(image_array,
-            width + 2,
-            height + 2,
+            width,
+            height,
             palette)
     image.WriteImage(object_name.replace("/", "_") + "." + extension)
