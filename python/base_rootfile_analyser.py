@@ -17,10 +17,10 @@ commandline_parser = argparse.ArgumentParser(description='''Base class for doing
 commandline_parser.add_argument('file', metavar='FILE.root',
         nargs=1, help='ROOT file with the TH2 histograms')
 commandline_parser.add_argument('--corrected', '-c', 
-        action=argparse.store_false,
+        action='store_true',
         help='use dark and flat corrected images.')
 commandline_parser.add_argument('--overwrite', '-o', 
-        action=argparse.store_false,
+        action='store_true',
         help='overwrite target if it exists')
 
 """save results of calculations in this TDirectory inside the ROOT file"""
@@ -52,6 +52,8 @@ class BaseRootfileAnalyser(object):
                 self.tree = self.root_file.Get("root_image_tree")
                 self.branch_name = "image"
         else: 
+            self.tree = self.root_file.Get("root_image_tree")
+            self.branch_name = "image"
             if not self.tree or not self.tree.GetEntriesFast():
                 print("Tree not found or empty", "root_image_tree")
                 raise IOError
@@ -101,7 +103,8 @@ class BaseRootfileAnalyser(object):
         """write output object if it did not exist and close file"""
         if self.overwrite or not self.exists_in_file:
             self.directory.cd()
-            self.output_object.Write(ROOT.TObject.kOverwrite)
+            self.output_object.Write(self.output_object.GetName(),
+                    ROOT.TObject.kOverwrite)
         print()
         print("Done!")
         print()
@@ -121,7 +124,13 @@ class BaseRootfileAnalyser(object):
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
     root_file_name = args.file[0]
-    with BaseRootfileAnalyser(root_file_name) as base_analyser:
+    overwrite = args.overwrite
+    use_corrected = args.corrected
+    open_option = "update"
+    with BaseRootfileAnalyser(root_file_name,
+            open_option,
+            use_corrected,
+            overwrite) as base_analyser:
         for i, event in enumerate(base_analyser.tree):
             base_analyser.analyse_histogram(i, event.image)
 

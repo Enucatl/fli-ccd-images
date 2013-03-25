@@ -122,8 +122,12 @@ if __name__ == '__main__':
     from ConfigParser import ConfigParser
     config = ConfigParser()
     config.read(config_file_name)
+    overwrite = args.overwrite
+    use_corrected = args.corrected
+    open_option = "update"
 
-    with CorrectedTree(config, root_file_name) as analyser:
+    with CorrectedTree(config, root_file_name,
+            open_option, use_corrected, overwrite) as analyser:
         if not analyser.exists_in_file:
             for i, entry in enumerate(analyser.tree):
                 analyser.analyse_histogram(i, entry.image)

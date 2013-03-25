@@ -71,9 +71,14 @@ commandline_parser.add_argument('pixel', metavar='PIXEL',
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
     root_file_name = args.file[0]
+    overwrite = args.overwrite
+    use_corrected = args.corrected
+    open_option = "update"
     pixel = commandline_parser.parse_args().pixel
 
-    with ProjectionStackMaker(pixel, root_file_name) as analyser:
+    with ProjectionStackMaker(pixel, root_file_name,
+            open_option,
+            use_corrected, overwrite) as analyser:
         if not analyser.exists_in_file:
             for i, entry in enumerate(analyser.tree):
                 branch_name = analyser.branch_name

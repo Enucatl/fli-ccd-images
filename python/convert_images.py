@@ -93,6 +93,9 @@ if __name__ == '__main__':
     args = commandline_parser.parse_args()
     root_file_name = args.file[0]
     extension = args.format[0]
+    overwrite = args.overwrite
+    use_corrected = args.corrected
+    open_option = "update"
     with ImageConverter(extension, root_file_name) as analyser:
         if not analyser.exists_in_file:
             for i, entry in enumerate(analyser.tree):

@@ -102,7 +102,11 @@ if __name__ == '__main__':
     args = commandline_parser.parse_args()
     root_file_name = args.file[0]
     roi = args.roi
-    with IntensityScan(roi, root_file_name) as analyser:
+    overwrite = args.overwrite
+    use_corrected = args.corrected
+    open_option = "update"
+    with IntensityScan(roi, root_file_name,
+            open_option, use_corrected, overwrite) as analyser:
         if not analyser.exists_in_file:
             for i, entry in enumerate(analyser.tree):
                 branch_name = analyser.branch_name

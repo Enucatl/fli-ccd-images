@@ -106,8 +106,13 @@ if __name__ == '__main__':
     root_file_name = args.file[0]
     flat_file_name = args.flat[0]
     dark_file_name = args.dark
+    overwrite = args.overwrite
+    use_corrected = args.corrected
+    open_option = "update"
 
-    with ExternalFlatDarkImporter(root_file_name, flat_file_name, dark_file_name) as analyser:
+    with ExternalFlatDarkImporter(root_file_name, flat_file_name,
+            dark_file_name,
+            open_option, use_corrected, overwrite) as analyser:
         if not analyser.exists_in_file:
             for i, entry in enumerate(analyser.tree):
                 analyser.analyse_histogram(i, entry.image)
