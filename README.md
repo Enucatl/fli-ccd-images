@@ -16,8 +16,6 @@ The [ROOT data analysis framework](http://root.cern.ch "ROOT homepage") ≥ 5.34
 
 [GIT](http://git-scm.com/ "GIT homepage") version control system ≥ 1.7
 
-[Pexpect](http://www.noah.org/wiki/pexpect) for the image converting server
-
 
 ## Report Bugs & Request Features
 
