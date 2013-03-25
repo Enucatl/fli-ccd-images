@@ -103,4 +103,4 @@ see the evolution of a pixel line by stacking all the slices together.
 Needs the ROOT file with all the RAW images inside created by `bin/make_root`!
 
     :::bash
-    python python/make_projection_stack.py FILE.root PIXEL
+    python python/projection_stack.py FILE.root PIXEL
