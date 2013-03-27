@@ -3,16 +3,19 @@ from __future__ import division, print_function
 
 import os
 import argparse
-import array
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
+from itertools import islice
+import skimage
+from skimage import filter, io
+import numpy
+import matplotlib.pyplot as plt
+
 from rootstyle import tdrstyle_grayscale
 from progress_bar import progress_bar
-from itertools import islice
 
-tdrstyle_grayscale()
 commandline_parser = argparse.ArgumentParser(description='''
         Convert object to image.''')
 commandline_parser.add_argument('file', metavar='FILE.root',
@@ -39,17 +42,24 @@ if __name__ == '__main__':
     n_colors = 999
     width = histogram.GetNbinsX()
     height = histogram.GetNbinsY()
-    image = ROOT.TASImage(width, height)
-    palette = tdrstyle_grayscale(n_colors)
-    palette = ROOT.TImagePalette(n_colors,
-            palette)
-    image_array = array.array("d")
-    for i in range(height):
-        start = 1 + (i + 1) * (width + 2)
-        sliced = islice(histogram.fArray, start, start + width)
-        image_array.extend(sliced)
-    image.SetImage(image_array,
-            width,
-            height,
-            palette)
-    image.WriteImage(object_name.replace("/", "_") + "." + extension)
+    image = numpy.fromiter(
+            (histogram.fArray[i]
+                for i in range(histogram.fN)),
+            dtype=numpy.uint16,
+            count=histogram.fN)
+    image = skimage.img_as_uint(image)
+    image = numpy.reshape(image, (height + 2, width + 2))
+    image = numpy.delete(image, (0, height + 1), 0)
+    image = numpy.delete(image, (0, width + 1), 1)
+    image = numpy.flipud(image)
+    images = numpy.split(image, 13, 0)
+    #edges = filter.sobel(image, sigma=4)
+    image = images[3]
+    edges = filter.sobel(image)
+    output_name = object_name.replace("/", "_") + "." + extension
+    plt.subplot(121)
+    plt.imshow(image, cmap=plt.cm.Greys_r)
+    plt.subplot(122)
+    plt.imshow(edges, cmap=plt.cm.Greys_r)
+    io.imsave(output_name, image)
+    plt.show()
