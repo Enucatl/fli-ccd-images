@@ -143,5 +143,5 @@ if __name__ == '__main__':
     plt.errorbar(x, y, yerr=yerr, fmt='o')
     plt.figure()
     plt.errorbar(x, yerr, fmt='ro')
-    plt.savefig(output_name, bbox_inches=0)
+    #plt.savefig(output_name, bbox_inches=0)
     plt.show()
