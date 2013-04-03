@@ -14,6 +14,7 @@ from scipy import ndimage
 from scipy import stats
 from skimage import io
 from skimage import filter
+from skimage import transform
 from skimage import morphology
 from skimage import img_as_uint
 import matplotlib.pyplot as plt
@@ -65,35 +66,19 @@ if __name__ == '__main__':
     io.use_plugin("freeimage")
     n_images = len(images)
     columns = 3
-    #grid = gridspec.GridSpec(2 * (len(images) // columns + 1), columns,
-            #hspace=0.01)
-    for i, image in enumerate(images[0]):
-        #plot1 = plt.subplot(grid[(2 * i) // columns, i % columns])
-        #plot2 = plt.subplot(grid[(2 * i) // columns + 1, i % columns])
-        #plot1.set_title("image {0}".format(i + 1))
+    edge_array = []
+    #images = [images[4]]
+    for i, image in enumerate(images):
         image = image[:, 300:900]
+        #thresholded = image < 3100
         edges = filter.sobel(image)
-        #edges = filter.canny(image, sigma=5)
-        threshold = filter.threshold_otsu(edges)
-        label_objects, nb_labels = ndimage.label(edges > threshold)
-        sizes = np.bincount(label_objects.ravel())
-        mask_sizes = sizes > 20
-        mask_sizes[0] = 0
-        cleaned = mask_sizes[label_objects]
-        filled = ndimage.binary_fill_holes(cleaned)
-        #plot1.imshow(image, cmap=plt.cm.Greys_r)
-        #plot2.imshow(filled, cmap=plt.cm.Greys_r)
-        plt.subplot(6, 1, 1)
-        plt.imshow(image, cmap=plt.cm.Greys_r)
-        plt.subplot(6, 1, 2)
-        plt.imshow(edges, cmap=plt.cm.Greys_r)
-        plt.subplot(6, 1, 3)
-        plt.imshow(cleaned, cmap=plt.cm.Greys_r)
-        plt.subplot(6, 1, 4)
-        plt.imshow(image, cmap=plt.cm.Greys_r)
-        plt.subplot(6, 1, 5)
-        plt.imshow(image, cmap=plt.cm.Greys_r)
-        plt.subplot(6, 1, 6)
-        plt.imshow(filled, cmap=plt.cm.Greys_r)
+        edge_array.append(edges)
     #plt.savefig(output_name, bbox_inches=0)
+    edge_array = np.reshape(edge_array, (-1, 600))
+    f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+    plt.subplots_adjust(left=0.0, right=1.0, bottom=0.0, top=0.95)
+    ax1.imshow(image_array, cmap=plt.cm.Greys_r)
+    ax1.set_title("original")
+    ax2.imshow(edge_array, cmap=plt.cm.Greys_r)
+    ax2.set_title("sobel filter")
     plt.show()
