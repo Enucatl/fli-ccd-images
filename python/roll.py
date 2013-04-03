@@ -65,12 +65,12 @@ if __name__ == '__main__':
     io.use_plugin("freeimage")
     n_images = len(images)
     columns = 3
-    grid = gridspec.GridSpec(2 * (len(images) // columns + 1), columns,
-            hspace=0.01)
-    for i, image in enumerate(images):
-        plot1 = plt.subplot(grid[(2 * i) // columns, i % columns])
-        plot2 = plt.subplot(grid[(2 * i) // columns + 1, i % columns])
-        plot1.set_title("image {0}".format(i + 1))
+    #grid = gridspec.GridSpec(2 * (len(images) // columns + 1), columns,
+            #hspace=0.01)
+    for i, image in enumerate(images[0]):
+        #plot1 = plt.subplot(grid[(2 * i) // columns, i % columns])
+        #plot2 = plt.subplot(grid[(2 * i) // columns + 1, i % columns])
+        #plot1.set_title("image {0}".format(i + 1))
         image = image[:, 300:900]
         edges = filter.sobel(image)
         #edges = filter.canny(image, sigma=5)
@@ -81,7 +81,19 @@ if __name__ == '__main__':
         mask_sizes[0] = 0
         cleaned = mask_sizes[label_objects]
         filled = ndimage.binary_fill_holes(cleaned)
-        plot1.imshow(image, cmap=plt.cm.Greys_r)
-        plot2.imshow(filled, cmap=plt.cm.Greys_r)
+        #plot1.imshow(image, cmap=plt.cm.Greys_r)
+        #plot2.imshow(filled, cmap=plt.cm.Greys_r)
+        plt.subplot(6, 1, 1)
+        plt.imshow(image, cmap=plt.cm.Greys_r)
+        plt.subplot(6, 1, 2)
+        plt.imshow(edges, cmap=plt.cm.Greys_r)
+        plt.subplot(6, 1, 3)
+        plt.imshow(cleaned, cmap=plt.cm.Greys_r)
+        plt.subplot(6, 1, 4)
+        plt.imshow(image, cmap=plt.cm.Greys_r)
+        plt.subplot(6, 1, 5)
+        plt.imshow(image, cmap=plt.cm.Greys_r)
+        plt.subplot(6, 1, 6)
+        plt.imshow(filled, cmap=plt.cm.Greys_r)
     #plt.savefig(output_name, bbox_inches=0)
     plt.show()
