@@ -102,16 +102,16 @@ if __name__ == '__main__':
     images = np.split(image_array, n_subimages, 0)
     io.use_plugin("freeimage")
     n_images = len(images)
-    grid = gridspec.GridSpec(2 * (len(images) // 5 + 1), 5,
-            hspace=0.01)
     x = np.zeros(n_images)
     y = np.zeros(n_images)
     yerr = np.zeros(n_images)
+    lower_edges = []
+    upper_edges = []
+    processed_images = []
+    image_height = 0
     for i, image in enumerate(images):
-        plot1 = plt.subplot(grid[(2 * i) // 5, i % 5])
-        plot2 = plt.subplot(grid[(2 * i) // 5 + 1, i % 5])
-        plot1.set_title("image {0}".format(i + 1))
         image = image[:, 300:800]
+        image_height = image.shape[0]
         edges = filter.sobel(image)
         threshold = filter.threshold_otsu(edges)
         label_objects, nb_labels = ndimage.label(edges > threshold)
@@ -132,16 +132,21 @@ if __name__ == '__main__':
         height = lower_edge - upper_edge
         x[i] = i
         y[i] = height
-        yerr[i] = std_dev
-        plot1.imshow(image, cmap=plt.cm.Greys_r)
-        plot1.axhline(y=int(upper_edge), linewidth=1, color='r')
-        plot1.axhline(y=int(lower_edge), linewidth=1, color='r')
-        plot2.imshow(filled, cmap=plt.cm.Greys_r)
-        plot2.axhline(y=int(upper_edge), linewidth=2, color='r')
-        plot2.axhline(y=int(lower_edge), linewidth=2, color='r')
+        yerr[i] = std_dev / 1000
+        lower_edges.append(lower_edge)
+        upper_edges.append(upper_edge)
+        processed_images.append(filled)
+    print(processed_images)
+    processed_images = np.reshape(processed_images, (-1, 500))
+    f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+    plt.subplots_adjust(left=0.0, right=1.0, bottom=0.0, top=0.95)
+    ax1.imshow(image_array, cmap=plt.cm.Greys_r)
+    ax2.imshow(processed_images, cmap=plt.cm.Greys_r)
+    for i, (lower_edge, upper_edge) in enumerate(
+            zip(lower_edges, upper_edges)):
+        first_pixel = i * image_height
+        ax2.axhline(y=(first_pixel + lower_edge), color='r')
+        ax2.axhline(y=(first_pixel + upper_edge), color='r')
     plt.figure()
-    plt.errorbar(x, y, yerr=yerr, fmt='o')
-    plt.figure()
-    plt.errorbar(x, yerr, fmt='ro')
-    #plt.savefig(output_name, bbox_inches=0)
+    plt.errorbar(x, y, fmt='o')
     plt.show()
