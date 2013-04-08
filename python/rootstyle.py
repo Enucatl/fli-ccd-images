@@ -469,8 +469,8 @@ def set_palette(name='default', ncontours=200):
         green = [1.00, 0.84, 0.61, 0.34, 0.00]
         blue  = [1.00, 0.84, 0.61, 0.34, 0.00]
     if name == 'gray_inverted':
-        black = 0.0
-        white = 1.0
+        black = 0.02
+        white = 0.98
         stops = [0.00, black, white, 1.00]
         red   = [0.00, 0.0, 1.0, 1.00]
         green = [0.00, 0.0, 1.0, 1.00]
