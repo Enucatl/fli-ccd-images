@@ -60,4 +60,4 @@ if __name__ == '__main__':
     image_array = np.flipud(image_array)
     io.use_plugin("freeimage")
     output_name = root_file_name.replace(".root", "." + extension)
-    io.imsave(output_name)
+    io.imsave(output_name, image_array)
