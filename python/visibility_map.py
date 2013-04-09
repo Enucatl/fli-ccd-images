@@ -80,12 +80,14 @@ if __name__ == '__main__':
                 for i in range(width)),
         dtype=np.float64)[200:800] 
     mean_visibility = np.mean(visibility_array)
-    print("mean visibility {0:.2%}".format(mean_visibility))
-    text = ROOT.TPaveText(0.9, 0.9, 0.98, 0.98)
+    text = ROOT.TPaveText(0.7, 0.94, 0.98, 0.98, "blNDC")
+    text.SetFillColor(0)
     text.AddText("mean visibility {0:.2%}".format(mean_visibility))
+    text.Draw()
+    visibility_canvas.Update()
     #median_visibility = np.median(visibility_array)
     #print("median visibility {0:.2%}".format(mean_visibility))
-    image_canvas = ROOT.TCanvas("image_canvas",
-            "image_canvas")
-    histogram.Draw("col")
+    #image_canvas = ROOT.TCanvas("image_canvas",
+            #"image_canvas")
+    #histogram.Draw("col")
     raw_input()
