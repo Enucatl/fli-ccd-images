@@ -9,6 +9,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 import math
 from itertools import islice
+from rootstyle import tdrstyle_grayscale
 import numpy as np
 from scipy import ndimage
 from scipy import stats
@@ -34,6 +35,7 @@ commandline_parser.add_argument('--format', metavar='FORMAT',
         nargs=1, default=["tif"], help='output format (default 16bit tif)')
 
 if __name__ == '__main__':
+    tdrstyle_grayscale()
     args = commandline_parser.parse_args()
     root_file_name = args.file[0]
     object_name = args.object[0]
@@ -48,9 +50,42 @@ if __name__ == '__main__':
             object_name))
     width = histogram.GetNbinsX()
     height = histogram.GetNbinsY()
+    visibility_histogram = ROOT.TH1D("visibility",
+            "visibility map;pixel;visibility",
+            width, 0, width)
     for i in range(width):
         projection = histogram.ProjectionY(
                 "projectiony_{0}".format(i + 1),
                 i + 1, i + 1, "e")
         transform = projection.FFT(0, "mag r2c ex")
-        print(transform.GetBinContent(1), transform.GetBinContent(2))
+        n_bins = height 
+        frequencies = np.fromiter(
+                (projection.GetBinContent(i + 1)
+                    for i in range(height)),
+                dtype=np.uint16)
+        mean = np.mean(frequencies)
+        std_dev = np.std(frequencies)
+        frequencies = np.ma.masked_greater(frequencies,
+                mean + 3 * std_dev)
+        minimum, median, maximum = stats.mstats.mquantiles(
+                frequencies,
+                prob=[0, 0.5, 1])
+        visibility = (maximum - minimum) / (2 * median)
+        visibility_histogram.SetBinContent(i + 1, visibility)
+    visibility_canvas = ROOT.TCanvas("visibility_canvas",
+            "visibility_canvas")
+    visibility_histogram.Draw()
+    visibility_array = np.fromiter(
+            (visibility_histogram.GetBinContent(i + 1)
+                for i in range(width)),
+        dtype=np.float64)[200:800] 
+    mean_visibility = np.mean(visibility_array)
+    print("mean visibility {0:.2%}".format(mean_visibility))
+    text = ROOT.TPaveText(0.9, 0.9, 0.98, 0.98)
+    text.AddText("mean visibility {0:.2%}".format(mean_visibility))
+    #median_visibility = np.median(visibility_array)
+    #print("median visibility {0:.2%}".format(mean_visibility))
+    image_canvas = ROOT.TCanvas("image_canvas",
+            "image_canvas")
+    histogram.Draw("col")
+    raw_input()
