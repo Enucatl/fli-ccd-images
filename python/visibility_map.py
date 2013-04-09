@@ -57,7 +57,6 @@ if __name__ == '__main__':
         projection = histogram.ProjectionY(
                 "projectiony_{0}".format(i + 1),
                 i + 1, i + 1, "e")
-        transform = projection.FFT(0, "mag r2c ex")
         n_bins = height 
         frequencies = np.fromiter(
                 (projection.GetBinContent(i + 1)
