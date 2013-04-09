@@ -1,3 +1,6 @@
+import numpy as np 
+from skimage import img_as_uint
+
 def th2_to_numpy(histogram):
     """Convert TH2 histogram to numpy array
 
