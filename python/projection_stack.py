@@ -77,7 +77,6 @@ if __name__ == '__main__':
     use_corrected = args.corrected
     open_option = "update"
     pixel = commandline_parser.parse_args().pixel
-    print(pixel)
 
     with ProjectionStackMaker(pixel, root_file_name,
             open_option,
