@@ -27,16 +27,19 @@ commandline_parser = argparse.ArgumentParser(description='''
         Convert object to image.''')
 commandline_parser.add_argument('file', metavar='FILE.root',
         nargs=1, help='ROOT file with the histogram')
-commandline_parser.add_argument('--object', metavar='OBJECT',
-        nargs=1, default=["postprocessing/stack_pixel_508_508"],
-        help='name of the histogram')
+commandline_parser.add_argument('--pixel_file', metavar='INI_FILE',
+        nargs=1, default=["data/default_pixel.ini"],
+        help='file containing the default pixel height')
 commandline_parser.add_argument('--format', metavar='FORMAT',
         nargs=1, default=["tif"], help='output format (default 16bit tif)')
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
     root_file_name = args.file[0]
-    object_name = args.object[0]
+    pixel_file = args.pixel_file[0]
+    pixel = int(open(pixel_file).read()) 
+    object_name = "postprocessing/stack_pixel_{0}_{0}".format(
+            pixel)
     extension = args.format[0]
     root_file = ROOT.TFile(root_file_name, "update")
     if not root_file.IsOpen():
