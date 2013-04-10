@@ -19,6 +19,8 @@ class ProjectionStackMaker(BaseRootfileAnalyser):
         """check pixel list: it must contain 1 or 2 values"""
         if len(pixel) == 1:
             pixel.append(pixel[0])
+        elif len(pixel) == 2 and not pixel[1]:
+            pixel[1] = pixel[0]
         elif len(pixel) > 2 or len(pixel) == 0:
             print("one or two pixel numbers (begin and end) must be specified!")
             raise IOError
@@ -75,6 +77,7 @@ if __name__ == '__main__':
     use_corrected = args.corrected
     open_option = "update"
     pixel = commandline_parser.parse_args().pixel
+    print(pixel)
 
     with ProjectionStackMaker(pixel, root_file_name,
             open_option,
