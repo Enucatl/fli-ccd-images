@@ -21,3 +21,29 @@ def th2_to_numpy(histogram):
     image_array = np.delete(image_array, (0, width + 1), 1)
     image_array = np.flipud(image_array)
     return image_array
+
+def numpy_to_th2(array, name="image"):
+    """Convert numpy array to TH2
+
+    :histogram: array
+    :returns: TH2
+
+    """
+    if len(array.shape) != 2:
+        raise ValueError("array must be 2D.")
+    height = array.shape[0]
+    width = array.shape[1]
+    histogram = ROOT.TH2D(name, name,
+            width, 0, width,
+            height, 0, height)
+    with_rows = np.vstack((
+        np.zeros((width, 1), dtype=array.dtype)),
+        array,
+        np.zeros((width, 1), dtype=array.dtype)))
+    with_columns = np.hstack((
+        np.zeros((height + 2, 1), dtype=array.dtype)),
+        with_rows,
+        np.zeros((height + 2, 1), dtype=array.dtype)))
+    histogram.fArray[:histogram.fN] = with_columns
+    histogram.SetEntries(height * width)
+    return histogram

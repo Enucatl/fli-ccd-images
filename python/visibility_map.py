@@ -33,6 +33,8 @@ commandline_parser.add_argument('--pixel_file', metavar='INI_FILE',
         help='file containing the default pixel height')
 commandline_parser.add_argument('--format', metavar='FORMAT',
         nargs=1, default=["tif"], help='output format (default 16bit tif)')
+commandline_parser.add_argument('--roi', metavar='FORMAT',
+        nargs=2, default=[300, 800], help='region of interest')
 
 if __name__ == '__main__':
     tdrstyle_grayscale()
@@ -43,6 +45,7 @@ if __name__ == '__main__':
     object_name = "postprocessing/stack_pixel_{0}_{0}".format(
             pixel)
     extension = args.format[0]
+    roi = args.roi
     root_file = ROOT.TFile(root_file_name, "update")
     if not root_file.IsOpen():
         raise IOError("Could not open {0}.".format(
@@ -80,7 +83,7 @@ if __name__ == '__main__':
     visibility_array = np.fromiter(
             (visibility_histogram.GetBinContent(i + 1)
                 for i in range(width)),
-        dtype=np.float64)[200:800] 
+        dtype=np.float64)[roi[0]:roi[1]] 
     mean_visibility = np.mean(visibility_array)
     text = ROOT.TPaveText(0.7, 0.94, 0.98, 0.98, "blNDC")
     text.SetFillColor(0)
