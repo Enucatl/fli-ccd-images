@@ -87,7 +87,8 @@ if __name__ == '__main__':
     mean_visibility = np.mean(visibility_array)
     text = ROOT.TPaveText(0.7, 0.94, 0.98, 0.98, "blNDC")
     text.SetFillColor(0)
-    text.AddText("mean visibility {0:.2%}".format(mean_visibility))
+    text.AddText("mean visibility {0[0]}-{0[1]}: {1:.2%}".format(
+        roi, mean_visibility))
     text.Draw()
     visibility_canvas.Update()
     #median_visibility = np.median(visibility_array)
