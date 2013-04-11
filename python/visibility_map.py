@@ -75,7 +75,7 @@ if __name__ == '__main__':
         minimum, median, maximum = stats.mstats.mquantiles(
                 frequencies,
                 prob=[0, 0.5, 1])
-        visibility = (maximum - minimum) / (2 * median)
+        visibility = (maximum - minimum) / (minimum + maximum)
         visibility_histogram.SetBinContent(i + 1, visibility)
     visibility_canvas = ROOT.TCanvas("visibility_canvas",
             "visibility_canvas")
