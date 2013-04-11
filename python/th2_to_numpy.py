@@ -39,11 +39,11 @@ def numpy_to_th2(array, name="image"):
     with_rows = np.vstack((
         np.zeros((width, 1), dtype=array.dtype)),
         array,
-        np.zeros((width, 1), dtype=array.dtype)))
+        np.zeros((width, 1), dtype=array.dtype))
     with_columns = np.hstack((
         np.zeros((height + 2, 1), dtype=array.dtype)),
         with_rows,
-        np.zeros((height + 2, 1), dtype=array.dtype)))
+        np.zeros((height + 2, 1), dtype=array.dtype))
     histogram.fArray[:histogram.fN] = with_columns
     histogram.SetEntries(height * width)
     return histogram
