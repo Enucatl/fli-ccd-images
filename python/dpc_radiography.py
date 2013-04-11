@@ -8,20 +8,11 @@ import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 import math
-from rootstyle import tdrstyle_grayscale
-from scipy import ndimage
 from scipy import stats
-from skimage import io
-from skimage import filter
-from skimage import transform
-from skimage import morphology
 from th2_to_numpy import th2_to_numpy
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-
-from rootstyle import tdrstyle_grayscale
-from progress_bar import progress_bar
 
 commandline_parser = argparse.ArgumentParser(description='''
         Convert object to image.''')
@@ -57,7 +48,6 @@ def get_signals(phase_stepping_curve, flat=None):
     return a0, phi1, a1
 
 if __name__ == '__main__':
-    tdrstyle_grayscale()
     args = commandline_parser.parse_args()
     root_file_name = args.file[0]
     flat_file_name = args.flat[0]
@@ -87,9 +77,6 @@ if __name__ == '__main__':
     image_array = th2_to_numpy(histogram)[:,roi[0]:roi[1]]
     flat_image = th2_to_numpy(flat_histogram)[:,roi[0]:roi[1]]
     flat_parameters = get_signals(flat_image)
-    #plt.figure()
-    #plt.imshow(image_array, cmap=plt.cm.Greys_r)
-    #plt.show()
     images = np.split(image_array, n_lines, axis=0)
     absorption_image = np.zeros((n_lines, image_array.shape[1]))
     differential_phase_image = np.zeros_like(absorption_image)
@@ -102,9 +89,6 @@ if __name__ == '__main__':
         differential_phase_image[i, :] = phase
         dark_field_image[i, :] = dark_field
 
-    #plt.figure()
-    #img1 = plt.imshow(absorption_image, cmap=plt.cm.Greys_r)
-    #img1.set_clim(0.2, 1)
     f, (ax1, ax2, ax3) = plt.subplots(
             3, 1, sharex=True)
     plt.subplots_adjust(
@@ -134,10 +118,10 @@ if __name__ == '__main__':
         hist3.hist(range(dark_field_image.shape[1]),
                 bins=dark_field_image.shape[1],
                 weights=dark_field_image.T, fc='w', ec='k')
-    plt.figure()
-    plt.hist(image_array.flatten(), 256,
-            range=(np.amin(image_array),
-                np.amax(image_array)), fc='w', ec='k')
+    #plt.figure()
+    #plt.hist(image_array.flatten(), 256,
+            #range=(np.amin(image_array),
+                #np.amax(image_array)), fc='w', ec='k')
     #plt.figure()
     #plt.hist(dark_field_image.flatten(), 256,
             #range=(np.amin(dark_field_image),
