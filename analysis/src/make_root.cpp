@@ -2,8 +2,6 @@
 #include <boost/program_options.hpp>
 #include <boost/progress.hpp>
 
-#include "TApplication.h"
-#include "TCanvas.h"
 #include "TFile.h"
 
 #include "raw_image_tools.h"

@@ -99,7 +99,7 @@ if __name__ == '__main__':
     #ax1.set_title("absorption")
     ax1.axis("off")
     img2 = ax2.imshow(differential_phase_image, cmap=plt.cm.Greys_r)
-    img2.set_clim(-0.2, 1)
+    img2.set_clim(-1, math.pi)
     #ax2.set_title("differential phase")
     ax2.axis("off")
     img3 = ax3.imshow(dark_field_image, cmap=plt.cm.Greys_r)
