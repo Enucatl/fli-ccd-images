@@ -6,19 +6,7 @@ import os
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
-import math
-from itertools import islice
-from rootstyle import tdrstyle_grayscale
 import numpy as np
-from scipy import ndimage
-from scipy import stats
-from skimage import io
-from skimage import filter
-from skimage import transform
-from skimage import morphology
-from skimage import img_as_uint
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 
 from rootstyle import tdrstyle_grayscale
 from progress_bar import progress_bar

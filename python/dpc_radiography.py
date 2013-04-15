@@ -8,14 +8,11 @@ import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 import math
-from scipy import stats
 from th2_to_numpy import th2_to_numpy
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 
 from base_rootfile_analyser import commandline_parser
-from hadd import hadd
 from handle_projection_stack import get_projection_stack
 
 commandline_parser.add_argument('--flat', metavar='FLAT_FILE(s).root',
