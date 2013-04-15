@@ -9,7 +9,7 @@ RootImageWriter::RootImageWriter(const std::string root_output_name,
     root_file_(root_output_name.c_str(), "create"),
     tree_("root_image_tree", "root_image_tree") {
     if (not root_file_.IsOpen()) {
-        std::cerr << "RootImageWriter::RootImageWriter:\nROOT file already exists or failed to open!" << std::endl;
+        std::cerr << "RootImageWriter::RootImageWriter:\nROOT failed to open." << std::endl;
         std::cerr << root_output_name << std::endl;
         open_failed_ = true;
     }
