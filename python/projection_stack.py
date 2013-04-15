@@ -8,6 +8,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 from base_rootfile_analyser import BaseRootfileAnalyser, commandline_parser
 from rootstyle import tdrstyle_grayscale
+from hadd import hadd
 
 tdrstyle_grayscale()
 
@@ -72,7 +73,7 @@ commandline_parser.add_argument('pixel', metavar='PIXEL',
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
-    root_file_name = args.file[0]
+    root_file_name = hadd(args.file)
     overwrite = args.overwrite
     use_corrected = args.corrected
     open_option = "update"

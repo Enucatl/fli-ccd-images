@@ -18,14 +18,12 @@ from skimage import morphology
 from skimage import img_as_uint
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+from base_rootfile_analyser import commandline_parser
+from hadd import hadd
 
 from rootstyle import tdrstyle_grayscale
 from progress_bar import progress_bar
 
-commandline_parser = argparse.ArgumentParser(description='''
-        Convert object to image.''')
-commandline_parser.add_argument('file', metavar='FILE.root',
-        nargs=1, help='ROOT file with the histogram')
 commandline_parser.add_argument('--object', metavar='OBJECT',
         nargs=1, default=["postprocessing/stack_pixel_515_515"], help='name of the histogram')
 commandline_parser.add_argument('--split', metavar='N_SUB_IMAGES',
@@ -75,7 +73,7 @@ def grating_height(segments):
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
-    root_file_name = args.file[0]
+    root_file_name = hadd(args.file)
     object_name = args.object[0]
     extension = args.format[0]
     n_subimages = args.split[0]

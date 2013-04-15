@@ -23,11 +23,9 @@ import matplotlib.gridspec as gridspec
 
 from rootstyle import tdrstyle_grayscale
 from progress_bar import progress_bar
+from base_rootfile_analyser import commandline_parser
 
-commandline_parser = argparse.ArgumentParser(description='''
-        Convert object to image.''')
-commandline_parser.add_argument('file', metavar='FILE.root',
-        nargs=1, help='ROOT file with the histogram')
+commandline_parser.description = __doc__
 commandline_parser.add_argument('--pixel_file', metavar='INI_FILE',
         nargs=1, default=["data/default_pixel.ini"],
         help='file containing the default pixel height')

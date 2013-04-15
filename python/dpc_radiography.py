@@ -14,12 +14,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-commandline_parser = argparse.ArgumentParser(description='''
-        Convert object to image.''')
-commandline_parser.add_argument('file', metavar='FILE.root',
-        nargs=1, help='ROOT file with the histogram')
-commandline_parser.add_argument('--flat', metavar='FLAT_FILE.root',
-        nargs=1, help='ROOT file with the histogram for the flat field')
+from base_rootfile_analyser import commandline_parser
+from hadd import hadd
+
+commandline_parser.add_argument('--flat', metavar='FLAT_FILE(s).root',
+        nargs='+', help='ROOT file(s) with the histogram for the flat field')
 commandline_parser.add_argument('--lines', metavar='LINES',
         nargs=1, type=int, help='number of lines in the projections')
 commandline_parser.add_argument('--pixel_file', metavar='INI_FILE',
@@ -49,8 +48,8 @@ def get_signals(phase_stepping_curve, flat=None):
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
-    root_file_name = args.file[0]
-    flat_file_name = args.flat[0]
+    root_file_name = hadd(args.file)
+    flat_file_name = hadd(args.flat)
     n_lines = args.lines[0]
     pixel_file = args.pixel_file[0]
     pixel = int(open(pixel_file).read()) 

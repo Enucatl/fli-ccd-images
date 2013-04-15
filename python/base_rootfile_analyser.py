@@ -10,12 +10,13 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 from rootstyle import tdrstyle_grayscale
 from progress_bar import progress_bar
+from hadd import hadd
 
 tdrstyle_grayscale()
 commandline_parser = argparse.ArgumentParser(description='''Base class for doing
         something with all the TH2 in a ROOT file.''')
 commandline_parser.add_argument('file', metavar='FILE1.root [FILE2.root] ...',
-        nargs='+', help='ROOT file(s) with the TH2 histograms')
+        nargs='+', help='ROOT file(s) with the tree')
 commandline_parser.add_argument('--corrected', '-c', 
         action='store_true',
         help='use dark and flat corrected images.')
@@ -123,7 +124,7 @@ class BaseRootfileAnalyser(object):
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
-    root_file_name = args.file[0]
+    root_file_name = hadd(args.file)
     overwrite = args.overwrite
     use_corrected = args.corrected
     open_option = "update"

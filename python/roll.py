@@ -22,11 +22,9 @@ import matplotlib.gridspec as gridspec
 
 from rootstyle import tdrstyle_grayscale
 from progress_bar import progress_bar
+from base_rootfile_analyser import commandline_parser
+from hadd import hadd
 
-commandline_parser = argparse.ArgumentParser(description='''
-        Convert object to image.''')
-commandline_parser.add_argument('file', metavar='FILE.root',
-        nargs=1, help='ROOT file with the histogram')
 commandline_parser.add_argument('--object', metavar='OBJECT',
         nargs=1, default=["postprocessing/stack_pixel_515_515"],
         help='name of the histogram')
@@ -38,7 +36,7 @@ commandline_parser.add_argument('--format', metavar='FORMAT',
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
-    root_file_name = args.file[0]
+    root_file_name = hadd(args.file)
     object_name = args.object[0]
     extension = args.format[0]
     n_subimages = args.split[0]
