@@ -29,16 +29,17 @@ commandline_parser.add_argument('--format', metavar='FORMAT',
 commandline_parser.add_argument('--roi', metavar='FORMAT',
         nargs=2, default=[300, 800], help='region of interest')
 
-def get_signals(phase_stepping_curve, flat=None):
+def get_signals(phase_stepping_curve, flat=None, n_periods=1):
     """Get the three images from the phase stepping curves.
     flat contains a0, phi and a1 from the flat image
     These are the columns of the phase_stepping_curve
     input, while the row is the pixel number."""
     n_phase_steps = phase_stepping_curve.shape[0]
-    transformed = np.fft.rfft(phase_stepping_curve, axis=0)
+    transformed = np.delete(phase_stepping_curve, -1, axis=0)
+    transformed = np.fft.rfft(transformed, axis=0)
     a0 = np.abs(transformed[0, :]) 
-    a1 = np.abs(transformed[1, :]) 
-    phi1 = np.angle(transformed[1, :])
+    a1 = np.abs(transformed[n_periods, :]) 
+    phi1 = np.unwrap(np.angle(transformed[n_periods, :]))
     if flat:
         a0_flat, phi_flat, a1_flat = flat
         a0 /= a0_flat
