@@ -16,18 +16,12 @@ import matplotlib.gridspec as gridspec
 
 from base_rootfile_analyser import commandline_parser
 from hadd import hadd
+from handle_projection_stack import get_projection_stack
 
 commandline_parser.add_argument('--flat', metavar='FLAT_FILE(s).root',
         nargs='+', help='ROOT file(s) with the histogram for the flat field')
 commandline_parser.add_argument('--lines', metavar='LINES',
         nargs=1, type=int, help='number of lines in the projections')
-commandline_parser.add_argument('--pixel_file', metavar='INI_FILE',
-        nargs=1, default=["data/default_pixel.ini"],
-        help='file containing the default pixel height')
-commandline_parser.add_argument('--format', metavar='FORMAT',
-        nargs=1, default=["tif"], help='output format (default 16bit tif)')
-commandline_parser.add_argument('--roi', metavar='FORMAT',
-        nargs=2, default=[300, 800], help='region of interest')
 
 def get_signals(phase_stepping_curve, flat=None, n_periods=1):
     """Get the three images from the phase stepping curves.
@@ -49,31 +43,12 @@ def get_signals(phase_stepping_curve, flat=None, n_periods=1):
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
-    root_file_name = hadd(args.file)
-    flat_file_name = hadd(args.flat)
+    root_file, histogram = get_projection_stack(args)
+    args.file = args.flat
+    flat_root_file, flat_histogram = get_projection_stack(args)
     n_lines = args.lines[0]
-    pixel_file = args.pixel_file[0]
-    pixel = int(open(pixel_file).read()) 
-    object_name = "postprocessing/stack_pixel_{0}_{0}".format(
-            pixel)
     extension = args.format[0]
     roi = args.roi
-    root_file = ROOT.TFile(root_file_name, "update")
-    if not root_file.IsOpen():
-        raise IOError("Could not open {0}.".format(
-            root_file_name))
-    histogram = root_file.Get(object_name)
-    if not histogram:
-        raise IOError("Object {0} not found.".format(
-            object_name))
-    flat_root_file = ROOT.TFile(flat_file_name, "update")
-    if not root_file.IsOpen():
-        raise IOError("Could not open {0} for flat.".format(
-            root_file_name))
-    flat_histogram = flat_root_file.Get(object_name)
-    if not histogram:
-        raise IOError("Object {0} not found for flat.".format(
-            object_name))
     image_array = th2_to_numpy(histogram)[:,roi[0]:roi[1]]
     flat_image = th2_to_numpy(flat_histogram)[:,roi[0]:roi[1]]
     flat_parameters = get_signals(flat_image)
@@ -126,9 +101,10 @@ if __name__ == '__main__':
     #plt.hist(dark_field_image.flatten(), 256,
             #range=(np.amin(dark_field_image),
                 #np.amax(dark_field_image)), fc='k', ec='k')
+    #plt.figure()
     #plt.hist(differential_phase_image.flatten(), 256,
             #range=(np.amin(differential_phase_image),
                 #np.amax(differential_phase_image)), fc='k', ec='k')
-    plt.savefig(root_file_name.replace(".root",
+    plt.savefig(root_file.GetName().replace(".root",
         "." + extension))
     plt.show()

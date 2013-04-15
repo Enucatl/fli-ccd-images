@@ -2,7 +2,6 @@
 from __future__ import division, print_function
 
 import os
-import argparse
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
@@ -26,36 +25,15 @@ from progress_bar import progress_bar
 from base_rootfile_analyser import commandline_parser
 from dpc_radiography import get_signals
 from th2_to_numpy import th2_to_numpy
+from handle_projection_stack import get_projection_stack
 
 commandline_parser.description = __doc__
-commandline_parser.add_argument('--pixel_file', metavar='INI_FILE',
-        nargs=1, default=["data/default_pixel.ini"],
-        help='file containing the default pixel height')
-commandline_parser.add_argument('--format', metavar='FORMAT',
-        nargs=1, default=["tif"], help='output format (default 16bit tif)')
-commandline_parser.add_argument('--roi', metavar='FORMAT',
-        nargs=2, default=[300, 800], help='region of interest')
-commandline_parser.add_argument('--periods', metavar='N_PERIODS',
-        nargs=1, default=[1], help='number of phase stepping periods')
 
 if __name__ == '__main__':
     tdrstyle_grayscale()
     args = commandline_parser.parse_args()
-    root_file_name = args.file[0]
-    pixel_file = args.pixel_file[0]
-    pixel = int(open(pixel_file).read()) 
-    object_name = "postprocessing/stack_pixel_{0}_{0}".format(
-            pixel)
-    extension = args.format[0]
     roi = args.roi
-    root_file = ROOT.TFile(root_file_name, "update")
-    if not root_file.IsOpen():
-        raise IOError("Could not open {0}.".format(
-            root_file_name))
-    histogram = root_file.Get(object_name)
-    if not histogram:
-        raise IOError("Object {0} not found.".format(
-            object_name))
+    root_file, histogram = get_projection_stack(args)
     width = histogram.GetNbinsX()
     height = histogram.GetNbinsY()
     visibility_histogram = ROOT.TH1D("visibility",
@@ -80,9 +58,4 @@ if __name__ == '__main__':
         roi, mean_visibility))
     text.Draw()
     visibility_canvas.Update()
-    #median_visibility = np.median(visibility_array)
-    #print("median visibility {0:.2%}".format(mean_visibility))
-    #image_canvas = ROOT.TCanvas("image_canvas",
-            #"image_canvas")
-    #histogram.Draw("col")
     raw_input()

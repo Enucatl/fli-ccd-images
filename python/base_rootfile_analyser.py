@@ -15,8 +15,11 @@ from hadd import hadd
 tdrstyle_grayscale()
 commandline_parser = argparse.ArgumentParser(description='''Base class for doing
         something with all the TH2 in a ROOT file.''')
-commandline_parser.add_argument('file', metavar='FILE1.root [FILE2.root] ...',
+commandline_parser.add_argument('file', metavar='FILE.root',
         nargs='+', help='ROOT file(s) with the tree')
+commandline_parser.add_argument('--batch', '-b', 
+        action='store_true',
+        help='batch mode (no drawing)')
 commandline_parser.add_argument('--corrected', '-c', 
         action='store_true',
         help='use dark and flat corrected images.')
@@ -35,12 +38,14 @@ class BaseRootfileAnalyser(object):
     These functions are meant to be redefined in daughter classes."""
     def __init__(self, root_file_name, open_option="update",
     use_corrected=False,
-    overwrite=False):
+    overwrite=False,
+    batch=False):
         super(BaseRootfileAnalyser, self).__init__()
         if not os.path.exists(root_file_name):
             print("File not found", root_file_name)
             raise IOError
         self.overwrite = overwrite
+        self.batch = batch
         self.root_file = ROOT.TFile(root_file_name, open_option)
         self.tree = self.root_file.Get(os.path.join(
             post_processing_dirname, "corrected_image_tree"))
