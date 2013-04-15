@@ -36,7 +36,8 @@ def get_signals(phase_stepping_curve, flat=None, n_periods=1):
     These are the columns of the phase_stepping_curve
     input, while the row is the pixel number."""
     n_phase_steps = phase_stepping_curve.shape[0]
-    transformed = np.fft.rfft(phase_stepping_curve, axis=0)
+    transformed = np.delete(phase_stepping_curve, -1, axis=0)
+    transformed = np.fft.rfft(transformed, axis=0)
     a0 = np.abs(transformed[0, :]) 
     a1 = np.abs(transformed[n_periods, :]) 
     phi1 = np.unwrap(np.angle(transformed[n_periods, :]))
