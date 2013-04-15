@@ -47,3 +47,5 @@ def numpy_to_th2(array, name="image"):
     histogram.fArray[:histogram.fN] = with_columns
     histogram.SetEntries(height * width)
     return histogram
+
+

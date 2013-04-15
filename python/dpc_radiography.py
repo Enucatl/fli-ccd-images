@@ -39,12 +39,12 @@ def get_signals(phase_stepping_curve, flat=None):
     transformed = np.fft.rfft(phase_stepping_curve, axis=0)
     a0 = np.abs(transformed[0, :]) 
     a1 = np.abs(transformed[1, :]) 
-    phi1 = np.unwrap(np.angle(transformed[1, :]))
+    phi1 = np.angle(transformed[1, :])
     if flat:
         a0_flat, phi_flat, a1_flat = flat
         a0 /= a0_flat
-        phi1 -= phi_flat
         a1 /= a1_flat / a0
+        phi1 = np.unwrap(phi1 - phi_flat)
     return a0, phi1, a1
 
 if __name__ == '__main__':
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     #ax1.set_title("absorption")
     ax1.axis("off")
     img2 = ax2.imshow(differential_phase_image, cmap=plt.cm.Greys_r)
-    img2.set_clim(-1, math.pi)
+    img2.set_clim(0, 1.5)
     #ax2.set_title("differential phase")
     ax2.axis("off")
     img3 = ax3.imshow(dark_field_image, cmap=plt.cm.Greys_r)
@@ -126,6 +126,9 @@ if __name__ == '__main__':
     #plt.hist(dark_field_image.flatten(), 256,
             #range=(np.amin(dark_field_image),
                 #np.amax(dark_field_image)), fc='k', ec='k')
+    #plt.hist(differential_phase_image.flatten(), 256,
+            #range=(np.amin(differential_phase_image),
+                #np.amax(differential_phase_image)), fc='k', ec='k')
     plt.savefig(root_file_name.replace(".root",
         "." + extension))
     plt.show()

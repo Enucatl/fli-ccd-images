@@ -14,8 +14,8 @@ from progress_bar import progress_bar
 tdrstyle_grayscale()
 commandline_parser = argparse.ArgumentParser(description='''Base class for doing
         something with all the TH2 in a ROOT file.''')
-commandline_parser.add_argument('file', metavar='FILE.root',
-        nargs=1, help='ROOT file with the TH2 histograms')
+commandline_parser.add_argument('file', metavar='FILE1.root [FILE2.root] ...',
+        nargs='+', help='ROOT file(s) with the TH2 histograms')
 commandline_parser.add_argument('--corrected', '-c', 
         action='store_true',
         help='use dark and flat corrected images.')
@@ -28,8 +28,8 @@ post_processing_dirname = "postprocessing"
 
 class BaseRootfileAnalyser(object):
     """abstract base class to perform the same operation over all the TH2
-    in the same ROOT file, with appropriate setup (enter) and cleanup
-    (exit) functions, and a loop over all the histograms.
+    in the same ROOT file, with appropriate setup (open) and cleanup
+    (close) functions, and a loop over all the histograms.
     
     These functions are meant to be redefined in daughter classes."""
     def __init__(self, root_file_name, open_option="update",
