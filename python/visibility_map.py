@@ -23,6 +23,8 @@ import matplotlib.gridspec as gridspec
 
 from rootstyle import tdrstyle_grayscale
 from progress_bar import progress_bar
+from dpc_radiography import get_signals
+from th2_to_numpy import th2_to_numpy
 
 commandline_parser = argparse.ArgumentParser(description='''
         Convert object to image.''')
@@ -59,24 +61,12 @@ if __name__ == '__main__':
     visibility_histogram = ROOT.TH1D("visibility",
             "visibility map;pixel;visibility",
             width, 0, width)
+    image_array = th2_to_numpy(histogram)
+    a0, _, a1 = get_signals(image_array)
+    visibility = 2 * a1 / a0
+    print(visibility.shape)
     for i in range(width):
-        projection = histogram.ProjectionY(
-                "projectiony_{0}".format(i + 1),
-                i + 1, i + 1, "e")
-        n_bins = height 
-        frequencies = np.fromiter(
-                (projection.GetBinContent(i + 1)
-                    for i in range(height)),
-                dtype=np.uint16)
-        mean = np.mean(frequencies)
-        std_dev = np.std(frequencies)
-        frequencies = np.ma.masked_greater(frequencies,
-                mean + 3 * std_dev)
-        minimum, median, maximum = stats.mstats.mquantiles(
-                frequencies,
-                prob=[0, 0.5, 1])
-        visibility = (maximum - minimum) / (minimum + maximum)
-        visibility_histogram.SetBinContent(i + 1, visibility)
+            visibility_histogram.SetBinContent(i + 1, visibility[i])
     visibility_canvas = ROOT.TCanvas("visibility_canvas",
             "visibility_canvas")
     visibility_histogram.Draw()
