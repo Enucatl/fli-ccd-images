@@ -86,6 +86,8 @@ if __name__ == '__main__':
         hist3.hist(range(dark_field_image.shape[1]),
                 bins=dark_field_image.shape[1],
                 weights=dark_field_image.T, fc='w', ec='k')
+    plt.savefig(root_file.GetName().replace(".root",
+        "." + extension))
     #plt.figure()
     #plt.hist(image_array.flatten(), 256,
             #range=(np.amin(image_array),
@@ -102,6 +104,4 @@ if __name__ == '__main__':
             np.mean(differential_phase_image),
             np.std(differential_phase_image) /
             math.sqrt(roi[1] - roi[0])))
-    #plt.savefig(root_file.GetName().replace(".root",
-        #"." + extension))
     plt.show()
