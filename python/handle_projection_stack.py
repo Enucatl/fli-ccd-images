@@ -17,7 +17,8 @@ commandline_parser.description = __doc__
 commandline_parser.add_argument('--format', metavar='FORMAT',
         nargs=1, default=["tif"], help='output format (default 16bit tif)')
 commandline_parser.add_argument('--roi', metavar='FORMAT',
-        nargs=2, default=[300, 800], help='region of interest')
+        nargs=2, default=[300, 800],
+        type=int, help='region of interest')
 
 def get_projection_stack(commandline_args):
     """Get the projection stack. Build it if necessary.
