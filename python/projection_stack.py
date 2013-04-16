@@ -45,12 +45,13 @@ class ProjectionStackMaker(BaseRootfileAnalyser):
                 0,
                 self.n_images)
         first_pixel = int(example_image.GetYaxis().GetBinLowEdge(1))
-        self.pixel = [int(x) - first_pixel for x in self.pixel]
+        self.projection_pixel = [int(x) - first_pixel for x in self.pixel]
 
     def analyse_histogram(self, i, hist):
         super(ProjectionStackMaker,
                 self).analyse_histogram(i, hist)
-        projection = hist.ProjectionX("_px", self.pixel[0], self.pixel[1])
+        projection = hist.ProjectionX("_px", self.projection_pixel[0],
+                self.projection_pixel[1])
         for j in range(self.n_bins_x):
             self.output_object.SetBinContent(j + 1, i + 1,
                     projection.GetBinContent(j + 1))
