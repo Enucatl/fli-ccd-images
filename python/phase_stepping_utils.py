@@ -12,7 +12,8 @@ def average_curve(curves, phase_stepping_points):
     """Split the curves input into phase stepping curves with the given
     number of points and return the average."""
     list_of_curves = np.split(curves,
-            curves.shape[1] // phase_stepping_points)
+            curves.shape[1] // phase_stepping_points,
+            axis=0)
     stacked = np.dstack(list_of_curves)
     mean = np.mean(stacked, axis=-1)
     return mean
