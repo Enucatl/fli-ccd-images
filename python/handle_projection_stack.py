@@ -30,7 +30,6 @@ def get_projection_stack(commandline_args):
     use_corrected = commandline_args.corrected
     overwrite = commandline_args.overwrite
     open_option = "update"
-    print("pixel", pixel)
     projection_stack_maker = ProjectionStackMaker([pixel],
             root_file_name,
             open_option,

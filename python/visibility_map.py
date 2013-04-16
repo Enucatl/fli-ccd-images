@@ -10,15 +10,12 @@ import numpy as np
 
 from rootstyle import tdrstyle_grayscale
 from progress_bar import progress_bar
-from base_rootfile_analyser import commandline_parser
+from phase_stepping_utils import commandline_parser
 from dpc_radiography import get_signals
 from th2_to_numpy import th2_to_numpy
 from handle_projection_stack import get_projection_stack
 
 commandline_parser.description = __doc__
-commandline_parser.add_argument('--periods', metavar='PERIODS',
-        type=int, default=1,
-        help='number of phase stepping periods')
 
 if __name__ == '__main__':
     tdrstyle_grayscale()
