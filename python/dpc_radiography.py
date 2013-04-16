@@ -31,16 +31,16 @@ def get_signals(phase_stepping_curve, flat=None, n_periods=1):
     These are the columns of the phase_stepping_curve
     input, while the row is the pixel number."""
     n_phase_steps = phase_stepping_curve.shape[0]
-    transformed = np.delete(phase_stepping_curve, -1, axis=0)
-    transformed = np.fft.rfft(transformed, axis=0)
+    transformed = np.fft.rfft(phase_stepping_curve, n_phase_steps-1, axis=0)
     a0 = np.abs(transformed[0, :]) 
     a1 = np.abs(transformed[n_periods, :]) 
-    phi1 = np.unwrap(np.angle(transformed[n_periods, :]))
+    phi1 = np.angle(transformed[n_periods, :])
     if flat:
         a0_flat, phi_flat, a1_flat = flat
         a0 /= a0_flat
         a1 /= a1_flat / a0
-        phi1 = np.unwrap(phi1 - phi_flat)
+	phi1 -= phi_flat
+        phi1 = np.mod(phi1 + math.pi, 2*math.pi) - math.pi
     return a0, phi1, a1
 
 if __name__ == '__main__':
@@ -103,10 +103,10 @@ if __name__ == '__main__':
     #plt.hist(dark_field_image.flatten(), 256,
             #range=(np.amin(dark_field_image),
                 #np.amax(dark_field_image)), fc='k', ec='k')
-    #plt.figure()
-    #plt.hist(differential_phase_image.flatten(), 256,
-            #range=(np.amin(differential_phase_image),
-                #np.amax(differential_phase_image)), fc='k', ec='k')
+    plt.figure()
+    plt.hist(differential_phase_image.flatten(), 256,
+            range=(np.amin(differential_phase_image),
+                np.amax(differential_phase_image)), fc='k', ec='k')
     plt.savefig(root_file.GetName().replace(".root",
         "." + extension))
     plt.show()
