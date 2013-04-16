@@ -31,13 +31,8 @@ def get_signals(phase_stepping_curve, flat=None, n_periods=1):
     These are the columns of the phase_stepping_curve
     input, while the row is the pixel number."""
     n_phase_steps = phase_stepping_curve.shape[0]
-    print(n_phase_steps)
-    print(phase_stepping_curve[:,0])
-    transformed = np.fft.rfft(phase_stepping_curve, n_phase_steps-1, axis=0)
-    print(",".join(str(x) for x in transformed[:,0]),
-            file=open("21-20.fourier.numpy.txt", "w"))
-    print(",".join(str(x) for x in np.abs(transformed[:,0])))
-    print(",".join(str(x) for x in np.angle(transformed[:,0])))
+    transformed = np.fft.rfft(phase_stepping_curve,
+            n_phase_steps - 1, axis=0)
     a0 = np.abs(transformed[0, :]) 
     a1 = np.abs(transformed[n_periods, :]) 
     phi1 = np.angle(transformed[n_periods, :])
@@ -46,14 +41,7 @@ def get_signals(phase_stepping_curve, flat=None, n_periods=1):
         a0 /= a0_flat
         a1 /= a1_flat / a0
         phi1 -= phi_flat
-        print("subtracted")
-        #print(",".join(str(x) for x in phi1))
-        #print(",".join(str(x) for x in phi1))
-        print(str(phi1[0]))
-        phi1 = np.mod(phi1 + math.pi, 2*math.pi) - math.pi
-        print("mod")
-        #print(",".join(str(x) for x in phi1))
-        print(str(phi1[0]))
+        phi1 = np.mod(phi1 + math.pi, 2 * math.pi) - math.pi
     return a0, phi1, a1
 
 if __name__ == '__main__':
