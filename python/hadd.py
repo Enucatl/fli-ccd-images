@@ -6,6 +6,8 @@ from __future__ import division, print_function
 import os
 from subprocess import check_call
 
+import ROOT
+
 def hadd(files):
     """Merge several root files into one with $ROOTSYS/bin/hadd.
     
@@ -22,11 +24,16 @@ def hadd(files):
         output_name = "{0}_{1}.root".format(
                 first_name, last_name)
         output_name_with_dir = os.path.join(dir_name, output_name)
-        merge_command = "hadd {0} {1}".format(
+        merge_command = "hadd -f {0} {1}".format(
                 output_name_with_dir,
                 " ".join(files))
         print(merge_command)
         check_call(merge_command, shell=True)
+        """Remove the postprocessing folder, as everything needs to be
+        recalculated with the new data."""
+        root_file = ROOT.TFile(output_name_with_dir, "update")
+        root_file.Delete("postprocessing;1")
+        root_file.Close()
         return output_name_with_dir
 
 if __name__ == '__main__':

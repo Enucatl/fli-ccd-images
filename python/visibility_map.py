@@ -16,11 +16,15 @@ from th2_to_numpy import th2_to_numpy
 from handle_projection_stack import get_projection_stack
 
 commandline_parser.description = __doc__
+commandline_parser.add_argument('--periods', metavar='PERIODS',
+        type=int, default=1,
+        help='number of phase stepping periods')
 
 if __name__ == '__main__':
     tdrstyle_grayscale()
     args = commandline_parser.parse_args()
     roi = args.roi
+    n_periods = args.periods
     root_file, histogram = get_projection_stack(args)
     width = histogram.GetNbinsX()
     height = histogram.GetNbinsY()
@@ -28,7 +32,7 @@ if __name__ == '__main__':
             "visibility map;pixel;visibility",
             width, 0, width)
     image_array = th2_to_numpy(histogram)
-    a0, _, a1 = get_signals(image_array, n_periods=2)
+    a0, _, a1 = get_signals(image_array, n_periods=n_periods)
     visibility = 2 * a1 / a0
     for i in range(width):
             visibility_histogram.SetBinContent(i + 1, visibility[i])

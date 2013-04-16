@@ -25,6 +25,15 @@ commandline_parser.add_argument('--flats_every', metavar='N_FLATS',
 commandline_parser.add_argument('--lines', metavar='LINES',
         nargs=1, type=int, help='number of lines in the projections')
 
+def average_curve(curves, phase_stepping_points):
+    """Split the curves input into phase stepping curves with the given
+    number of points and return the average."""
+    list_of_curves = np.split(curves,
+            curves.shape[1] // phase_stepping_points)
+    stacked = np.dstack(list_of_curves)
+    mean = np.mean(stacked, axis=-1)
+    return mean
+
 def get_signals(phase_stepping_curve, flat=None, n_periods=1):
     """Get the three images from the phase stepping curves.
     flat contains a0, phi and a1 from the flat image
@@ -53,6 +62,7 @@ if __name__ == '__main__':
     extension = args.format[0]
     roi = args.roi
     image_array = th2_to_numpy(histogram)[:,roi[0]:roi[1]]
+    print(image_array.shape)
     flat_image = th2_to_numpy(flat_histogram)[:,roi[0]:roi[1]]
     flat_parameters = get_signals(flat_image)
     images = np.split(image_array, n_lines, axis=0)
@@ -108,6 +118,7 @@ if __name__ == '__main__':
     plt.hist(differential_phase_image.flatten(), 256,
             range=(np.amin(differential_phase_image),
                 np.amax(differential_phase_image)), fc='k', ec='k')
+    print("mean phase", np.mean(differential_phase_image))
     #plt.savefig(root_file.GetName().replace(".root",
         #"." + extension))
     plt.show()
