@@ -36,4 +36,12 @@ if __name__ == '__main__':
     mean_drift = (np.average(mean_drift_array, weights=np.power(std_dev, -2)),
             np.std(mean_drift_array) / math.sqrt(roi[1] - roi[0]))
     print("weighted drift = {0[0]:.5f} +- {0[1]:.5f}".format(mean_drift))
+    across_pixels = np.mean(phase_drift, axis=1)
+    across_pixels_err = np.std(phase_drift, axis=1) / math.sqrt(roi[1] -
+            roi[0])
+    plt.figure()
+    plt.errorbar(range(n_intervals), across_pixels, yerr=across_pixels_err,
+            fmt='ro')
+    print("average std dev", np.mean(across_pixels_err) * math.sqrt(roi[1] -
+        roi[0]))
     plt.show()
