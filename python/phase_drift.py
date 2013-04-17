@@ -33,7 +33,7 @@ if __name__ == '__main__':
     std_dev = np.std(phase_drift, axis=0) / math.sqrt(n_intervals)
     plt.figure()
     plt.errorbar(range(roi[0], roi[1]), mean_drift_array, yerr=std_dev, fmt='ro')
-    mean_drift = (np.mean(mean_drift_array),
+    mean_drift = (np.average(mean_drift_array, weights=np.power(std_dev, -2)),
             np.std(mean_drift_array) / math.sqrt(roi[1] - roi[0]))
-    print("mean drift = {0[0]:.5f} +- {0[1]:.5f}".format(mean_drift))
+    print("weighted drift = {0[0]:.5f} +- {0[1]:.5f}".format(mean_drift))
     plt.show()
