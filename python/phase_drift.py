@@ -5,7 +5,8 @@ from __future__ import division, print_function
 
 """Get a list of files, return a plot of the phase drift in each pixel."""
 
-import ROOT
+import matplotlib.pyplot as plt
+import math
 import numpy as np
 
 from th2_to_numpy import th2_to_numpy
@@ -19,11 +20,7 @@ if __name__ == '__main__':
     roi = args.roi
     n_lines = args.lines[0]
     n_intervals = n_lines - 1
-    phase_drift_histogram = ROOT.TH2D("phase_drift",
-            "phase drift; pixel; file number",
-            roi[1] - roi[0], roi[0], roi[1],
-            n_intervals, 0, n_intervals)
-
+    phase_drift = np.zeros((n_intervals, roi[1] - roi[0]))
     root_file, histogram = get_projection_stack(args)
     image_array = th2_to_numpy(histogram)[:,roi[0]:roi[1]]
     images = np.split(image_array, n_lines, axis=0)
@@ -31,13 +28,12 @@ if __name__ == '__main__':
     for i, (first_array, second_array) in enumerate(zip(images, images[1:])):
         flat_pars = get_signals(first_array, n_periods=args.periods)
         _, phi, _ = get_signals(second_array, flat_pars, n_periods=args.periods)
-        for j, phase_difference in enumerate(phi):
-            phase_drift_histogram.SetBinContent(
-                    j + 1, i + 1, phase_difference)
-    drift_histogram_canvas = ROOT.TCanvas("drift_histogram_canvas", "drift_histogram_canvas")
-    phase_drift_histogram.Draw("col")
-    profile_canvas = ROOT.TCanvas("profile_canvas", "profile_canvas")
-    profile = phase_drift_histogram.ProfileX()
-    profile.Draw()
-    profile_canvas.Update()
-    raw_input()
+        phase_drift[i, :] = phi
+    mean_drift_array = np.mean(phase_drift, axis=0)
+    std_dev = np.std(phase_drift, axis=0) / math.sqrt(n_intervals)
+    plt.figure()
+    plt.errorbar(range(roi[0], roi[1]), mean_drift_array, yerr=std_dev, fmt='ro')
+    mean_drift = (np.mean(mean_drift_array),
+            np.std(mean_drift_array) / math.sqrt(roi[1] - roi[0]))
+    print("mean drift = {0[0]:.5f} +- {0[1]:.5f}".format(mean_drift))
+    plt.show()
