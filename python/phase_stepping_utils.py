@@ -39,7 +39,7 @@ def get_signals(phase_stepping_curve, flat=None, n_periods=1):
         phi1 = np.mod(phi1 + math.pi, 2 * math.pi) - math.pi
     return a0, phi1, a1
 
-def goodness_of_fit(args):
+def goodness_of_fit(args, draw=False):
     """Return a histogram with the normalized chi2 calculated for the phase
     stepping fitted curve in each pixel."""
     roi = args.roi
@@ -63,10 +63,12 @@ def goodness_of_fit(args):
                 2 * dark[i] * normalization,
                 n_phase_steps,
                 phase[i])
-        #canvas = ROOT.TCanvas("canvas", "canvas")
-        #first_curve.Draw()
-        #function.SetLineColor(2)
-        #function.Draw("same")
+        if draw:
+            canvas = ROOT.TCanvas("dcanvas", "canvas")
+            curve.Draw()
+            function.SetLineColor(2)
+            function.Draw("same")
+            raw_input()
         chi_square = 0
         for j in range(curve.GetNbinsX()):
             observed = curve.GetBinContent(j + 1)
@@ -84,7 +86,7 @@ if __name__ == '__main__':
 
     from handle_projection_stack import get_projection_stack
     args = commandline_parser.parse_args()
-    histogram = goodness_of_fit(args)
+    histogram = goodness_of_fit(args, draw=False)
     canvas = ROOT.TCanvas("canvas", "canvas")
     histogram.Draw()
     raw_input()
