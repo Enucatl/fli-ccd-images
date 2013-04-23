@@ -29,7 +29,7 @@ commandline_parser.add_argument('--pixel_file', metavar='INI_FILE',
         nargs=1, default=["data/default_pixel.ini"],
         help='file containing the default pixel height')
 commandline_parser.add_argument('--format', metavar='FORMAT',
-        nargs=1, default=["tif"], help='output format (default 16bit tif)')
+        nargs=1, default=["tif"], help='output format')
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()

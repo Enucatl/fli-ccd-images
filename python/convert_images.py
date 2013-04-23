@@ -88,7 +88,7 @@ class ImageConverter(BaseRootfileAnalyser):
 
 commandline_parser.description = ImageConverter.__doc__
 commandline_parser.add_argument('--format', metavar='FORMAT',
-        nargs=1, default=["gif"], help='format of the images to be stored, default GIF')
+        nargs=1, default=["gif"], help='format of the images to be stored')
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()

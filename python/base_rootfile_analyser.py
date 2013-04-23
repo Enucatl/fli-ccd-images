@@ -14,7 +14,8 @@ from hadd import hadd
 
 tdrstyle_grayscale()
 commandline_parser = argparse.ArgumentParser(description='''Base class for doing
-        something with all the TH2 in a ROOT file.''')
+        something with all the TH2 in a ROOT file.''',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 commandline_parser.add_argument('file', metavar='FILE.root',
         nargs='+', help='ROOT file(s) with the tree')
 commandline_parser.add_argument('--batch', '-b', 

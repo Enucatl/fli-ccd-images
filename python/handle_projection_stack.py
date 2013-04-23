@@ -15,7 +15,7 @@ from hadd import hadd
 
 commandline_parser.description = __doc__
 commandline_parser.add_argument('--format', metavar='FORMAT',
-        nargs=1, default=["tif"], help='output format (default 16bit tif)')
+        nargs=1, default=["tif"], help='output format')
 commandline_parser.add_argument('--roi', metavar='FORMAT',
         nargs=2, default=[300, 800],
         type=int, help='region of interest')

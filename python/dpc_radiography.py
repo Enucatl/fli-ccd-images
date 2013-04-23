@@ -23,13 +23,13 @@ commandline_parser.add_argument('--flat', metavar='FLAT_FILE(s).root',
         help='ROOT file(s) with the histogram for the flat field')
 commandline_parser.add_argument('--n_flats', metavar='N_FLATS',
         nargs='?', type=int, default=1,
-        help='flats to average (default 1)')
+        help='flats to average')
 commandline_parser.add_argument('--flats_every', metavar='N_FLATS',
         nargs='?', type=int, default=999999,
-        help='flats taken every N_FLATS steps (default 999999)')
+        help='flats taken every N_FLATS steps')
 commandline_parser.add_argument('--lines', metavar='LINES',
         nargs=1, type=int,
-        help='number of lines in the projections (default 1)')
+        help='number of lines in the projections')
 
 
 if __name__ == '__main__':

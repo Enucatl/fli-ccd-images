@@ -32,7 +32,7 @@ commandline_parser.add_argument('--split', metavar='N_SUB_IMAGES',
         nargs=1, type=int, default=[1],
         help='split the original image into N subimages (default 1).')
 commandline_parser.add_argument('--format', metavar='FORMAT',
-        nargs=1, default=["tif"], help='output format (default 16bit tif)')
+        nargs=1, default=["tif"], help='output format')
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()

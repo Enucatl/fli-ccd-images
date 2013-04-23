@@ -30,7 +30,7 @@ commandline_parser.add_argument('--split', metavar='N_SUB_IMAGES',
         nargs=1, type=int, default=[1],
         help='split the original image into N subimages (default 1).')
 commandline_parser.add_argument('--format', metavar='FORMAT',
-        nargs=1, default=["tif"], help='output format (default 16bit tif)')
+        nargs=1, default=["tif"], help='output format')
 
 def split_indices(array):
     indices = np.flatnonzero(array)
