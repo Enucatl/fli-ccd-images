@@ -6,8 +6,6 @@ from base_rootfile_analyser import BaseRootfileAnalyser, commandline_parser
 from dark_image import DarkImageCalculator
 from flat_image import FlatImageCalculator
 import os
-import numpy
-import operator
 import ROOT
 
 class ExternalFlatDarkImporter(BaseRootfileAnalyser):
