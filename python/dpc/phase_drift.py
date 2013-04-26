@@ -9,11 +9,10 @@ import matplotlib.pyplot as plt
 import math
 import numpy as np
 
-from th2_to_numpy import th2_to_numpy
-from dpc_radiography import commandline_parser
-from handle_projection_stack import get_projection_stack
-from phase_stepping_utils import get_signals
-from rootstyle import tdrstyle_grayscale
+from utils.th2_to_numpy import th2_to_numpy
+from dpc.commandline_parser import commandline_parser
+from projection_stack.handle_projection_stack import get_projection_stack
+from dpc.phase_stepping_utils import get_signals
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()

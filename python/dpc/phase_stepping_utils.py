@@ -4,11 +4,7 @@ import math
 import numpy as np
 import ROOT
 
-from th2_to_numpy import th2_to_numpy
-from projection_stack import commandline_parser
-commandline_parser.add_argument('--periods', metavar='PERIODS',
-        type=int, default=1,
-        help='number of phase stepping periods')
+from utils.th2_to_numpy import th2_to_numpy
 
 def average_curve(curves, phase_stepping_points):
     """Split the curves input into phase stepping curves with the given
