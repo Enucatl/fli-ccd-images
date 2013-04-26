@@ -5,11 +5,7 @@ import array
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
-from base_rootfile_analyser import BaseRootfileAnalyser, commandline_parser
-from rootstyle import tdrstyle_grayscale
-from hadd import hadd
-
-tdrstyle_grayscale()
+from raw_images.base_rootfile_analyser import BaseRootfileAnalyser
 
 class IntensityScan(BaseRootfileAnalyser):
     """see intensity changes across all the images in a folder (e.g. a scan) in a region of interest. Needs the ROOT file with all the RAW images inside created by bin/make_root!"""
@@ -94,18 +90,21 @@ class IntensityScan(BaseRootfileAnalyser):
         finally:
             super(IntensityScan, self).close()
 
-commandline_parser.description = IntensityScan.__doc__
-commandline_parser.add_argument('--roi',
-        metavar=('min_x', 'max_x', 'min_y', 'max_y'),
-        nargs=4, help='min_x max_x min_y max_y')
-
 if __name__ == '__main__':
+    from utils.rootstyle import tdrstyle_grayscale
+    from utils.hadd import hadd
+    from raw_images.commandline_parser import commandline_parser
+    commandline_parser.description = IntensityScan.__doc__
+    commandline_parser.add_argument('--roi',
+            metavar=('min_x', 'max_x', 'min_y', 'max_y'),
+            nargs=4, help='min_x max_x min_y max_y')
     args = commandline_parser.parse_args()
     root_file_name = hadd(args.file)
     roi = args.roi
     overwrite = args.overwrite
     use_corrected = args.corrected
     open_option = "update"
+    tdrstyle_grayscale()
     with IntensityScan(roi, root_file_name,
             open_option, use_corrected, overwrite) as analyser:
         if not analyser.exists_in_file:

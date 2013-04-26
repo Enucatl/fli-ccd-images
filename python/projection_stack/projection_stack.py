@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import division, print_function
-import sys
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
-from base_rootfile_analyser import BaseRootfileAnalyser, commandline_parser
-from rootstyle import tdrstyle_grayscale
-from hadd import hadd
-
-tdrstyle_grayscale()
+from raw_images.base_rootfile_analyser import BaseRootfileAnalyser
+from projection_stack.commandline_parser import commandline_parser
 
 class ProjectionStackMaker(BaseRootfileAnalyser):
     """Draw a stack of a projection along a pixel of all the images in the ROOT file"""
@@ -68,12 +64,10 @@ class ProjectionStackMaker(BaseRootfileAnalyser):
         finally:
             super(ProjectionStackMaker, self).close()
 
-commandline_parser.description = ProjectionStackMaker.__doc__
-commandline_parser.add_argument('--pixel_file', metavar='INI_FILE',
-        nargs=1, default=["data/default_pixel.ini"],
-        help='file containing the default pixel height')
-
 if __name__ == '__main__':
+    from utils.rootstyle import tdrstyle_grayscale
+    from utils.hadd import hadd
+    tdrstyle_grayscale()
     args = commandline_parser.parse_args()
     root_file_name = hadd(args.file)
     overwrite = args.overwrite

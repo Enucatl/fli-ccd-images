@@ -3,30 +3,11 @@ from __future__ import division, print_function
 
 import warnings
 import os
-import argparse
 
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
-from rootstyle import tdrstyle_grayscale
-from progress_bar import progress_bar
-from hadd import hadd
-
-tdrstyle_grayscale()
-commandline_parser = argparse.ArgumentParser(description='''Base class for doing
-        something with all the TH2 in a ROOT file.''',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-commandline_parser.add_argument('file', metavar='FILE.root',
-        nargs='+', help='ROOT file(s) with the tree')
-commandline_parser.add_argument('--batch', '-b', 
-        action='store_true',
-        help='batch mode (no drawing)')
-commandline_parser.add_argument('--corrected', '-c', 
-        action='store_true',
-        help='use dark and flat corrected images.')
-commandline_parser.add_argument('--overwrite', '-o', 
-        action='store_true',
-        help='overwrite target if it exists')
+from utils.progress_bar import progress_bar
 
 """save results of calculations in this TDirectory inside the ROOT file"""
 post_processing_dirname = "postprocessing"
@@ -129,6 +110,8 @@ class BaseRootfileAnalyser(object):
         print(progress_bar((i + 1) / self.n_images), end='')
 
 if __name__ == '__main__':
+    from utils.hadd import hadd
+    from raw_images.commandline_parser import commandline_parser
     args = commandline_parser.parse_args()
     root_file_name = hadd(args.file)
     overwrite = args.overwrite

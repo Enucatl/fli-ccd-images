@@ -7,14 +7,10 @@ from itertools import islice
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
-from base_rootfile_analyser import BaseRootfileAnalyser, commandline_parser
-from rootstyle import tdrstyle_grayscale
-from hadd import hadd
-
-tdrstyle_grayscale()
+from raw_images.base_rootfile_analyser import BaseRootfileAnalyser
 
 class ImageConverter(BaseRootfileAnalyser):
-    """convert all images to an image format, defaults to GIF"""
+    """Convert all raw images in the tree to an image format with ROOT::TAsImage."""
     def __init__(self, extension, root_file_name, *args, **kwargs):
         super(ImageConverter,
                 self).__init__(root_file_name, *args, **kwargs)
@@ -86,17 +82,21 @@ class ImageConverter(BaseRootfileAnalyser):
         print()
         self.root_file.Close()
 
-commandline_parser.description = ImageConverter.__doc__
-commandline_parser.add_argument('--format', metavar='FORMAT',
-        nargs=1, default=["gif"], help='format of the images to be stored')
-
 if __name__ == '__main__':
+    from raw_images.commandline_parser import commandline_parser
+    from utils.rootstyle import tdrstyle_grayscale
+    from utils.hadd import hadd
+
+    commandline_parser.description = ImageConverter.__doc__
+    commandline_parser.add_argument('--format', metavar='FORMAT',
+            nargs=1, default=["gif"], help='format of the images to be stored')
     args = commandline_parser.parse_args()
     root_file_name = hadd(args.file)
     extension = args.format[0]
     overwrite = args.overwrite
     use_corrected = args.corrected
     open_option = "update"
+    tdrstyle_grayscale()
     with ImageConverter(extension, root_file_name) as analyser:
         if not analyser.exists_in_file:
             for i, entry in enumerate(analyser.tree):

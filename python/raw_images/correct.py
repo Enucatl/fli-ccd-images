@@ -2,11 +2,13 @@
 # encoding: utf-8
 
 from __future__ import division, print_function
-from base_rootfile_analyser import BaseRootfileAnalyser, commandline_parser
-from dark_image import DarkImageCalculator
-from flat_image import FlatImageCalculator
+
 import os
 import ROOT
+
+from raw_images.base_rootfile_analyser import BaseRootfileAnalyser
+from raw_images.dark_image import DarkImageCalculator
+from raw_images.flat_image import FlatImageCalculator
 
 class ExternalFlatDarkImporter(BaseRootfileAnalyser):
     """Add a tree with corrected images to the file."""
@@ -93,13 +95,14 @@ class ExternalFlatDarkImporter(BaseRootfileAnalyser):
         self.output_object.AddFriend(self.tree.GetName())
         super(ExternalFlatDarkImporter, self).close()
 
-commandline_parser.description = ExternalFlatDarkImporter.__doc__
-commandline_parser.add_argument('--flat',
-        nargs=1, help='root file with the flat images')
-commandline_parser.add_argument('--dark',
-        nargs='?', default='', help='root file with the dark images')
-
 if __name__ == '__main__':
+    from raw_images.commandline_parser import commandline_parser
+    commandline_parser.description = ExternalFlatDarkImporter.__doc__
+    commandline_parser.add_argument('--flat',
+            nargs=1, help='root file with the flat images')
+    commandline_parser.add_argument('--dark',
+            nargs='?', default='', help='root file with the dark images')
+
     args = commandline_parser.parse_args()
     root_file_name = args.file[0]
     flat_file_name = args.flat[0]

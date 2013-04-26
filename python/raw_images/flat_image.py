@@ -2,8 +2,10 @@
 # encoding: utf-8
 
 from __future__ import division, print_function
-from image_combination import ImageCombination
-import numpy
+
+import numpy as np
+
+from raw_images.image_combination import ImageCombination
 
 def calculate_flat(list_of_images, dark_image):
     """Calculate the master flat image:
@@ -18,7 +20,7 @@ def calculate_flat(list_of_images, dark_image):
         for image in list_of_images:
             image.Add(dark_image, -1)
     integrals = [image.Integral() for image in list_of_images]
-    mean_integral = numpy.mean(integrals)
+    mean_integral = np.mean(integrals)
     result = list_of_images[0].Clone()
     for image, integral in zip(list_of_images, integrals):
         image.Scale(mean_integral / integral)

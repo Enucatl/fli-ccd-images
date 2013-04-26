@@ -9,16 +9,8 @@ import os
 
 import ROOT
 
-from base_rootfile_analyser import commandline_parser
-from projection_stack import ProjectionStackMaker
-from hadd import hadd
-
-commandline_parser.description = __doc__
-commandline_parser.add_argument('--format', metavar='FORMAT',
-        nargs=1, default=["tif"], help='output format')
-commandline_parser.add_argument('--roi', metavar='FORMAT',
-        nargs=2, default=[300, 800],
-        type=int, help='region of interest')
+from projection_stack.projection_stack import ProjectionStackMaker
+from utils.hadd import hadd
 
 def get_projection_stack(commandline_args):
     """Get the projection stack. Build it if necessary.
