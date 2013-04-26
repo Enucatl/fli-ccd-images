@@ -1,4 +1,4 @@
-.PHONY: clean all test chmod_python
+.PHONY: clean all test chmod
 .SUFFIXES: .cpp .o
 
 BIN_FOLDER=bin
@@ -22,6 +22,12 @@ CFLAGS=-Wall `root-config --cflags` -I$(INC_FOLDER)/ -I$(GUI_INC_FOLDER) -I$(DIC
 LDFLAGS=`root-config --glibs`
 BOOST_LIBS=-lboost_program_options -lboost_filesystem -lboost_system
 BOOST_THREAD_LIBS=-lboost_thread
+PYTHON_PROGRAMMES=$(addprefix python/,\
+				  $(addprefix projection_stack/, export_stack.py projection_stack.py)\
+				  $(addprefix alignment/, pitch.py roll.py)\
+				  $(addprefix dpc/, dpc_radiography.py phase_drift.py visibility_map.py)\
+				  $(addprefix raw_images/, correct.py export_images.py intensity_scan.py)\
+					)
 
 all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer make_root) chmod
 
@@ -68,13 +74,14 @@ $(BIN_FOLDER):
 $(DICT_FOLDER):
 	mkdir -p $(DICT_FOLDER)
 
-chmod: python/*.py bash/*.sh
-	chmod +x python/*.py
+chmod: $(PYTHON_PROGRAMMES) bash/*.sh
+	chmod +x $(PYTHON_PROGRAMMES)
 	chmod +x bash/*.sh
+	-rm -rf bin/*py
+	$(foreach file, $(PYTHON_PROGRAMMES), ln -s ../$(file) $(BIN_FOLDER);)
 
-install:
-	mkdir -p $${HOME}/bin
-
+%.py %.sh:
+	echo "ciap"
 clean:
 	-rm -rf $(DICT_FOLDER) $(LIB_FOLDER) $(BIN_FOLDER) python/*.pyc\
 		test/png test/gif test/test.root test.root callgrind.out* *debuglog*\
