@@ -9,7 +9,7 @@ import os
 
 import ROOT
 
-from projections.projections import ProjectionStackMaker
+from projections.projection_stack import ProjectionStackMaker
 from readimages_utils.hadd import hadd
 
 def get_projection_stack(commandline_args):
@@ -46,7 +46,7 @@ def get_projection_stack(commandline_args):
     return root_file, histogram
 
 if __name__ == '__main__':
-    from rootstyle import tdrstyle_grayscale
+    from readimages_utils.rootstyle import tdrstyle_grayscale
     args = commandline_parser.parse_args()
     root_file, histogram = get_projection_stack(args)
     tdrstyle_grayscale()

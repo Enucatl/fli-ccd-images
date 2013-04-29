@@ -16,7 +16,6 @@ from skimage import img_as_uint
 
 from projections.commandline_parser import commandline_parser
 from readimages_utils.hadd import hadd
-from readimages_utils.rootstyle import tdrstyle_grayscale
 
 def split_indices(array):
     indices = np.flatnonzero(array)

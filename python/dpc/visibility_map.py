@@ -8,16 +8,15 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 import numpy as np
 
-from rootstyle import tdrstyle_grayscale
-from progress_bar import progress_bar
-from phase_stepping_utils import commandline_parser
-from dpc_radiography import get_signals
-from th2_to_numpy import th2_to_numpy
-from handle_projection_stack import get_projection_stack
+from dpc.phase_stepping_utils import commandline_parser
+from dpc.dpc_radiography import get_signals
+from readimages_utils.th2_to_numpy import th2_to_numpy
+from projections.handle_projection_stack import get_projection_stack
 
 commandline_parser.description = __doc__
 
 if __name__ == '__main__':
+    from readimages_utils.rootstyle import tdrstyle_grayscale
     tdrstyle_grayscale()
     args = commandline_parser.parse_args()
     roi = args.roi

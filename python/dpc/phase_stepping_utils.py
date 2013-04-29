@@ -80,7 +80,7 @@ def goodness_of_fit(args, draw=False):
 if __name__ == '__main__':
     """Test the phase stepping fit."""
 
-    from handle_projection_stack import get_projection_stack
+    from projections.handle_projection_stack import get_projection_stack
     args = commandline_parser.parse_args()
     histogram = goodness_of_fit(args, draw=False)
     canvas = ROOT.TCanvas("canvas", "canvas")

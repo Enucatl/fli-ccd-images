@@ -8,10 +8,10 @@ import math
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
-from th2_to_numpy import th2_to_numpy
 import numpy as np
 import matplotlib.pyplot as plt
 
+from readimages_utils.th2_to_numpy import th2_to_numpy
 from dpc.phase_stepping_utils import average_curve
 from dpc.phase_stepping_utils import get_signals
 from dpc.commandline_parser import commandline_parser
