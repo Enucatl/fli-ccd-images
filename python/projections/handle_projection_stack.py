@@ -9,8 +9,8 @@ import os
 
 import ROOT
 
-from projection_stack.projection_stack import ProjectionStackMaker
-from utils.hadd import hadd
+from projections.projections import ProjectionStackMaker
+from readimages_utils.hadd import hadd
 
 def get_projection_stack(commandline_args):
     """Get the projection stack. Build it if necessary.

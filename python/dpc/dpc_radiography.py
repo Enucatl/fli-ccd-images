@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from dpc.phase_stepping_utils import average_curve
 from dpc.phase_stepping_utils import get_signals
 from dpc.commandline_parser import commandline_parser
-from projection_stack.handle_projection_stack import get_projection_stack
+from projections.handle_projection_stack import get_projection_stack
 
 commandline_parser.description = __doc__
 

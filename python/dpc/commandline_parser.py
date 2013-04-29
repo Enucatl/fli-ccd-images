@@ -1,4 +1,4 @@
-from projection_stack.commandline_parser import commandline_parser
+from projections.commandline_parser import commandline_parser
 
 commandline_parser.add_argument('--flat', metavar='FLAT_FILE(s).root',
         nargs='+',

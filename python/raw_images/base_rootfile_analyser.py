@@ -7,7 +7,7 @@ import os
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
-from utils.progress_bar import progress_bar
+from readimages_utils.progress_bar import progress_bar
 
 """save results of calculations in this TDirectory inside the ROOT file"""
 post_processing_dirname = "postprocessing"
@@ -110,7 +110,7 @@ class BaseRootfileAnalyser(object):
         print(progress_bar((i + 1) / self.n_images), end='')
 
 if __name__ == '__main__':
-    from utils.hadd import hadd
+    from readimages_utils.hadd import hadd
     from raw_images.commandline_parser import commandline_parser
     args = commandline_parser.parse_args()
     root_file_name = hadd(args.file)

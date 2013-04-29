@@ -13,10 +13,10 @@ from skimage import io
 from skimage import filter
 import matplotlib.pyplot as plt
 
-from projection_stack.commandline_parser import commandline_parser
-from projection_stack.handle_projection_stack import get_projection_stack
-from utils.th2_to_numpy import th2_to_numpy
-from utils.hadd import hadd
+from projections.commandline_parser import commandline_parser
+from projections.handle_projection_stack import get_projection_stack
+from readimages_utils.th2_to_numpy import th2_to_numpy
+from readimages_utils.hadd import hadd
 
 if __name__ == '__main__':
     commandline_parser.add_argument('--split', metavar='N_SUB_IMAGES',

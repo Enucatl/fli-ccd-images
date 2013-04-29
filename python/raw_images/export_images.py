@@ -84,8 +84,8 @@ class ImageConverter(BaseRootfileAnalyser):
 
 if __name__ == '__main__':
     from raw_images.commandline_parser import commandline_parser
-    from utils.rootstyle import tdrstyle_grayscale
-    from utils.hadd import hadd
+    from readimages_utils.rootstyle import tdrstyle_grayscale
+    from readimages_utils.hadd import hadd
 
     commandline_parser.description = ImageConverter.__doc__
     commandline_parser.add_argument('--format', metavar='FORMAT',

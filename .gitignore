@@ -9,3 +9,4 @@ test/png
 *.swp
 callgrind*
 *debuglog*
+*egg-info*

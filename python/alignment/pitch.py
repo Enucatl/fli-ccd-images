@@ -14,9 +14,9 @@ from skimage import io
 from skimage import filter
 from skimage import img_as_uint
 
-from projection_stack.commandline_parser import commandline_parser
-from utils.hadd import hadd
-from utils.rootstyle import tdrstyle_grayscale
+from projections.commandline_parser import commandline_parser
+from readimages_utils.hadd import hadd
+from readimages_utils.rootstyle import tdrstyle_grayscale
 
 def split_indices(array):
     indices = np.flatnonzero(array)

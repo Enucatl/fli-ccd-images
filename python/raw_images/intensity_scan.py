@@ -91,8 +91,8 @@ class IntensityScan(BaseRootfileAnalyser):
             super(IntensityScan, self).close()
 
 if __name__ == '__main__':
-    from utils.rootstyle import tdrstyle_grayscale
-    from utils.hadd import hadd
+    from readimages_utils.rootstyle import tdrstyle_grayscale
+    from readimages_utils.hadd import hadd
     from raw_images.commandline_parser import commandline_parser
     commandline_parser.description = IntensityScan.__doc__
     commandline_parser.add_argument('--roi',
