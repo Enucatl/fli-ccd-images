@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "ReadImages",
-    version = "2.51",
+    version = "2.61",
     packages = find_packages(),
     scripts = ['projections/projection_stack.py',
         'projections/export_stack.py',
