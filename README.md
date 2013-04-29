@@ -30,7 +30,7 @@ please report any bug or feature request using the [issues webpage](https://bitb
     :::bash
     git clone https://bitbucket.org/Enucatl/readimages.git
 
-    or 
+or 
 
     :::bash
     git clone git@bitbucket.org:Enucatl/readimages.git
