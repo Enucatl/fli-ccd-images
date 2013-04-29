@@ -74,11 +74,10 @@ $(BIN_FOLDER):
 $(DICT_FOLDER):
 	mkdir -p $(DICT_FOLDER)
 
-chmod: $(PYTHON_PROGRAMMES) bash/*.sh
-	chmod +x $(PYTHON_PROGRAMMES)
+chmod: bash/*.sh
 	chmod +x bash/*.sh
-	-rm -rf bin/*py
-	cd python; python setup.py develop --install-dir ~/bin/python-packages -s ../bin
+	-rm -rf bin/*py?
+	cd python; python setup.py develop --user
 
 clean:
 	-rm -rf $(DICT_FOLDER) $(LIB_FOLDER) $(BIN_FOLDER) python/*.pyc\
