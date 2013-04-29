@@ -86,31 +86,31 @@ This ROOT file format is used in all the other scripts.
 Three scripts are provided to apply the same operation to each raw image
 (saved in the ROOT format):
 
-    * `correct.py`: subtract a dark, divide by a flat and append the results
+   * `correct.py`: subtract a dark, divide by a flat and append the results
       to the input file.
-    * `export_images.py`: save all images in another format (gif, png...).
-    * `intensity_scan.py`: plot the integral in the image as a function of
+   * `export_images.py`: save all images in another format (gif, png...).
+   * `intensity_scan.py`: plot the integral in the image as a function of
       the image number.
 
 ### Analyse stacks
 The easiest way to reconstruct a 2D image out of 1D lines is to stack the
 lines together. More tools are then provided to analyse the stack:
 
-    * `projection_stack.py`: make the stacked image.
-    * `export_stack.py`: save the stacked image in a different format.
+   * `projection_stack.py`: make the stacked image.
+   * `export_stack.py`: save the stacked image in a different format.
 
 ### Alignment tools
 The stacked images can yield interesting alignment information:
 
-    * `roll.py`: rotation about the `x` axis.
-    * `pitch.py`: rotation about the `y` axis.
+   * `roll.py`: rotation about the `x` axis.
+   * `pitch.py`: rotation about the `y` axis.
 
 ### Differential phase contrast
 The differential phase contrast images can be calculated from phase stepping
 scans:
 
-    * `dpc_radiography.py`: reconstruct the absorption, differential phase,
+   * `dpc_radiography.py`: reconstruct the absorption, differential phase,
       and visibility reduction images.
-    * `phase_drift.py`: show the drift of the phase values during a scan.
-    * `visibility_map.py`: draw a graph with the visibility as a function of
+   * `phase_drift.py`: show the drift of the phase values during a scan.
+   * `visibility_map.py`: draw a graph with the visibility as a function of
       the pixel in the detector.
