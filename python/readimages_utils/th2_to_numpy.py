@@ -1,7 +1,7 @@
 import numpy as np 
 from skimage import img_as_uint
 
-def th2_to_numpy(histogram):
+def th2_to_numpy(histogram, roi=[]):
     """Convert TH2 histogram to numpy array
 
     :histogram: TH2 object
@@ -20,7 +20,10 @@ def th2_to_numpy(histogram):
     image_array = np.delete(image_array, (0, height + 1), 0)
     image_array = np.delete(image_array, (0, width + 1), 1)
     image_array = np.flipud(image_array)
-    return image_array
+    if roi:
+        return image_array[:, roi[0]:roi[1]]
+    else: 
+        return image_array
 
 def numpy_to_th2(array, name="image"):
     """Convert numpy array to TH2

@@ -43,7 +43,7 @@ def goodness_of_fit(args, draw=False):
             "normalized chi2; pixel; #chi^{2}/ndf",
             roi[1] - roi[0], roi[0], roi[1])
     root_file, histogram = get_projection_stack(args)
-    image = th2_to_numpy(histogram)[:, roi[0]:roi[1]]
+    image = th2_to_numpy(histogram, roi)
     n_periods = args.periods
     absorption, phase, dark = get_signals(image, n_periods=n_periods)
     normalization = 1 / (image.shape[0] - 1)

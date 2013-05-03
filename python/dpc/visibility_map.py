@@ -8,7 +8,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 import numpy as np
 
-from dpc.phase_stepping_utils import commandline_parser
+from dpc.commandline_parser import commandline_parser
 from dpc.dpc_radiography import get_signals
 from readimages_utils.th2_to_numpy import th2_to_numpy
 from projections.handle_projection_stack import get_projection_stack
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     width = histogram.GetNbinsX()
     height = histogram.GetNbinsY()
     visibility_histogram = ROOT.TH1D("visibility",
-            "visibility map;pixel;visibility",
+            "visibility map;pixel;visibility (2 a_{1}/a_{0})",
             width, 0, width)
     image_array = th2_to_numpy(histogram)
     a0, _, a1 = get_signals(image_array, n_periods=n_periods)
@@ -45,5 +45,14 @@ if __name__ == '__main__':
     text.AddText("mean visibility {0[0]}-{0[1]}: {1:.2%}".format(
         roi, mean_visibility))
     text.Draw()
+    visibility_canvas.Update()
+    line = ROOT.TLine(
+            visibility_canvas.GetUxmin(),
+            mean_visibility,
+            visibility_canvas.GetUxmax(),
+            mean_visibility)
+    line.SetLineWidth(2)
+    line.SetLineColor(2)
+    line.Draw()
     visibility_canvas.Update()
     raw_input()
