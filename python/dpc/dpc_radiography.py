@@ -22,14 +22,16 @@ commandline_parser.description = __doc__
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
     root_file, histogram = get_projection_stack(args)
+    roi = args.roi
     args.file = args.flat
     flat_root_file, flat_histogram = get_projection_stack(args)
-    n_lines = args.lines[0]
+    image_array = th2_to_numpy(histogram, roi)
+    flat_image = th2_to_numpy(flat_histogram, roi)
+    n_steps = args.steps[0]
+    n_lines = image_array.shape[0] // n_steps 
+    #print(image_array.shape, n_steps, n_lines)
     extension = args.format[0]
-    roi = args.roi
     n_periods = args.periods
-    image_array = th2_to_numpy(histogram)[:,roi[0]:roi[1]]
-    flat_image = th2_to_numpy(flat_histogram)[:,roi[0]:roi[1]]
     flat_parameters = get_signals(flat_image, n_periods=n_periods)
     images = np.split(image_array, n_lines, axis=0)
     absorption_image = np.zeros((n_lines, image_array.shape[1]))
@@ -46,19 +48,16 @@ if __name__ == '__main__':
 
     f, (ax1, ax2, ax3) = plt.subplots(
             3, 1, sharex=True)
-    plt.subplots_adjust(
-            left=0.0, right=1.0,
-            #bottom=0.0, top=1,
-            wspace=0, hspace=0)
+    plt.tight_layout()
     img1 = ax1.imshow(absorption_image, cmap=plt.cm.Greys)
-    #ax1.set_title("absorption")
+    ax1.set_title("absorption")
     ax1.axis("off")
-    img2 = ax2.imshow(differential_phase_image, cmap=plt.cm.Greys_r)
+    img2 = ax2.imshow(differential_phase_image)
     img2.set_clim(0, 1.5)
-    #ax2.set_title("differential phase")
+    ax2.set_title("differential phase")
     ax2.axis("off")
-    img3 = ax3.imshow(dark_field_image, cmap=plt.cm.Greys_r)
-    #ax3.set_title("dark field")
+    img3 = ax3.imshow(dark_field_image)
+    ax3.set_title("visibility reduction")
     img3.set_clim(0, 2)
     ax3.axis("off")
     if absorption_image.shape[0] == 1:
@@ -67,12 +66,15 @@ if __name__ == '__main__':
         hist1.hist(range(absorption_image.shape[1]),
                 bins=absorption_image.shape[1],
                 weights=absorption_image.T, fc='w', ec='k')
+        hist1.set_title("absorption")
         hist2.hist(range(differential_phase_image.shape[1]),
                 bins=differential_phase_image.shape[1],
                 weights=differential_phase_image.T, fc='w', ec='k')
+        hist2.set_title("differential phase")
         hist3.hist(range(dark_field_image.shape[1]),
                 bins=dark_field_image.shape[1],
                 weights=dark_field_image.T, fc='w', ec='k')
+        hist3.set_title("visibility reduction")
     #plt.figure()
     #plt.hist(image_array.flatten(), 256,
             #range=(np.amin(image_array),
@@ -85,10 +87,10 @@ if __name__ == '__main__':
     #plt.hist(differential_phase_image.flatten(), 256,
             #range=(np.amin(differential_phase_image),
                 #np.amax(differential_phase_image)), fc='k', ec='k')
-    print("mean phase {0:.4f} +- {1:.4f}".format(
-            np.mean(differential_phase_image),
-            np.std(differential_phase_image) /
-            math.sqrt(roi[1] - roi[0])))
-    plt.savefig(root_file.GetName().replace(".root",
-        "." + extension))
+    #print("mean phase {0:.4f} +- {1:.4f}".format(
+            #np.mean(differential_phase_image),
+            #np.std(differential_phase_image) /
+            #math.sqrt(roi[1] - roi[0])))
+    #plt.savefig(root_file.GetName().replace(".root",
+        #"." + extension))
     plt.show()
