@@ -33,16 +33,11 @@ if __name__ == '__main__':
     mean_drift_array = np.mean(phase_drift, axis=0)
     std_dev = np.std(phase_drift, axis=0) / math.sqrt(n_intervals - 1)
     across_steps_figure = plt.figure()
-    #ax1 = plt.axes((0.18, 0.20, 0.55, 0.65))
     ax1 = plt.axes()
     ax1.set_xlim((roi[0], roi[1]))
-    #ax1.spines['top'].set_visible(False)
-    #ax1.spines['right'].set_visible(False)
     x_positions = range(roi[0], roi[1])
     plt.plot(x_positions,
             mean_drift_array,
-            #yerr=std_dev,
-            #fmt='ko',
             clip_on=False,
             )
     plt.xlabel('pixel')

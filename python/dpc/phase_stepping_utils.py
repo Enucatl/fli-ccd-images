@@ -2,9 +2,34 @@ from __future__ import division, print_function
 
 import math
 import numpy as np
+from scipy import stats
 import ROOT
 
 from readimages_utils.th2_to_numpy import th2_to_numpy
+
+def correct_drift(phase_image):
+    """Subtract a (fitted) linear drift from the image."""
+    x = np.arange(phase_image.shape[0])
+    y = np.sum(phase_image, axis=1) / phase_image.shape[1]
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+    print(slope, intercept)
+    import matplotlib.pyplot as plt
+    plt.figure()
+    axis = plt.axes()
+    line = slope * x + intercept
+    axis.set_title("phase drift interpolation")
+    plt.plot(x, line, 'r-', x, y, 'o')
+    plt.xlabel('image number')
+    plt.ylabel('average phase (rad)')
+    print(line.shape)
+    correction = np.tile(line, (phase_image.shape[1], 1)).transpose()
+    corrected_image = phase_image - correction
+    plt.figure()
+    image = plt.imshow(corrected_image)
+    image.set_clim(-0.5, 0.5)
+    plt.figure()
+    return corrected_image
+
 
 def average_curve(curves, phase_stepping_points):
     """Split the curves input into phase stepping curves with the given

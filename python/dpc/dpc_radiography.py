@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from readimages_utils.th2_to_numpy import th2_to_numpy
 from dpc.phase_stepping_utils import average_curve
 from dpc.phase_stepping_utils import get_signals
+from dpc.phase_stepping_utils import correct_drift
 from dpc.commandline_parser import commandline_parser
 from projections.handle_projection_stack import get_projection_stack
 
@@ -29,7 +30,6 @@ if __name__ == '__main__':
     flat_image = th2_to_numpy(flat_histogram, roi)
     n_steps = args.steps[0]
     n_lines = image_array.shape[0] // n_steps 
-    #print(image_array.shape, n_steps, n_lines)
     extension = args.format[0]
     n_periods = args.periods
     flat_parameters = get_signals(flat_image, n_periods=n_periods)
@@ -46,20 +46,22 @@ if __name__ == '__main__':
         differential_phase_image[i, :] = phase
         dark_field_image[i, :] = dark_field
 
+    drift_corrected = correct_drift(differential_phase_image)
     f, (ax1, ax2, ax3) = plt.subplots(
             3, 1, sharex=True)
-    plt.tight_layout()
-    img1 = ax1.imshow(absorption_image, cmap=plt.cm.Greys)
-    ax1.set_title("absorption")
+    img1 = ax1.imshow(absorption_image,
+            cmap=plt.cm.Greys)
     ax1.axis("off")
+    ax1.set_title("absorption")
     img2 = ax2.imshow(differential_phase_image)
     img2.set_clim(0, 1.5)
-    ax2.set_title("differential phase")
     ax2.axis("off")
+    ax2.set_title("differential phase")
     img3 = ax3.imshow(dark_field_image)
     ax3.set_title("visibility reduction")
-    img3.set_clim(0, 2)
     ax3.axis("off")
+    img3.set_clim(0, 2)
+    plt.tight_layout()
     if absorption_image.shape[0] == 1:
         f, (hist1, hist2, hist3) = plt.subplots(
                 3, 1, sharex=True)
