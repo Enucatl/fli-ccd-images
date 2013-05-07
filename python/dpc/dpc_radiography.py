@@ -25,7 +25,10 @@ class ImageReconstructor(object):
     """
 
     def __init__(self, args):
+        self.overwrite = args.overwrite
         root_file, histogram = get_projection_stack(args)
+        self.output_name = root_file.GetName().replace(".root",
+                "." + args.format[0])
         args.file = args.flat
         flat_root_file, flat_histogram = get_projection_stack(args)
         image_array = th2_to_numpy(histogram, args.roi)
@@ -57,7 +60,7 @@ class ImageReconstructor(object):
         self.differential_phase_image_title = "differential phase"
         self.dark_field_image_title = "visibility reduction"
 
-    def draw(self, file=""):
+    def draw(self):
         f, (ax1, ax2, ax3) = plt.subplots(
                 3, 1, sharex=True)
         img1 = ax1.imshow(self.absorption_image,
@@ -104,12 +107,10 @@ class ImageReconstructor(object):
                 #np.mean(self.differential_phase_image),
                 #np.std(self.differential_phase_image) /
                 #math.sqrt(roi[1] - roi[0])))
-        #plt.savefig(root_file.GetName().replace(".root",
-            #"." + extension))
-        if not file:
-            plt.show()
-        else:
-            plt.savefig(file)
+        if not os.path.exists(self.output_name) or self.overwrite:
+            plt.savefig(self.output_name)
+            print("saved", self.output_name)
+        plt.show()
 
     def correct_drift(self, verbose=False):
         """Fit a vertical line to the phase image in order to subtract a
