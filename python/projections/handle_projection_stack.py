@@ -17,8 +17,7 @@ def get_projection_stack(commandline_args):
     Return the root file (otherwise it will be garbage
     collected) and the projection stack as the original TH2."""
     root_file_name = hadd(commandline_args.file)
-    pixel_file = commandline_args.pixel_file[0]
-    pixel = int(open(pixel_file).read()) 
+    pixel = commandline_args.pixel[0]
     use_corrected = commandline_args.corrected
     overwrite = commandline_args.overwrite
     open_option = "update"

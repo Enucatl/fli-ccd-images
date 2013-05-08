@@ -72,8 +72,7 @@ if __name__ == '__main__':
     root_file_name = hadd(args.file)
     overwrite = args.overwrite
     use_corrected = args.corrected
-    pixel_file = args.pixel_file[0]
-    pixel = int(open(pixel_file).read()) 
+    pixel = args.pixel[0]
     batch = args.batch
     open_option = "update"
 
