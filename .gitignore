@@ -6,6 +6,7 @@ test/png
 *pyc
 *root
 *.gif
+*.hdf5
 *.swp
 callgrind*
 *debuglog*
