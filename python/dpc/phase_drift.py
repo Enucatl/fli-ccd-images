@@ -57,7 +57,7 @@ if __name__ == '__main__':
                    transform=ax1.transData, clip_on=False,
                    va='top', ha='left')
     plt.axhline(color='r')
-    plt.savefig("pixels.png")
+    #plt.savefig("pixels.png")
     """Now across pixels"""
     across_pixels_figure = plt.figure()
     across_pixels = np.mean(phase_drift, axis=1)
