@@ -4,8 +4,7 @@ from __future__ import division, print_function
 import os
 import argparse
 
-import ROOT
-ROOT.PyConfig.IgnoreCommandLineOptions = True
+import h5py
 
 import math
 import numpy as np
@@ -16,8 +15,11 @@ from skimage import img_as_uint
 
 from projections.commandline_parser import commandline_parser
 from readimages_utils.hadd import hadd
+from raw_images.base_analyser import post_processing_dirname
 
 def split_indices(array):
+    """Find the grating position as the indices where the array change from
+    0 to 1."""
     indices = np.flatnonzero(array)
     split_points = [indices[0]]
     for i in range(len(indices) - 1):
@@ -59,11 +61,20 @@ def grating_height(segments):
 if __name__ == '__main__':
     commandline_parser.add_argument('--split', metavar='N_SUB_IMAGES',
             nargs=1, type=int, default=[1],
-            help='split the original image into N subimages (default 1).')
+            help='split the original image into N subimages.')
     args = commandline_parser.parse_args()
-    root_file, histogram = get_projection_stack(args)
-    image_array = th2_to_numpy(histogram)
-    images = np.split(image_array, n_subimages, 0)
+    roi = args.roi
+    psm = ProjectionStackMaker(args.pixel[0],
+            args.file,
+            "a",
+            args.corrected,
+            args.overwrite,
+            args.batch)
+    if not psm.exists_in_file:
+        """Make projection stack if it doesn't exist."""
+        for i, image in enumerate(psm.images.itervalues()):
+            analyser.analyse_histogram(i, image)
+    images = np.split(psm.output_object, args.split[0], 0)
     io.use_plugin("freeimage")
     n_images = len(images)
     x = np.zeros(n_images)
@@ -74,13 +85,13 @@ if __name__ == '__main__':
     processed_images = []
     image_height = 0
     for i, image in enumerate(images):
-        image = image[:, 300:800]
+        image = image[:, roi[0]:roi[1]]
         image_height = image.shape[0]
         edges = filter.sobel(image)
         threshold = filter.threshold_otsu(edges)
         label_objects, nb_labels = ndimage.label(edges > threshold)
         sizes = np.bincount(label_objects.ravel())
-        mask_sizes = sizes > 800
+        mask_sizes = sizes > (roi[1] - roi[0])
         mask_sizes[0] = 0
         cleaned = mask_sizes[label_objects]
         filled = ndimage.binary_fill_holes(cleaned)
@@ -96,14 +107,14 @@ if __name__ == '__main__':
         height = lower_edge - upper_edge
         x[i] = i
         y[i] = height
-        yerr[i] = std_dev / 1000
+        yerr[i] = std_dev / math.sqrt(roi[1] - roi[0])
         lower_edges.append(lower_edge)
         upper_edges.append(upper_edge)
         processed_images.append(filled)
     print(processed_images)
-    processed_images = np.reshape(processed_images, (-1, 500))
+    processed_images = np.reshape(processed_images, (-1, (roi[1] - roi[0])))
     f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
-    plt.subplots_adjust(left=0.0, right=1.0, bottom=0.0, top=0.95)
+    plt.tight_layout()
     ax1.imshow(image_array, cmap=plt.cm.Greys_r)
     ax2.imshow(processed_images, cmap=plt.cm.Greys_r)
     for i, (lower_edge, upper_edge) in enumerate(
@@ -113,4 +124,7 @@ if __name__ == '__main__':
         ax2.axhline(y=(first_pixel + upper_edge), color='r')
     plt.figure()
     plt.errorbar(x, y, fmt='o')
+    plt.ion()
     plt.show()
+    print()
+    raw_input("Press ENTER to quit.")
