@@ -5,18 +5,14 @@ import os
 import argparse
 import math
 
-import ROOT
-ROOT.PyConfig.IgnoreCommandLineOptions = True
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-from readimages_utils.th2_to_numpy import th2_to_numpy
 from dpc.phase_stepping_utils import average_curve
 from dpc.phase_stepping_utils import get_signals
 from dpc.commandline_parser import commandline_parser
-from projections.handle_projection_stack import get_projection_stack
+from projections.projection_stack import get_projection_stack
 
 class ImageReconstructor(object):
     """Reconstruct the three signals from the phase stepping curve of the
@@ -26,13 +22,8 @@ class ImageReconstructor(object):
 
     def __init__(self, args):
         self.overwrite = args.overwrite
-        root_file, histogram = get_projection_stack(args)
-        self.output_name = root_file.GetName().replace(".root",
-                "." + args.format[0])
-        args.file = args.flat
-        flat_root_file, flat_histogram = get_projection_stack(args)
-        image_array = th2_to_numpy(histogram, args.roi)
-        flat_image = th2_to_numpy(flat_histogram, args.roi)
+        image_array = get_projection_stack(args.file, args)
+        flat_image = get_projection_stack(args.flat, args)
         self.n_steps = args.steps[0]
         self.n_lines = image_array.shape[0] // self.n_steps 
         if image_array.shape[0] % self.n_steps:

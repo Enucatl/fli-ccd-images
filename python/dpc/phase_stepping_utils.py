@@ -4,9 +4,6 @@ import math
 import numpy as np
 import ROOT
 
-from readimages_utils.th2_to_numpy import th2_to_numpy
-
-
 def average_curve(curves, phase_stepping_points):
     """Split the curves input into phase stepping curves with the given
     number of points and return the average."""

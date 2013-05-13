@@ -7,6 +7,23 @@ import numpy as np
 from readimages_h5py.base_hdf5_analyser import BaseHDF5Analyser
 from projections.commandline_parser import commandline_parser
 
+def get_projection_stack(files, args):
+    """Factory of projection stacks."""
+    psm = ProjectionStackMaker(args.pixel[0],
+            args.file,
+            "a",
+            args.corrected,
+            args.overwrite,
+            batch=True)
+    psm.open()
+    if not psm.exists_in_file:
+        """Make projection stack if it doesn't exist."""
+        for i, image in enumerate(psm.images.itervalues()):
+            psm.analyse_histogram(i, image)
+    projection_stack = psm.output_object[:, args.roi[0]:args.roi[1]]
+    psm.close()
+    return projection_stack
+
 class ProjectionStackMaker(BaseHDF5Analyser):
     """Draw a stack of a projection along a pixel of all the images in the
     file.

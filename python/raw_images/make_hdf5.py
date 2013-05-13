@@ -35,6 +35,7 @@ if __name__ == '__main__':
     header_lines = 16
     for folder_name in folder_names:
         if not os.path.isdir(folder_name):
+            print("not a folder:", folder_name)
             continue
         print("converting", folder_name)
         files = glob(os.path.join(folder_name, "*.raw"))
