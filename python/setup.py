@@ -16,7 +16,9 @@ setup(
         'raw_images/intensity_scan.py',
         ],
 
-    install_requires = ['numpy',
+    install_requires = [
+        'h5py',
+        'numpy',
         'scikit-image'],
 
     package_data = {

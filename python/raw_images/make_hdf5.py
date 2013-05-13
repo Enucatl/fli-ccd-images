@@ -22,18 +22,33 @@ commandline_parser = argparse.ArgumentParser(description=__doc__,
 commandline_parser.add_argument('folder', metavar='FOLDER(s)',
         nargs='+', help='folder(s) with the raw files')
 commandline_parser.add_argument('--show', action='store_true',
-        help='show each image')
+        help='show each image.')
+commandline_parser.add_argument('--overwrite', '-o',
+        action='store_true',
+        help='overwrite hdf5 files if they already exist.')
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
     show = args.show
+    overwrite = args.overwrite
     folder_names = args.folder
     header_lines = 16
     for folder_name in folder_names:
+        if not os.path.isdir(folder_name):
+            continue
         print("converting", folder_name)
         files = glob(os.path.join(folder_name, "*.raw"))
         output_name = os.path.normpath(folder_name) + ".hdf5"
-        output_file = h5py.File(output_name, 'w')
+        if not os.path.exists(output_name) or overwrite:
+            output_file = h5py.File(output_name, 'w')
+        else:
+            print()
+            print("""File exists. Run with the --overwrite (-o) flag if you want to overwrite it.""")
+            print(output_name)
+            print()
+            print(progress_bar(1))
+            print()
+            continue
         group = output_file.create_group("raw_images")
         n_files = len(files)
         for i, input_file_name in enumerate(files):
@@ -68,4 +83,5 @@ if __name__ == '__main__':
                 plt.show()
         output_file.close()
         print()
+        print("written", output_name)
     print("Done!")

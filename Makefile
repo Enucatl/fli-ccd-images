@@ -80,6 +80,7 @@ chmod: bash/*.sh
 	cd python; python setup.py develop --user
 
 clean:
-	-rm -rf $(DICT_FOLDER) $(LIB_FOLDER) $(BIN_FOLDER) python/*.pyc\
+	-rm -rf $(DICT_FOLDER) $(LIB_FOLDER) $(BIN_FOLDER)\
 		test/png test/gif test/test.root test.root callgrind.out* *debuglog*\
 		${HOME}/bin/image_convert_server.py
+	find -name "*pyc" -exec rm {} \;

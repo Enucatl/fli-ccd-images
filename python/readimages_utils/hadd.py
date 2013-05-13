@@ -6,7 +6,8 @@ from __future__ import division, print_function
 import os
 
 import h5py
-import raw_images
+
+raw_images_group = "raw_images"
 
 def hadd(files):
     """Merge several files into one.
@@ -23,15 +24,17 @@ def hadd(files):
         last_name = os.path.splitext(os.path.basename(files[-1]))[0]
         output_name = "{0}_{1}.hdf5".format(
                 first_name, last_name)
+        output_name_with_dir = os.path.join(dir_name, output_name)
         """Don't overwrite"""
         if not os.path.exists(output_name_with_dir):
-            output_name_with_dir = os.path.join(dir_name, output_name)
             output_file = h5py.File(output_name_with_dir, "w-")
-            output_group = output_file.create_group(raw_images.base_analyser.raw_images_group)
+            output_group = output_file.create_group(raw_images_group)
             for input_file_name in files:
                 input_file = h5py.File(input_file_name, "r")
                 for name, data in input_file[raw_images_group].iteritems():
-                    group.create_dataset(name, data=data)
+                    dataset = output_group.create_dataset(name, data=data)
+                    for key, value in data.attrs.iteritems():
+                        dataset.attrs[key] = value
                 input_file.close()
             output_file.close()
         return output_name_with_dir
