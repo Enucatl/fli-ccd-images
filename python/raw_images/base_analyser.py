@@ -7,6 +7,7 @@ import os
 import h5py
 
 from readimages_utils.progress_bar import progress_bar
+from readimages_utils.hadd import hadd
 
 """save results of calculations in this group inside the hdf5 file"""
 post_processing_dirname = "postprocessing"
@@ -24,12 +25,13 @@ class BaseHDF5Analyser(object):
     Setup (open) and cleanup (close) functions are provided, as well as an
     easy loop over all the images."""
 
-    def __init__(self, file_name,
+    def __init__(self, file_names,
             open_option="r+",
             use_corrected=False,
             overwrite=False,
             batch=False):
         super(BaseHDF5Analyser, self).__init__()
+        file_name = hadd(file_names)
         if not os.path.exists(file_name):
             print("File not found", file_name)
             raise IOError
@@ -115,7 +117,7 @@ class BaseHDF5Analyser(object):
 if __name__ == '__main__':
     from raw_images.commandline_parser import commandline_parser
     args = commandline_parser.parse_args()
-    file_name = args.file[0]
+    file_name = args.file
     overwrite = args.overwrite
     use_corrected = args.corrected
     open_option = "a"

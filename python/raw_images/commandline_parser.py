@@ -1,13 +1,13 @@
 """Command line parser for all the analysers of raw images (saved in a
-TTree)."""
+hdf5 file)."""
 
 import argparse
 
 commandline_parser = argparse.ArgumentParser(description='''Base class for doing
-        something with all the TH2 in a ROOT file.''',
+        something with all the images in a file.''',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-commandline_parser.add_argument('file', metavar='FILE.root',
-        nargs='+', help='ROOT file(s) with the tree')
+commandline_parser.add_argument('file', metavar='FILE.hdf5',
+        nargs='+', help='file(s) with the images')
 commandline_parser.add_argument('--batch', '-b', 
         action='store_true',
         help='batch mode (no drawing)')

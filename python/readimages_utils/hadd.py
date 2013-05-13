@@ -4,12 +4,12 @@
 from __future__ import division, print_function
 
 import os
-from subprocess import check_call
 
-import ROOT
+import h5py
+import raw_images
 
 def hadd(files):
-    """Merge several root files into one with $ROOTSYS/bin/hadd.
+    """Merge several files into one.
     
     Return the name of the output file.
     """
@@ -21,19 +21,19 @@ def hadd(files):
         dir_name = os.path.dirname(files[0])
         first_name = os.path.splitext(os.path.basename(files[0]))[0]
         last_name = os.path.splitext(os.path.basename(files[-1]))[0]
-        output_name = "{0}_{1}.root".format(
+        output_name = "{0}_{1}.hdf5".format(
                 first_name, last_name)
-        output_name_with_dir = os.path.join(dir_name, output_name)
-        merge_command = "hadd -f {0} {1}".format(
-                output_name_with_dir,
-                " ".join(files))
-        print(merge_command)
-        check_call(merge_command, shell=True)
-        """Remove the postprocessing folder, as everything needs to be
-        recalculated with the new data."""
-        root_file = ROOT.TFile(output_name_with_dir, "update")
-        root_file.Delete("postprocessing;1")
-        root_file.Close()
+        """Don't overwrite"""
+        if not os.path.exists(output_name_with_dir):
+            output_name_with_dir = os.path.join(dir_name, output_name)
+            output_file = h5py.File(output_name_with_dir, "w-")
+            output_group = output_file.create_group(raw_images.base_analyser.raw_images_group)
+            for input_file_name in files:
+                input_file = h5py.File(input_file_name, "r")
+                for name, data in input_file[raw_images_group].iteritems():
+                    group.create_dataset(name, data=data)
+                input_file.close()
+            output_file.close()
         return output_name_with_dir
 
 if __name__ == '__main__':

@@ -73,14 +73,14 @@ class ProjectionStackMaker(BaseHDF5Analyser):
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
-    root_file_name = args.file[0]
+    file_name = args.file
     overwrite = args.overwrite
     use_corrected = args.corrected
     pixel = args.pixel[0]
     batch = args.batch
     open_option = "a"
 
-    with ProjectionStackMaker(pixel, root_file_name,
+    with ProjectionStackMaker(pixel, file_name,
             open_option,
             use_corrected,
             overwrite,
