@@ -68,8 +68,7 @@ class BaseRootfileAnalyser(object):
 
     def dont_start(self):
         print("result already saved in file.")
-        print(progress_bar(1), end="")
-        print()
+        print(progress_bar(1))
 
     def output_exists(self, name):
         self.output_object = self.directory.Get(name)

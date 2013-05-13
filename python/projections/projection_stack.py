@@ -2,89 +2,91 @@
 
 from __future__ import division, print_function
 
-import ROOT
-ROOT.PyConfig.IgnoreCommandLineOptions = True
+import numpy as np
 
-from raw_images.base_rootfile_analyser import BaseRootfileAnalyser
+from readimages_h5py.base_hdf5_analyser import BaseHDF5Analyser
 from projections.commandline_parser import commandline_parser
 
-class ProjectionStackMaker(BaseRootfileAnalyser):
-    """Draw a stack of a projection along a pixel of all the images in the ROOT file"""
+class ProjectionStackMaker(BaseHDF5Analyser):
+    """Draw a stack of a projection along a pixel of all the images in the
+    file.
+    
+    """
     def __init__(self, pixel, *args, **kwargs):
+        self.pixel = pixel + 1
         super(ProjectionStackMaker, self).__init__(*args, **kwargs)
-        self.pixel = pixel
-        """check pixel list: it must contain 1 or 2 values"""
-        if len(pixel) == 1:
-            pixel.append(pixel[0])
-        elif len(pixel) == 2 and not pixel[1]:
-            pixel[1] = pixel[0]
-        elif len(pixel) > 2 or len(pixel) == 0:
-            print("one or two pixel numbers (begin and end) must be specified!")
-            raise IOError
+        example_image = self.images.itervalues().next()
+        self.dtype = example_image.dtype
+        first_pixel = example_image.attrs["max_y"]
+        self.max_x = example_image.attrs["max_x"]
+        self.min_x = example_image.attrs["min_x"]
+        self.projection_pixel = first_pixel - self.pixel
+        self.corrected_pixels = 0
 
     def output_name(self):
-        return "stack_pixel_{0[0]}_{0[1]}".format(self.pixel)
+        return "stack_pixel_{0}".format(self.pixel)
 
     def if_not_exists(self):
         super(ProjectionStackMaker, self).if_not_exists()
-        self.tree.GetEntry(0)
-        example_image = self.tree.image
-        title = "{0} along pixel {1[0]}-{1[1]}; x pixel; image number".format(
-                self.root_file.GetName(),
+        self.title = "{0} along pixel {1}; x pixel; image number".format(
+                self.input_file.filename,
                 self.pixel)
-        self.n_bins_x = example_image.GetNbinsX()
-        self.output_object = ROOT.TH2D(self.output_name(), title,
-                self.n_bins_x,
-                example_image.GetXaxis().GetXmin(),
-                example_image.GetXaxis().GetXmax(),
-                self.n_images,
-                0,
-                self.n_images)
-        first_pixel = int(example_image.GetYaxis().GetBinLowEdge(1))
-        self.projection_pixel = [int(x) - first_pixel for x in self.pixel]
+        width = self.max_x - self.min_x
+        """with respect to the ROOT version, this histogram has swapped axes
+        and the pixel number for the projection is the ROOT number + 1"""
+        self.output_object = np.zeros(
+                (self.n_images, width),
+                dtype=self.dtype)
 
     def analyse_histogram(self, i, hist):
         super(ProjectionStackMaker,
                 self).analyse_histogram(i, hist)
-        projection = hist.ProjectionX("_px", self.projection_pixel[0],
-                self.projection_pixel[1])
-        for j in range(self.n_bins_x):
-            self.output_object.SetBinContent(j + 1, i + 1,
-                    projection.GetBinContent(j + 1))
+        line = hist[self.projection_pixel, :] 
+        mean = np.mean(line)
+        std_dev = np.std(line)
+        if (line > mean + 3 * std_dev).any():
+            line[line > mean + 3 * std_dev] = mean
+            self.corrected_pixels += 1
+        self.output_object[i, :] = line
 
     def close(self):
         try:
             if not self.batch:
-                self.canvas = ROOT.TCanvas("canvas", "canvas")
-                self.output_object.Draw("col")
+                import matplotlib.pyplot as plt
                 print()
-                raw_input("press ENTER to quit")
+                print("direct conversions in the ccd:",
+                        self.corrected_pixels,
+                        "pixels corrected.")
+                plt.figure()
+                plt.imshow(self.output_object,
+                        origin='lower',
+                        extent=[self.min_x, self.max_x,
+                            0, self.n_images])
+                print()
+                plt.ion()
+                plt.show()
+                raw_input("Press ENTER to quit.")
         except KeyboardInterrupt:
             pass
         finally:
             super(ProjectionStackMaker, self).close()
 
 if __name__ == '__main__':
-    from readimages_utils.rootstyle import tdrstyle_grayscale
-    from readimages_utils.hadd import hadd
-    tdrstyle_grayscale()
     args = commandline_parser.parse_args()
-    root_file_name = hadd(args.file)
+    root_file_name = args.file[0]
     overwrite = args.overwrite
     use_corrected = args.corrected
     pixel = args.pixel[0]
     batch = args.batch
-    open_option = "update"
+    open_option = "a"
 
-    with ProjectionStackMaker([pixel], root_file_name,
+    with ProjectionStackMaker(pixel, root_file_name,
             open_option,
             use_corrected,
             overwrite,
             batch) as analyser:
         if not analyser.exists_in_file:
-            for i, entry in enumerate(analyser.tree):
-                branch_name = analyser.branch_name
-                histogram = getattr(entry, branch_name)
-                analyser.analyse_histogram(i, histogram)
+            for i, image in enumerate(analyser.images.itervalues()):
+                analyser.analyse_histogram(i, image)
         else:
             pass
