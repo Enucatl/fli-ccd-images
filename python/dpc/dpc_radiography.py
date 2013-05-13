@@ -9,6 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
+import readimages_utils.rcparams
+from readimages_utils.hadd import hadd
 from dpc.phase_stepping_utils import average_curve
 from dpc.phase_stepping_utils import get_signals
 from dpc.commandline_parser import commandline_parser
@@ -23,6 +25,9 @@ class ImageReconstructor(object):
     def __init__(self, args):
         self.overwrite = args.overwrite
         image_array = get_projection_stack(args.file, args)
+        plt.figure()
+        plt.imshow(image_array)
+        raw_input()
         flat_image = get_projection_stack(args.flat, args)
         self.n_steps = args.steps[0]
         self.n_lines = image_array.shape[0] // self.n_steps 
