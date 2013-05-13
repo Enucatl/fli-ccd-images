@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -vx
-root_file=$(./bash/scan_folder.sh $1).root
-if [ ! -f $(root_file) ]
+hdf5_file=$(./bash/scan_folder.sh $1).hdf5
+if [ ! -f $(hdf5_file) ]
 then
-    ./bash/make_root.sh $1
+    ./bash/make_hdf5.sh $1
 fi
 shift
-projection_stack.py $root_file 
+projection_stack.py $hdf5_file 
