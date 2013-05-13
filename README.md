@@ -75,20 +75,16 @@ if you specify a FOLDER name, it will continuously update the display with
 
 The python scripts will be installed with the `python setup.py --user` option, and will end up in `~/.local/bin`. This folder should therefore be appended to the `PATH` variable.
 
-### Make ROOT file
-reads all images in a folder and convert them from RAW to TH2D in a ROOT file.
-This ROOT file format is used in all the other scripts.
+### Make HDF5 file
+reads all images in a folder and convert them from RAW to HDF5.
+This file is then used in all the other scripts.
 
     :::bash
-    ./bin/make_root FOLDER
+    make_hdf5.py FOLDER
 
 ### Analyse the raw images
-Three scripts are provided to apply the same operation to each raw image
-(saved in the ROOT format):
+Three scripts are provided to apply the same operation to each raw image:
 
-   * `correct.py`: subtract a dark, divide by a flat and append the results
-      to the input file.
-   * `export_images.py`: save all images in another format (gif, png...).
    * `intensity_scan.py`: plot the integral in the image as a function of
       the image number.
 

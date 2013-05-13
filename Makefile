@@ -1,4 +1,4 @@
-.PHONY: clean all test chmod
+.PHONY: clean all chmod
 .SUFFIXES: .cpp .o
 
 BIN_FOLDER=bin
@@ -29,32 +29,11 @@ PYTHON_PROGRAMMES=$(addprefix python/,\
 				  $(addprefix raw_images/, correct.py export_images.py intensity_scan.py)\
 					)
 
-all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer make_root) chmod
-
-test: $(addprefix $(TEST_FOLDER)/, test_load_short)
-
-$(TEST_FOLDER)/test_load_short: test_load_short.cpp\
-	$(addprefix $(LIB_FOLDER)/, raw_image_tools.o)
-	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS)
+all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer) chmod
 
 $(BIN_FOLDER)/ccdfli_viewer: ccdfli_viewer.cpp\
 	$(DICT_FOLDER)/main_frameDict.cpp\
 	$(addprefix $(LIB_FOLDER)/, rootstyle.o main_frame.o base_image_reader.o newest_image_reader.o single_image_reader.o raw_image_tools.o contrast_adjuster.o)\
-	| $(BIN_FOLDER)
-	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
-
-$(BIN_FOLDER)/make_root: make_root.cpp\
-	$(addprefix $(LIB_FOLDER)/, root_image_writer.o single_image_reader.o base_image_reader.o raw_image_tools.o)\
-	| $(BIN_FOLDER)
-	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
-
-$(BIN_FOLDER)/add_image_to_root_file: add_image_to_root_file.cpp\
-	$(addprefix $(LIB_FOLDER)/, single_image_reader.o base_image_reader.o raw_image_tools.o)\
-	| $(BIN_FOLDER)
-	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
-
-$(BIN_FOLDER)/convert_scan_online: convert_scan_online.cpp\
-	$(addprefix $(LIB_FOLDER)/, single_image_reader.o base_image_reader.o raw_image_tools.o)\
 	| $(BIN_FOLDER)
 	g++ $(CFLAGS) -o $@ $^ $(LDFLAGS) $(BOOST_LIBS) $(BOOST_THREAD_LIBS)
 
