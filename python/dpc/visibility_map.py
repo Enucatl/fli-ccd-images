@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from __future__ import division, print_function
 
+"""Draw the graph of the visibility in each pixel."""
+
 import os
 
 import numpy as np

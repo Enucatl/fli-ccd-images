@@ -4,9 +4,6 @@ from __future__ import division, print_function
 import os
 import argparse
 
-import ROOT
-ROOT.PyConfig.IgnoreCommandLineOptions = True
-
 import math
 import numpy as np
 from skimage import io
@@ -14,6 +11,7 @@ from skimage import filter
 import matplotlib.pyplot as plt
 
 from projections.commandline_parser import commandline_parser
+from projections.projection_stack import get_projection_stack
 
 if __name__ == '__main__':
     commandline_parser.add_argument('--split', metavar='N_SUB_IMAGES',
@@ -21,17 +19,8 @@ if __name__ == '__main__':
             help='split the original image into N subimages (default 1).')
     args = commandline_parser.parse_args()
     roi = args.roi
-    psm = ProjectionStackMaker(args.pixel[0],
-            args.file,
-            "a",
-            args.corrected,
-            args.overwrite,
-            args.batch)
-    if not psm.exists_in_file:
-        """Make projection stack if it doesn't exist."""
-        for i, image in enumerate(psm.images.itervalues()):
-            analyser.analyse_histogram(i, image)
-    images = np.split(psm.output_object, args.split[0], 0)
+    image_array = get_projection_stack(args.file, args)
+    images = np.split(image_array, args.split[0], 0)
     io.use_plugin("freeimage")
     n_images = len(images)
     columns = 3
