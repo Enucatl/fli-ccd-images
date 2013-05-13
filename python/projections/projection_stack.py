@@ -10,7 +10,7 @@ from projections.commandline_parser import commandline_parser
 def get_projection_stack(files, args):
     """Factory of projection stacks."""
     psm = ProjectionStackMaker(args.pixel[0],
-            args.file,
+            files,
             "a",
             args.corrected,
             args.overwrite,

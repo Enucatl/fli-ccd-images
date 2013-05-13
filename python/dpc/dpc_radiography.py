@@ -25,14 +25,15 @@ class ImageReconstructor(object):
     def __init__(self, args):
         self.overwrite = args.overwrite
         image_array = get_projection_stack(args.file, args)
-        plt.figure()
-        plt.imshow(image_array)
-        raw_input()
         flat_image = get_projection_stack(args.flat, args)
+        self.output_name = hadd(args.file).replace(
+                ".hdf5",
+                "." + args.format[0])
         self.n_steps = args.steps[0]
         self.n_lines = image_array.shape[0] // self.n_steps 
         if image_array.shape[0] % self.n_steps:
-            raise ValueError("""wrong number of steps,
+            raise ValueError("""
+            wrong number of steps,
             division does not result in an integer.
             Image shape: {0}""".format(image_array.shape))
         self.extension = args.format[0]
