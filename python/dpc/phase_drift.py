@@ -9,16 +9,14 @@ import matplotlib.pyplot as plt
 import math
 import numpy as np
 
-from projections.handle_projection_stack import get_projection_stack
-from readimages_utils.th2_to_numpy import th2_to_numpy
+from projections.projection_stack import get_projection_stack
 from dpc.commandline_parser import commandline_parser
 from dpc.phase_stepping_utils import get_signals
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
     roi = args.roi
-    root_file, histogram = get_projection_stack(args)
-    image_array = th2_to_numpy(histogram, roi)
+    image_array = get_projection_stack(args.file, args)
     n_steps = args.steps[0]
     n_lines = image_array.shape[0] // n_steps 
     n_periods = args.periods
@@ -73,4 +71,6 @@ if __name__ == '__main__':
     print("average std dev", np.mean(across_pixels_err) * math.sqrt(
         n_pixels - 1))
     plt.axhline(color='r')
+    plt.ion()
     plt.show()
+    raw_input("Press ENTER to quit.")
