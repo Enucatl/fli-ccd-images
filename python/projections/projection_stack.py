@@ -4,7 +4,7 @@ from __future__ import division, print_function
 
 import numpy as np
 
-from readimages_h5py.base_hdf5_analyser import BaseHDF5Analyser
+from raw_images.base_analyser import BaseHDF5Analyser
 from projections.commandline_parser import commandline_parser
 
 def get_projection_stack(files, args):
