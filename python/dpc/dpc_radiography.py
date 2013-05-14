@@ -11,7 +11,6 @@ from scipy import stats
 
 import readimages_utils.rcparams
 from readimages_utils.hadd import hadd
-from dpc.phase_stepping_utils import average_curve
 from dpc.phase_stepping_utils import get_signals
 from dpc.commandline_parser import commandline_parser
 from projections.projection_stack import get_projection_stack
@@ -54,18 +53,13 @@ class ImageReconstructor(object):
         self.n_periods = args.periods
         """Average flats if more than one flat image."""
         self.n_flats = flat_image.shape[0] // self.n_steps
-        flat_images = np.split(flat_image, self.n_flats, axis=0)
-        flat_absorption = np.zeros((self.n_flats, flat_image.shape[1]))
-        flat_phase = np.zeros_like(flat_absorption)
-        flat_dark_field = np.zeros_like(flat_absorption)
-        for i, phase_stepping_curve in enumerate(flat_images):
-            absorption, phase, dark_field = get_signals(
-                    phase_stepping_curve,
+        flat_images = np.dstack(np.split(flat_image, self.n_flats, axis=0))
+        """rows and columns have to be swapped with rollaxis so that
+        the image is displayed properly."""
+        flat_images = np.rollaxis(flat_images, 2, 1)
+        flat_absorption, flat_phase, flat_dark_field = get_signals(
+                    flat_images,
                     None, self.n_periods)
-            flat_absorption[i, :] = absorption
-            flat_phase[i, :] = phase
-            flat_dark_field[i, :] = dark_field
-        print("subtracting drift")
         if self.n_flats > 1:
             corrected_flat_phase = subtract_drift(flat_phase)
         else:
@@ -86,20 +80,14 @@ class ImageReconstructor(object):
             division does not result in an integer.
             Image shape: {0}""".format(image_array.shape))
         self.extension = args.format[0]
-        self.images = np.split(image_array, self.n_lines, axis=0)
-        self.absorption_image = np.zeros((self.n_lines, image_array.shape[1]))
-        self.differential_phase_image = np.zeros_like(self.absorption_image)
-        self.dark_field_image = np.zeros_like(self.absorption_image)
+        self.images = np.dstack(np.split(image_array, self.n_lines, axis=0))
+        self.images = np.rollaxis(self.images, 2, 1)
 
     def calculate_images(self):
-        for i, phase_stepping_curve in enumerate(self.images):
-            absorption, phase, dark_field = get_signals(
-                    phase_stepping_curve,
-                    self.flat_parameters,
-                    self.n_periods)
-            self.absorption_image[i, :] = absorption
-            self.differential_phase_image[i, :] = phase
-            self.dark_field_image[i, :] = dark_field
+        self.absorption_image, self.differential_phase_image, self.dark_field_image = get_signals(
+            self.images,
+            self.flat_parameters,
+            self.n_periods)
         self.absorption_image_title = "absorption image"
         self.differential_phase_image_title = "differential phase"
         self.dark_field_image_title = "visibility reduction"
@@ -135,6 +123,7 @@ class ImageReconstructor(object):
                     bins=self.dark_field_image.shape[1],
                     weights=self.dark_field_image.T, fc='w', ec='k')
             hist3.set_title("visibility reduction")
+        #histograms
         #plt.figure()
         #plt.hist(image_array.flatten(), 256,
                 #range=(np.amin(image_array),
@@ -170,4 +159,5 @@ if __name__ == '__main__':
     ir = ImageReconstructor(args)
     ir.calculate_images()
     ir.correct_drift()
-    ir.draw()
+    if not args.batch:
+        ir.draw()
