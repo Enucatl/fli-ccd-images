@@ -16,6 +16,30 @@ from dpc.phase_stepping_utils import get_signals
 from dpc.commandline_parser import commandline_parser
 from projections.projection_stack import get_projection_stack
 
+def subtract_drift(image, draw=False):
+    """Fit a vertical line to the phase image in order to subtract a
+    linear phase drift.
+
+    """
+    x = np.arange(image.shape[0])
+    y = np.sum(image, axis=1) / image.shape[1]
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+    line = slope * x + intercept
+    correction = np.tile(line,
+            (image.shape[1], 1)).transpose()
+    corrected_image = image - correction
+    if draw:
+        plt.figure()
+        axis = plt.axes()
+        axis.set_title("phase drift interpolation")
+        plt.plot(x, line, 'r-', x, y, 'o')
+        plt.xlabel('image number')
+        plt.ylabel('average phase (rad)')
+        #plt.figure()
+        #image = plt.imshow(corrected_image)
+        #image.set_clim(-0.5, 0.5)
+    return corrected_image
+
 class ImageReconstructor(object):
     """Reconstruct the three signals from the phase stepping curve of the
     grating interferometer.
@@ -26,10 +50,35 @@ class ImageReconstructor(object):
         self.overwrite = args.overwrite
         image_array = get_projection_stack(args.file, args)
         flat_image = get_projection_stack(args.flat, args)
+        self.n_steps = args.steps[0]
+        self.n_periods = args.periods
+        """Average flats if more than one flat image."""
+        self.n_flats = flat_image.shape[0] // self.n_steps
+        flat_images = np.split(flat_image, self.n_flats, axis=0)
+        flat_absorption = np.zeros((self.n_flats, flat_image.shape[1]))
+        flat_phase = np.zeros_like(flat_absorption)
+        flat_dark_field = np.zeros_like(flat_absorption)
+        for i, phase_stepping_curve in enumerate(flat_images):
+            absorption, phase, dark_field = get_signals(
+                    phase_stepping_curve,
+                    None, self.n_periods)
+            flat_absorption[i, :] = absorption
+            flat_phase[i, :] = phase
+            flat_dark_field[i, :] = dark_field
+        print("subtracting drift")
+        if self.n_flats > 1:
+            corrected_flat_phase = subtract_drift(flat_phase)
+        else:
+            corrected_flat_phase = flat_phase
+        average_absorption = np.mean(flat_absorption, axis=0)
+        average_phase = np.mean(corrected_flat_phase, axis=0)
+        average_dark_field = np.mean(flat_dark_field, axis=0)
+        self.flat_parameters = (average_absorption,
+                average_phase,
+                average_dark_field)
         self.output_name = hadd(args.file).replace(
                 ".hdf5",
                 "." + args.format[0])
-        self.n_steps = args.steps[0]
         self.n_lines = image_array.shape[0] // self.n_steps 
         if image_array.shape[0] % self.n_steps:
             raise ValueError("""
@@ -37,8 +86,6 @@ class ImageReconstructor(object):
             division does not result in an integer.
             Image shape: {0}""".format(image_array.shape))
         self.extension = args.format[0]
-        self.n_periods = args.periods
-        self.flat_parameters = get_signals(flat_image, n_periods=self.n_periods)
         self.images = np.split(image_array, self.n_lines, axis=0)
         self.absorption_image = np.zeros((self.n_lines, image_array.shape[1]))
         self.differential_phase_image = np.zeros_like(self.absorption_image)
@@ -107,31 +154,14 @@ class ImageReconstructor(object):
         if not os.path.exists(self.output_name) or self.overwrite:
             plt.savefig(self.output_name)
             print("saved", self.output_name)
+        plt.ion()
         plt.show()
+        raw_input("Press ENTER to quit.")
 
-    def correct_drift(self, verbose=False):
-        """Fit a vertical line to the phase image in order to subtract a
-        linear phase drift.
-
-        """
-        x = np.arange(self.differential_phase_image.shape[0])
-        y = np.sum(self.differential_phase_image, axis=1) / self.differential_phase_image.shape[1]
-        slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
-        line = slope * x + intercept
-        correction = np.tile(line,
-                (self.differential_phase_image.shape[1], 1)).transpose()
+    def correct_drift(self, draw=False):
         self.differential_phase_image_title += " (drift corrected)"
-        self.differential_phase_image -= correction
-        if verbose:
-            plt.figure()
-            axis = plt.axes()
-            axis.set_title("phase drift interpolation")
-            plt.plot(x, line, 'r-', x, y, 'o')
-            plt.xlabel('image number')
-            plt.ylabel('average phase (rad)')
-            #plt.figure()
-            #image = plt.imshow(corrected_image)
-            #image.set_clim(-0.5, 0.5)
+        self.differential_phase_image = subtract_drift(
+                self.differential_phase_image, draw)
         
 commandline_parser.description = ImageReconstructor.__doc__
 
