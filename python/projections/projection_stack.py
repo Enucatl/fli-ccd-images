@@ -71,9 +71,14 @@ class ProjectionStackMaker(BaseHDF5Analyser):
             if not self.batch:
                 import matplotlib.pyplot as plt
                 print()
-                print("direct conversions in the ccd:",
+                if self.corrected_pixels:
+                    shape = self.output_object.shape
+                    total_pixels = shape[0] * shape[1]
+                    print("direct conversions in the ccd:",
                         self.corrected_pixels,
-                        "pixels corrected.")
+                        "pixels corrected (on {0} total pixels, {1:.3%})".format(
+                            total_pixels,
+                            self.corrected_pixels / total_pixels))
                 plt.figure()
                 plt.imshow(self.output_object,
                         origin='lower',
