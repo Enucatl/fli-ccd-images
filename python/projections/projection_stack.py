@@ -83,7 +83,8 @@ class ProjectionStackMaker(BaseHDF5Analyser):
                 plt.imshow(self.output_object,
                         origin='lower',
                         extent=[self.min_x, self.max_x,
-                            0, self.n_images])
+                            0, self.n_images],
+                        aspect='auto')
                 print()
                 plt.ion()
                 plt.show()
