@@ -19,8 +19,10 @@ if __name__ == '__main__':
     roi = args.roi
     n_periods = args.periods
     image_array = get_projection_stack(args.file, args)
-    a0, _, a1 = get_signals(image_array, n_periods=n_periods)
-    visibility = 2 * a1 / a0
+    image = np.dstack(np.split(image_array, 1, axis=0))
+    image = np.rollaxis(image, 2, 1)
+    a0, _, a1 = get_signals(image, n_periods=n_periods)
+    visibility = (2 * a1 / a0).transpose()
     mean_visibility = np.mean(visibility)
     plt.figure()
     plt.plot(np.arange(*roi), visibility,
