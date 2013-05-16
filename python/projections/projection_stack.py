@@ -34,10 +34,10 @@ class ProjectionStackMaker(BaseHDF5Analyser):
         super(ProjectionStackMaker, self).__init__(*args, **kwargs)
         example_image = self.images.itervalues().next()
         self.dtype = example_image.dtype
-        first_pixel = example_image.attrs["max_y"]
+        first_pixel = example_image.attrs["min_y"]
         self.max_x = example_image.attrs["max_x"]
         self.min_x = example_image.attrs["min_x"]
-        self.projection_pixel = first_pixel - self.pixel
+        self.projection_pixel = self.pixel - first_pixel - 1
         self.corrected_pixels = 0
 
     def output_name(self):
