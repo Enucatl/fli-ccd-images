@@ -68,6 +68,7 @@ class IntensityScan(BaseHDF5Analyser):
                     yerr=np.sqrt(self.y), fmt='o')
             plt.xlabel("file number")
             plt.ylabel("intensity (integral)")
+            plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
             plt.ion()
             plt.show()
             try:
@@ -85,7 +86,7 @@ if __name__ == '__main__':
         metavar=('min_x', 'max_x', 'min_y', 'max_y'),
         nargs=4, type=int, help='min_x max_x min_y max_y')
     args = commandline_parser.parse_args()
-    overwrite = args.overwrite
+    overwrite = True
     use_corrected = args.corrected
     open_option = "a"
     with IntensityScan(args.roi, args.file,
