@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 from __future__ import division, print_function
 
-"""Draw the graph of the visibility in each pixel."""
+"""Draw the graph of the visibility in each pixel.
+
+If more than one phase stepping curve is found in the file,
+the output is the average visibility for each phase stepping curve.
+
+"""
 
 import os
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 
 from dpc.commandline_parser import commandline_parser
 from dpc.dpc_radiography import get_signals
@@ -19,20 +25,42 @@ if __name__ == '__main__':
     roi = args.roi
     n_periods = args.periods
     image_array = get_projection_stack(args.file, args)
-    image = np.dstack(np.split(image_array, 1, axis=0))
+    n_steps = args.steps[0]
+    n_images = image_array.shape[0] // n_steps
+    if image_array.shape[0] % n_steps:
+        raise ValueError("incorrect number of steps! {0}".format(
+            image_array.shape))
+    image = np.dstack(np.split(image_array, n_images, axis=0))
     image = np.rollaxis(image, 2, 1)
     a0, _, a1 = get_signals(image, n_periods=n_periods)
-    visibility = (2 * a1 / a0).transpose()
-    mean_visibility = np.mean(visibility)
+    visibility = (2 * a1 / a0)
+    mean_visibility = np.mean(visibility, axis=1)
+    std_dev_visibility = np.std(visibility, axis=1) / visibility.shape[1]
     plt.figure()
-    plt.plot(np.arange(*roi), visibility,
-            antialiased=True)
-    plt.xlabel("pixel number")
-    plt.ylabel("visibility")
-    line = plt.axhline(y=mean_visibility, color='r')
+    axis = plt.axes()
+    if visibility.shape[0] == 1:
+        plt.plot(np.arange(*roi), visibility.T)
+        plt.xlim(roi[0], roi[1])
+        plt.xlabel("pixel number")
+        plt.ylabel("visibility ($\\%$)")
+        mean_visibility = mean_visibility[0]
+        line = plt.axhline(y=mean_visibility, color='r')
+        plt.legend([line], ["average visibility: {0:.2f} $\\%$".format(
+            mean_visibility * 100)])
+    else:
+        plt.errorbar(
+                np.arange(1, mean_visibility.shape[0] + 1),
+                mean_visibility,
+                yerr=std_dev_visibility,
+                fmt='o'
+                )
+        plt.xlim(0, mean_visibility.shape[0] + 1)
+        plt.xlabel("image number")
+        plt.ylabel("average visibility ($\\%$)",
+                )
+    axis.yaxis.set_major_formatter(FuncFormatter(
+        lambda x, pos=0: "{0:.1%}".format(x)))
     plt.tight_layout()
-    plt.legend([line], ["average visibility: {0:.2f} $\\%$".format(
-        mean_visibility * 100)])
     plt.ion()
     plt.show()
     raw_input("Press ENTER to quit.")
