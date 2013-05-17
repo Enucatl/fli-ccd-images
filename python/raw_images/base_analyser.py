@@ -81,7 +81,7 @@ class BaseHDF5Analyser(object):
             return False
 
     def open(self):
-        name = self.output_name
+        name = self.output_name()
         if self.overwrite or not self.output_exists(name):
             self.if_not_exists()
         else:
