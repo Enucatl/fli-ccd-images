@@ -25,9 +25,11 @@ if __name__ == '__main__':
     images = np.split(image_array, n_lines, axis=0)
     phase_drift = np.zeros((n_intervals, n_pixels))
     for i, (first_array, second_array) in enumerate(zip(images, images[1:])):
-        flat_pars = get_signals(first_array, n_periods=n_periods)
-        _, phi, _ = get_signals(second_array, flat_pars, n_periods=n_periods)
-        phase_drift[i, :] = phi
+        first = np.dstack(np.split(first_array, 1, axis=0))
+        second = np.dstack(np.split(second_array, 1, axis=0))
+        flat_pars = get_signals(first, n_periods=n_periods)
+        _, phi, _ = get_signals(second, flat_pars, n_periods=n_periods)
+        phase_drift[i, :] = phi.transpose()
     mean_drift_array = np.mean(phase_drift, axis=0)
     std_dev = np.std(phase_drift, axis=0) / math.sqrt(n_intervals - 1)
     across_steps_figure = plt.figure()
