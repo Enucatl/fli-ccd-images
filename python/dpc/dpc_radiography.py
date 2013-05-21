@@ -97,16 +97,23 @@ class ImageReconstructor(object):
                 3, 1, sharex=True)
         img1 = ax1.imshow(self.absorption_image,
                 cmap=plt.cm.Greys)
+        limits = stats.mstats.mquantiles(self.absorption_image,
+                prob=[0.02, 0.98])
+        img1.set_clim(*limits)
         ax1.axis("off")
         ax1.set_title(self.absorption_image_title)
         img2 = ax2.imshow(self.differential_phase_image)
-        img2.set_clim(-0.4, 0.4)
+        limits = stats.mstats.mquantiles(self.differential_phase_image,
+                prob=[0.02, 0.98])
+        img2.set_clim(*limits)
         ax2.axis("off")
         ax2.set_title(self.differential_phase_image_title)
         img3 = ax3.imshow(self.dark_field_image)
         ax3.set_title(self.dark_field_image_title)
         ax3.axis("off")
-        img3.set_clim(0, 2)
+        limits = stats.mstats.mquantiles(self.dark_field_image,
+                prob=[0.02, 0.98])
+        img3.set_clim(*limits)
         plt.tight_layout()
         if self.absorption_image.shape[0] == 1:
             f, (hist1, hist2, hist3) = plt.subplots(
