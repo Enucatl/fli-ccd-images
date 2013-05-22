@@ -11,8 +11,10 @@ import numpy as np
 from scipy import ndimage
 from skimage import filter
 from skimage import img_as_uint
+import matplotlib.pyplot as plt
 
 from projections.commandline_parser import commandline_parser
+from projections.projection_stack import get_projection_stack
 from readimages_utils.hadd import hadd
 from raw_images.base_analyser import post_processing_dirname
 
@@ -63,7 +65,7 @@ if __name__ == '__main__':
             help='split the original image into N subimages.')
     args = commandline_parser.parse_args()
     roi = args.roi
-    image_array = get_projection_stack(args.file, args)
+    image_array = np.flipud(get_projection_stack(args.file, args))
     images = np.split(image_array, args.split[0], 0)
     n_images = len(images)
     x = np.zeros(n_images)
@@ -74,21 +76,17 @@ if __name__ == '__main__':
     processed_images = []
     image_height = 0
     for i, image in enumerate(images):
-        image = image[:, roi[0]:roi[1]]
+        image = image
         image_height = image.shape[0]
         edges = filter.sobel(image)
         threshold = filter.threshold_otsu(edges)
         label_objects, nb_labels = ndimage.label(edges > threshold)
         sizes = np.bincount(label_objects.ravel())
-        mask_sizes = sizes > (roi[1] - roi[0])
+        mask_sizes = sizes > 3 * (roi[1] - roi[0])
         mask_sizes[0] = 0
         cleaned = mask_sizes[label_objects]
         filled = ndimage.binary_fill_holes(cleaned)
         summed = np.sum(filled, axis=1)
-        output_name = object_name.replace("/", "_")
-        output_name = "{0}_{1}.{2}".format(
-                output_name,
-                i, extension)
         segments = np.split(summed, split_indices(summed))
         if len(segments) < 4:
             continue
@@ -100,12 +98,11 @@ if __name__ == '__main__':
         lower_edges.append(lower_edge)
         upper_edges.append(upper_edge)
         processed_images.append(filled)
-    print(processed_images)
     processed_images = np.reshape(processed_images, (-1, (roi[1] - roi[0])))
     f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
     plt.tight_layout()
-    ax1.imshow(image_array, cmap=plt.cm.Greys_r)
-    ax2.imshow(processed_images, cmap=plt.cm.Greys_r)
+    ax1.imshow(image_array)
+    ax2.imshow(processed_images)
     for i, (lower_edge, upper_edge) in enumerate(
             zip(lower_edges, upper_edges)):
         first_pixel = i * image_height
@@ -113,6 +110,8 @@ if __name__ == '__main__':
         ax2.axhline(y=(first_pixel + upper_edge), color='r')
     plt.figure()
     plt.errorbar(x, y, fmt='o')
+    plt.xlabel("image number")
+    plt.ylabel("apparent grating thickness (pixels)")
     plt.ion()
     plt.show()
     print()
