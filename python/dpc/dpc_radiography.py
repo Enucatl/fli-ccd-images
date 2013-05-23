@@ -64,9 +64,9 @@ class ImageReconstructor(object):
             corrected_flat_phase = subtract_drift(flat_phase)
         else:
             corrected_flat_phase = flat_phase
-        average_absorption = np.mean(flat_absorption, axis=0)
-        average_phase = np.mean(corrected_flat_phase, axis=0)
-        average_dark_field = np.mean(flat_dark_field, axis=0)
+        average_absorption = np.median(flat_absorption, axis=0)
+        average_phase = np.median(corrected_flat_phase, axis=0)
+        average_dark_field = np.median(flat_dark_field, axis=0)
         self.flat_parameters = (average_absorption,
                 average_phase,
                 average_dark_field)
@@ -105,6 +105,7 @@ class ImageReconstructor(object):
         img2 = ax2.imshow(self.differential_phase_image)
         limits = stats.mstats.mquantiles(self.differential_phase_image,
                 prob=[0.02, 0.98])
+        #limits = (-3, 3)
         img2.set_clim(*limits)
         ax2.axis("off")
         ax2.set_title(self.differential_phase_image_title)
