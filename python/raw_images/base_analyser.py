@@ -70,7 +70,7 @@ class BaseHDF5Analyser(object):
         self.exists_in_file = True
 
     def dont_start(self):
-        print("result already saved in file.")
+        print("base_analyser: result already saved in file.")
         print(progress_bar(1))
 
     def output_exists(self, name):

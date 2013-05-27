@@ -5,10 +5,13 @@ import os
 import argparse
 import math
 
+import h5py
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
+from raw_images.base_analyser import post_processing_dirname
+from readimages_utils.progress_bar import progress_bar
 import readimages_utils.rcparams
 from readimages_utils.hadd import hadd
 from dpc.phase_stepping_utils import get_signals
@@ -47,13 +50,45 @@ class ImageReconstructor(object):
 
     def __init__(self, args):
         self.overwrite = args.overwrite
-        image_array = get_projection_stack(args.file, args)
-        flat_image = get_projection_stack(args.flat, args)
+        self.image_array = get_projection_stack(args.file, args)
+        self.flat_image = get_projection_stack(args.flat, args)
+        open_option = "a"
+        self.input_file = h5py.File(hadd(args.file), open_option)
+        output_names = self.set_names()
+        self.output_directory = self.input_file.require_group(
+                post_processing_dirname)
+        self.export_name = hadd(args.file).replace(
+                ".hdf5",
+                "." + args.format[0])
+        """Overwrite if necessary"""
+        if self.overwrite:
+            self.exists_in_file = False
+            for name in output_names:
+                if name in self.output_directory:
+                    del self.output_directory[name]
+            self.initialize_reconstruction()
+        else:
+            images = {}
+            for name in output_names:
+                if name in self.output_directory:
+                    images[name] = self.output_directory[name]
+            if len(images) == 3:
+                """All three images were saved, don't recalculate them"""
+                self.absorption_image = self.output_directory[self.absorption_image_name]
+                self.differential_phase_image = self.output_directory[self.differential_phase_image_name]
+                self.dark_field_image = self.output_directory[self.dark_field_image_name]
+                self.exists_in_file = True
+            else:
+                self.exists_in_file = False
+                self.initialize_reconstruction()
+
+    def initialize_reconstruction(self):
         self.n_steps = args.steps[0]
         self.n_periods = args.periods
         """Average flats if more than one flat image."""
-        self.n_flats = flat_image.shape[0] // self.n_steps
-        flat_images = np.dstack(np.split(flat_image, self.n_flats, axis=0))
+        self.n_flats = self.flat_image.shape[0] // self.n_steps
+        flat_images = np.dstack(np.split(self.flat_image,
+            self.n_flats, axis=0))
         """rows and columns have to be swapped with rollaxis so that
         the image is displayed properly."""
         flat_images = np.rollaxis(flat_images, 2, 1)
@@ -70,27 +105,47 @@ class ImageReconstructor(object):
         self.flat_parameters = (average_absorption,
                 average_phase,
                 average_dark_field)
-        self.output_name = hadd(args.file).replace(
-                ".hdf5",
-                "." + args.format[0])
-        self.n_lines = image_array.shape[0] // self.n_steps 
-        if image_array.shape[0] % self.n_steps:
+        self.n_lines = self.image_array.shape[0] // self.n_steps 
+        if self.image_array.shape[0] % self.n_steps:
             raise ValueError("""
             wrong number of steps,
             division does not result in an integer.
             Image shape: {0}""".format(image_array.shape))
         self.extension = args.format[0]
-        self.images = np.dstack(np.split(image_array, self.n_lines, axis=0))
+        self.images = np.dstack(np.split(self.image_array, self.n_lines, axis=0))
         self.images = np.rollaxis(self.images, 2, 1)
 
-    def calculate_images(self):
-        self.absorption_image, self.differential_phase_image, self.dark_field_image = get_signals(
-            self.images,
-            self.flat_parameters,
-            self.n_periods)
+    def set_names(self):
         self.absorption_image_title = "absorption image"
         self.differential_phase_image_title = "differential phase"
         self.dark_field_image_title = "visibility reduction"
+        self.absorption_image_name = self.absorption_image_title.replace(
+                " ", "_")
+        self.differential_phase_image_name = self.differential_phase_image_title.replace(
+                " ", "_")
+        self.dark_field_image_name = self.dark_field_image_title.replace(
+                " ", "_")
+        output_names = (self.absorption_image_name,
+                self.differential_phase_image_name,
+                self.dark_field_image_name)
+        return output_names
+
+    def calculate_images(self):
+        if not self.exists_in_file:
+            images = get_signals( 
+                self.images,
+                self.flat_parameters,
+                self.n_periods)
+            self.absorption_image, self.differential_phase_image, self.dark_field_image = images
+            for name, image in zip(self.set_names(), images):
+                self.output_directory.create_dataset(
+                        name,
+                        data=image)
+            self.input_file.close()
+        else:
+            print("dpc_radiography: result already saved in file.")
+            print(progress_bar(1))
+
 
     def draw(self):
         f, (ax1, ax2, ax3) = plt.subplots(
@@ -148,9 +203,9 @@ class ImageReconstructor(object):
                 #np.mean(self.differential_phase_image),
                 #np.std(self.differential_phase_image) /
                 #math.sqrt(roi[1] - roi[0])))
-        if not os.path.exists(self.output_name) or self.overwrite:
-            plt.savefig(self.output_name)
-            print("saved", self.output_name)
+        if not os.path.exists(self.export_name) or self.overwrite:
+            plt.savefig(self.export_name)
+            print("saved", self.export_name)
         plt.ion()
         plt.show()
         raw_input("Press ENTER to quit.")

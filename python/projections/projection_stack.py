@@ -66,6 +66,10 @@ class ProjectionStackMaker(BaseHDF5Analyser):
             self.corrected_pixels += 1
         self.output_object[i, :] = line
 
+    def dont_start(self):
+        print("projection_stack: result already saved in file.")
+        print(progress_bar(1))
+
     def close(self):
         try:
             if not self.batch:
