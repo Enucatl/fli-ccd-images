@@ -4,6 +4,7 @@ from __future__ import division, print_function
 
 import numpy as np
 
+from readimages_utils.progress_bar import progress_bar
 from raw_images.base_analyser import BaseHDF5Analyser
 from projections.commandline_parser import commandline_parser
 
