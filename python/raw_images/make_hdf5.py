@@ -6,6 +6,7 @@ from __future__ import division, print_function
 import os
 from itertools import islice
 from glob import glob
+import shutil
 
 import h5py
 import numpy as np
@@ -82,6 +83,8 @@ if __name__ == '__main__':
                         extent=[min_x, max_x, min_y, max_y])
                 plt.locator_params(axis='y', nbins=3)
                 plt.show()
+            input_file.close()
+        shutil.rmtree(folder_name)
         output_file.close()
         print()
         print("written", output_name)
