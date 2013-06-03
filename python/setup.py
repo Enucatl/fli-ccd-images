@@ -2,10 +2,10 @@ from setuptools import setup, find_packages
 
 setup(
     name = "ReadImages",
-    version = "3.21",
+    version = "3",
     packages = find_packages(),
     scripts = [
-        'projections/export_dataset.py',
+        'readimages_utils/export_dataset.py',
         'projections/projection_stack.py',
         'alignment/pitch.py',
         'alignment/roll.py',
@@ -15,6 +15,7 @@ setup(
         'raw_images/make_hdf5.py',
         'raw_images/export_images.py',
         'raw_images/intensity_scan.py',
+        'tomography/tomography.py',
         ],
 
     install_requires = [
