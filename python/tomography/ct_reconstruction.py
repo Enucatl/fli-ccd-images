@@ -35,7 +35,7 @@ if __name__ == '__main__':
     angles = np.linspace(args.angles[0], args.angles[1], projections)
     roi = args.roi
     for i, name in enumerate(dataset_names):
-        sinogram = np.transpose(input_file[name][...])[roi[0]:roi[1], :]
+        sinogram = np.transpose(input_file[name][:, roi[0]:roi[1]])
         output_name = name + "_ct_reconstruction"
         if output_name not in input_file or overwrite:
             if output_name in input_file:
