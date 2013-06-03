@@ -15,7 +15,7 @@ setup(
         'raw_images/make_hdf5.py',
         'raw_images/export_images.py',
         'raw_images/intensity_scan.py',
-        'tomography/tomography.py',
+        'tomography/ct_reconstruction.py',
         ],
 
     install_requires = [
