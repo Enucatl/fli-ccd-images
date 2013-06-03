@@ -19,15 +19,10 @@ from dpc.commandline_parser import commandline_parser
 from projections.projection_stack import get_projection_stack
 
 def subtract_drift(image, draw=False):
-    """Fit a vertical line to the phase image in order to subtract a
-    linear phase drift.
+    """Force the phase to have zero mean in all lines.
 
     """
-    x = np.arange(image.shape[0])
-    y = np.sum(image, axis=1) / image.shape[1]
-    slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
-    line = slope * x + intercept
-    correction = np.tile(line,
+    correction = np.tile(np.mean(image, axis=1),
             (image.shape[1], 1)).transpose()
     corrected_image = image - correction
     if draw:
