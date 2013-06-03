@@ -2,9 +2,10 @@ from setuptools import setup, find_packages
 
 setup(
     name = "ReadImages",
-    version = "3.00",
+    version = "3.21",
     packages = find_packages(),
     scripts = [
+        'projections/export_dataset.py',
         'projections/projection_stack.py',
         'alignment/pitch.py',
         'alignment/roll.py',

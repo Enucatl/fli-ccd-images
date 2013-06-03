@@ -132,15 +132,19 @@ class ImageReconstructor(object):
                 self.flat_parameters,
                 self.n_periods)
             self.absorption_image, self.differential_phase_image, self.dark_field_image = images
+        else:
+            print("dpc_radiography: result already saved in file.")
+            print(progress_bar(1))
+
+
+    def save_images(self):
+        if not self.exists_in_file:
+            images = self.absorption_image, self.differential_phase_image, self.dark_field_image
             for name, image in zip(self.set_names(), images):
                 self.output_directory.create_dataset(
                         name,
                         data=image)
             self.input_file.close()
-        else:
-            print("dpc_radiography: result already saved in file.")
-            print(progress_bar(1))
-
 
     def draw(self):
         f, (ax1, ax2, ax3) = plt.subplots(
@@ -217,5 +221,6 @@ if __name__ == '__main__':
     ir = ImageReconstructor(args)
     ir.calculate_images()
     ir.correct_drift()
+    ir.save_images()
     if not args.batch:
         ir.draw()
