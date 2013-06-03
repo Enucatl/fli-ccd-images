@@ -25,6 +25,7 @@ http://scikit-image.org/docs/dev/api/skimage.transform.html#iradon
 commandline_parser.description = __doc__
 
 if __name__ == '__main__':
+    args = commandline_parser.parse_args()
     dataset_names = args.dataset
     file_name = hadd(args.file)
     input_file = h5py.File(file_name, "a")
@@ -32,22 +33,25 @@ if __name__ == '__main__':
     n = len(dataset_names)
     projections = args.projections[0]
     angles = np.linspace(args.angles[0], args.angles[1], projections)
+    roi = args.roi
     for i, name in enumerate(dataset_names):
-        sinogram = input_file[name]
+        sinogram = np.transpose(input_file[name][...])[roi[0]:roi[1], :]
         output_name = name + "_ct_reconstruction"
-        output_dataset = input_file.require_dataset(output_name)
-        if output_name in input_file and not overwrite:
-            print("tomography:",
-            name, "already saved in file.")
-            continue
-        else:
+        if output_name not in input_file or overwrite:
+            if output_name in input_file:
+                del input_file[output_name]
             output_dataset = iradon(sinogram,
                     angles,
-                    filer='hamming',
+                    filter='hamming',
                     interpolation='linear')
             print()
             print("Done!")
             print()
+        else:
+            output_dataset = input_file[output_dataset]
+            print("tomography:",
+            name, "already saved in file.")
+            continue
         input_file.close()
         if args.show:
             plt.figure()
