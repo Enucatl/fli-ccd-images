@@ -16,48 +16,27 @@
 ##########################################################################################################################################
 
 # Modules from your Python distribution
-import os, time, sys
-try:
-	import numpy
-except ImportError:
-	print("\nPlease install the NumPy module!\n")
-	os._exit(1)	
+from __future__ import division, print_function
 
-# NiftyRec Modules
-try:
-        import NiftyRec
-except ImportError:
-        print("\nPlease install Python NiftyRec! ")
-        print("    - LINUX and MAC OSx: ")
-        print("               1) from the command line cd to 'install_directory_of_NiftyRec-x.x.x/niftyrec/python/' ")
-        print("               2) sudo python setup.py build install ")
-        print("    - WINDOWS: ")
-        print("               1) Download the self installer and follow the instructions \n")
-	os._exit(1)	
-try:
-	from NiftyRec.NiftyRec import et_project as project
-	from NiftyRec.NiftyRec import et_list_gpus as list_gpus
-	from NiftyRec.NiftyRec import et_get_block_size as get_block_size
-except ImportError:
-        raise
-	os._exit(1)	
+import time, sys
+import numpy
+import matplotlib.pyplot as plt
+import h5py
 
-# Local Modules
-try:
-	from Reconstruction import Reconstructor
-	from simple_phantom_image_handling import *
-except ImportError:
-	print("\nCan\t find Reconstruction.py and/or simple_phantom_image_handling.py. Please ensure they are in your cwd\n.")
-	os._exit(1)	
+from NiftyRec.NiftyRec import et_project as project
+from NiftyRec.NiftyRec import et_list_gpus as list_gpus
+from NiftyRec.NiftyRec import et_get_block_size as get_block_size
+from Reconstruction import Reconstructor
+from simple_phantom_image_handling import *
 
 ##########################################################################################################################################
 # Configure the settings below appropriately for your system.
 
 verbose=True					# Show additional output while processing.
 use_the_GPU=False				# Set to TRUE if you have a CUDA-enabled card and have build NiftyRec to use it.
-input_phantom="phantom.tif"			# Source phantom image.
-theta0=0. ; theta1=360.; n_cameras=100		# Number of equispaced virtual projections of the phantom
-method='osem'  					# Methods available in Python are osem, tv, je, ccje.
+input_phantom="test.hdf5"			# Source phantom image.
+theta0=0 ; theta1=360; n_cameras=721		# Number of equispaced virtual projections of the phantom
+method='je'  					# Methods available in Python are osem, tv, je, ccje.
 params={'subset_order':8,'steps':30,'beta':0.}	# Parameters that methods may need in NiftyRec.
 padFactor=1.0					# How much zero padding around the image as a fraction of image size. Must be >= 1.
 resize_display=5				# Zoom the small image when showing it onscreen, so we can see it better.
@@ -65,38 +44,18 @@ psf_one=numpy.ones((1,1))			# Unity point spread function
 
 ### BEGIN MAIN ###########################################################################################################################
 
-print("\nSimple Phantom Example for NiftyRec\n")
-
 # Start a timer
 start_time=time.time()
 
-# Load image
-print("Loading phantom...")
-M=64 					# One image frame loaded (M = no. of slices)
-i,N=image2array(input_phantom)		# Load phantom image (size N*n, N>n)
-i=numpy.true_divide(i,numpy.max(i)) 	# Normalize image
-i=makeSquareImg(i)			# Square off the image to N*N
-i,N=padImg(i,int(numpy.ceil(N/float(get_block_size())))*get_block_size())    # Additionally pad image to a multiple of the GPU block size
-
-# Scale-up image if number of camera angles is larger
-if n_cameras>N:
-	N=n_cameras
-	i=rescaleImAr(i,(N,N))
+N = n_cameras
 
 # Create Reconstructor
-volume_size = (N,M,N)
+volume_size = (N, 1, N)
 print("The test phantom volume is of size"+str(volume_size))
-r=Reconstructor(volume_size)
+r = Reconstructor(volume_size)
 
 # Camera angles
-r.set_cameras_equispaced(theta0,theta1,n_cameras, axis=1)  # r.cameras is in radians!
-
-# If the number of camera angles is less than the image size, pad out with theta=0 instances, they won't add more information.
-dummy_views_to_add=0
-original_n_camera_angles=n_cameras
-if N>n_cameras:
-	dummy_views_to_add=N-n_cameras
-	r.set_cameras_matrix(numpy.hstack((r.cameras,numpy.zeros((3,dummy_views_to_add)))))
+r.set_cameras_equispaced(theta0, theta1, n_cameras, axis=1)  # r.cameras is in radians!
 
 # Apply PSF to every view
 psf_mat=numpy.zeros((psf_one.shape[0],psf_one.shape[1],N))
@@ -109,20 +68,12 @@ r.set_use_gpu(use_the_GPU)
 if use_the_GPU:	CPUGPU='GPU'
 else:		CPUGPU='CPU'
 print("Using GPU?"+str(r.use_gpu))
-if use_the_GPU: print 'GPU Info: ',list_gpus()
+if use_the_GPU: print('GPU Info: ', list_gpus())
 
-# Use NiftyRec to make the phantom's sinogram that we will then use to try and reconstruct the phantom.
-# (if M>1, the M slices of the 3D volume are all identical) 
-print("Making sinogram of phantom on the %s..." % CPUGPU)
-input_phantom_array=numpy.zeros(volume_size)				      	  # Make an empty volume
-for slice_index in range(M):
-    input_phantom_array[ 0:i.shape[0], slice_index, 0:i.shape[1] ]=i.astype(numpy.float32)  # Put image array into the volume's slices
-NRsino=project(input_phantom_array, r.cameras, r.psf, r.attenuation, use_the_GPU) # Run et_project
+input_file = h5py.File('S00140.hdf5')
+NRsino = input_file['/postprocessing/stack_pixel_510'][:, 100:821]
+NRsino = numpy.reshape(NRsino, (NRsino.shape[0], 1, NRsino.shape[1]))
 print("Size of NiftyRec\'s sinogram:"+str(NRsino.shape))
-
-# If we had to add any 'dummy' views to pad the solution, zero out the sinogram for those views.
-# et_project will obviously calculate the true projection at theta=0, and we want to remove that superfluous information.
-if dummy_views_to_add>0: NRsino[original_n_camera_angles:,:,:]=-1
 
 # Load sinogram and set callbacks
 r.set_sinogram(NRsino)
@@ -131,10 +82,10 @@ r.set_callback_updateactivity(callback_updateactivity_handler)
 
 # Check if we're ready to go, else quit.
 print("All paremeters set? "+str(r.has_all_parameters())+"\n\n")
-if not r.has_all_parameters(): os._exit(1)
+if not r.has_all_parameters(): sys.exit(1)
 
 # Begin reconstruction
-sys.stdout.write( 'Reconstructing using `%s\' method on the %s...' % (method,CPUGPU) )
+print( 'Reconstructing using `%s\' method on the %s...' % (method,CPUGPU) )
 r.reconstruct(method,params,verbose)  # remove underscore to background-thread
 
 # Waiting loop
@@ -147,19 +98,23 @@ while r._reconstructing:
 elapsed_time = time.time() - start_time
 
 # Make NumPy arrays of the first slice of the volume for the input phantom & reconstruction.
-display_slice = numpy.floor(M/2)
-slice_input=input_phantom_array[:,display_slice,:]
-slice_output=r.activity[:,display_slice,:]
+slice_output = r.activity[:, 0, :]
+if "reconstruction" in input_file:
+    del input_file["reconstruction"]
+input_file.create_dataset("reconstruction", data=slice_output)
+input_file.close()
 
 # Determine sum square error in the reconstruction of the phantom
-reconstruction_sum_sq_err = numpy.true_divide(numpy.sum((slice_input-slice_output)**2),numpy.sum(slice_input**2))
-print("Fraction error of reconstruction: %f\n" % reconstruction_sum_sq_err)
 print("Time elapsed: %i seconds (on the %s)" % (numpy.ceil(elapsed_time),CPUGPU))
 
-# Display sinogram, input & output images using PIL.
-sinogram_slice_imageArray=numpy.transpose(NRsino[:,display_slice,:].reshape(r.N_cameras,N))
-displayImg(sinogram_slice_imageArray,resize=resize_display,title='NiftyRec sinogram')
-displayImg(slice_output,resize=resize_display,title='NiftyRec reconstruction')
-displayImg(slice_input,resize=resize_display,title='Original data')
+# Display sinogram, output images 
+sinogram_slice_imageArray = NRsino[:, 0, :].reshape(r.N_cameras, N)
+plt.figure()
+plt.imshow(sinogram_slice_imageArray)
+plt.figure()
+plt.imshow(slice_output)
+plt.ion()
+plt.show()
+raw_input("press ENTER to quit.")
 
 
