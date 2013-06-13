@@ -4,4 +4,4 @@ import matplotlib
 
 matplotlib.rcParams["image.origin"] = "lower"
 matplotlib.rcParams["image.aspect"] = "auto"
-matplotlib.rcParams["image.interpolation"] = "none"
+matplotlib.rcParams["image.interpolation"] = "bicubic"
