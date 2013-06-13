@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from __future__ import division, print_function
-
 """Get a list of files, return a plot of the phase drift in each pixel."""
+
+from __future__ import division, print_function
 
 import matplotlib.pyplot as plt
 import math
@@ -58,7 +58,7 @@ if __name__ == '__main__':
                    va='top', ha='left')
     plt.axhline(color='r')
     #plt.savefig("pixels.png")
-    """Now across pixels"""
+    #Now across pixels"""
     across_pixels_figure = plt.figure()
     across_pixels = np.mean(phase_drift, axis=1)
     across_pixels_err = (np.std(phase_drift, axis=1) /

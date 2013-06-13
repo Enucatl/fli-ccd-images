@@ -1,22 +1,18 @@
 #!/usr/bin/env python
+"""Measure the pitch of the grating, that is the rotation along the y axis.
+
+"""
+
 from __future__ import division, print_function
-
-import os
-import argparse
-
-import h5py
 
 import math
 import numpy as np
 from scipy import ndimage
 from skimage import filter
-from skimage import img_as_uint
 import matplotlib.pyplot as plt
 
 from projections.commandline_parser import commandline_parser
 from projections.projection_stack import get_projection_stack
-from readimages_utils.hadd import hadd
-from raw_images.base_analyser import post_processing_dirname
 
 def split_indices(array):
     """Find the grating position as the indices where the array change from
@@ -48,14 +44,19 @@ def grating_height(segments):
     upper_positions = np.array(range(upper_edge.shape[0]))
     upper_average = np.average(upper_positions,
             weights=upper_edge)
-    upper_variance = np.dot(upper_edge, (upper_positions - upper_average)**2)/upper_edge.sum()  # Fast and numerically precise
+    upper_variance = np.dot(
+            upper_edge, (upper_positions -
+                upper_average)**2)/upper_edge.sum()
     lower_positions = np.array(range(lower_edge.shape[0]))
     lower_average = np.average(lower_positions,
             weights=lower_edge)
-    lower_variance = np.dot(lower_edge, (lower_positions - lower_average)**2)/lower_edge.sum()  # Fast and numerically precise
+    lower_variance = np.dot(
+            lower_edge, (lower_positions -
+                lower_average)**2)/lower_edge.sum()
 
     upper_position = segments[0].shape[0] + upper_average
-    lower_position = segments[0].shape[0] + upper_edge.shape[0] + empty_distance + lower_average
+    lower_position = (segments[0].shape[0] + upper_edge.shape[0]
+            + empty_distance + lower_average)
     std_dev = math.sqrt(lower_variance + upper_variance)
     return upper_position, lower_position, std_dev
 

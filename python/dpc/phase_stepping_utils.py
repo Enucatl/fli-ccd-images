@@ -1,3 +1,7 @@
+"""Utility functions for dpc analysis.
+
+"""
+
 from __future__ import division, print_function
 
 import math

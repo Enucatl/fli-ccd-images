@@ -1,3 +1,5 @@
+"""Commandline parser for dpc reconstruction."""
+
 from projections.commandline_parser import commandline_parser
 
 commandline_parser.add_argument('--flat', metavar='FLAT_FILE.hdf5',

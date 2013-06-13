@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+"""Merge HDF5 files."""
+
 from __future__ import division, print_function
 
 import os
@@ -16,7 +18,7 @@ def hadd(files):
     """
 
     if len(files) == 1:
-        """Nothing to do with only one input file."""
+        #Nothing to do with only one input file
         return files[0]
     else:
         dir_name = os.path.dirname(files[0])
@@ -25,7 +27,7 @@ def hadd(files):
         output_name = "{0}_{1}.hdf5".format(
                 first_name, last_name)
         output_name_with_dir = os.path.join(dir_name, output_name)
-        """Don't overwrite"""
+        #Don't overwrite
         if not os.path.exists(output_name_with_dir):
             output_file = h5py.File(output_name_with_dir, "w-")
             output_group = output_file.create_group(raw_images_group)

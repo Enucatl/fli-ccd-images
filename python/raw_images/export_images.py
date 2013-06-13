@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+
+"""Convert HDF5 images to any image format supported by matplotlib."""
+
 from __future__ import division, print_function
-import array
 import os
-from itertools import islice
 import shutil
 
 import matplotlib.pyplot as plt

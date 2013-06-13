@@ -1,19 +1,4 @@
 #!/usr/bin/env python
-from __future__ import division, print_function
-
-import os
-
-import h5py
-import numpy as np
-import matplotlib.pyplot as plt
-from skimage.transform import iradon
-
-import readimages_utils.rcparams
-from raw_images.base_analyser import post_processing_dirname
-from readimages_utils.hadd import hadd
-
-
-from tomography.commandline_parser import commandline_parser
 
 """Perform a computed tomography reconstruction from a sinogram
 (--dataset) with the filtered back projection (skimage.transform.iradon)
@@ -21,6 +6,19 @@ from tomography.commandline_parser import commandline_parser
 http://scikit-image.org/docs/dev/api/skimage.transform.html#iradon
 
 """
+
+from __future__ import division, print_function
+
+import h5py
+import numpy as np
+import matplotlib.pyplot as plt
+from skimage.transform import iradon
+
+import readimages_utils.rcparams #pylint: disable=W0611
+from readimages_utils.hadd import hadd
+
+
+from tomography.commandline_parser import commandline_parser
 
 commandline_parser.description = __doc__
 

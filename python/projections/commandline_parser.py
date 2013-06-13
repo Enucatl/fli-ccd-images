@@ -1,3 +1,5 @@
+"""Commandline parser for stack-related operations."""
+
 from raw_images.commandline_parser import commandline_parser
 
 commandline_parser.add_argument('--pixel', metavar='PIXEL',

@@ -1,9 +1,12 @@
 #!/usr/bin/env python
+
+"""Reconstruct the three grating interferometry signals.
+
+"""
+
 from __future__ import division, print_function
 
 import os
-import argparse
-import math
 
 import h5py
 import numpy as np
@@ -12,8 +15,7 @@ from scipy import stats
 
 from raw_images.base_analyser import post_processing_dirname
 from readimages_utils.progress_bar import progress_bar
-import readimages_utils.rcparams
-from readimages_utils.hadd import hadd
+import readimages_utils.rcparams #pylint: disable=W0611
 from dpc.phase_stepping_utils import get_signals
 from dpc.commandline_parser import commandline_parser
 from projections.projection_stack import get_projection_stack
@@ -55,7 +57,7 @@ class ImageReconstructor(object):
         self.export_name = hadd(args.file).replace(
                 ".hdf5",
                 "." + args.format[0])
-        """Overwrite if necessary"""
+        #Overwrite if necessary
         if self.overwrite:
             self.exists_in_file = False
             for name in output_names:
@@ -68,24 +70,31 @@ class ImageReconstructor(object):
                 if name in self.output_directory:
                     images[name] = self.output_directory[name]
             if len(images) == 3:
-                """All three images were saved, don't recalculate them"""
-                self.absorption_image = self.output_directory[self.absorption_image_name]
-                self.differential_phase_image = self.output_directory[self.differential_phase_image_name]
-                self.dark_field_image = self.output_directory[self.dark_field_image_name]
+                #All three images were saved, don't recalculate them
+                self.absorption_image = self.output_directory[
+                        self.absorption_image_name]
+                self.differential_phase_image = self.output_directory[
+                        self.differential_phase_image_name]
+                self.dark_field_image = self.output_directory[
+                        self.dark_field_image_name]
                 self.exists_in_file = True
             else:
                 self.exists_in_file = False
                 self.initialize_reconstruction()
 
     def initialize_reconstruction(self):
+        """Calculate the flat parameters and properly stack the images in a
+        3D structure so that the phase steps are along axis=2.
+
+        """
         self.n_steps = args.steps[0]
         self.n_periods = args.periods
-        """Average flats if more than one flat image."""
+        #Average flats if more than one flat image.
         self.n_flats = self.flat_image.shape[0] // self.n_steps
         flat_images = np.dstack(np.split(self.flat_image,
             self.n_flats, axis=0))
-        """rows and columns have to be swapped with rollaxis so that
-        the image is displayed properly."""
+        #rows and columns have to be swapped with rollaxis so that
+        #the image is displayed properly
         flat_images = np.rollaxis(flat_images, 2, 1)
         flat_absorption, flat_phase, flat_dark_field = get_signals(
                     flat_images,
@@ -107,10 +116,12 @@ class ImageReconstructor(object):
             division does not result in an integer.
             Image shape: {0}""".format(image_array.shape))
         self.extension = args.format[0]
-        self.images = np.dstack(np.split(self.image_array, self.n_lines, axis=0))
+        self.images = np.dstack(np.split(
+            self.image_array, self.n_lines, axis=0))
         self.images = np.rollaxis(self.images, 2, 1)
 
     def set_names(self):
+        """Set the titles of the images."""
         self.absorption_image_title = "absorption image"
         self.differential_phase_image_title = "differential phase"
         self.dark_field_image_title = "visibility reduction"
@@ -126,6 +137,10 @@ class ImageReconstructor(object):
         return output_names
 
     def calculate_images(self):
+        """Calculate the three signals from the phase stepping curves and
+        the flat parameters with the get_signals utility function.
+
+        """
         if not self.exists_in_file:
             images = get_signals( 
                 self.images,
@@ -138,6 +153,10 @@ class ImageReconstructor(object):
 
 
     def save_images(self):
+        """Save results to the HDF5 file in the post_processing_dirname
+        group.
+
+        """
         if not self.exists_in_file:
             images = self.absorption_image, self.differential_phase_image, self.dark_field_image
             for name, image in zip(self.set_names(), images):
@@ -147,6 +166,7 @@ class ImageReconstructor(object):
             self.input_file.close()
 
     def draw(self):
+        """Display the calculated images with matplotlib."""
         f, (ax1, ax2, ax3) = plt.subplots(
                 3, 1, sharex=True)
         img1 = ax1.imshow(self.absorption_image,
@@ -210,6 +230,10 @@ class ImageReconstructor(object):
         raw_input("Press ENTER to quit.")
 
     def correct_drift(self, draw=False):
+        """Correct the phase image for a phase drift with the subtract_drift
+        function.
+
+        """
         self.differential_phase_image_title += " (drift corrected)"
         self.differential_phase_image = subtract_drift(
                 self.differential_phase_image, draw)

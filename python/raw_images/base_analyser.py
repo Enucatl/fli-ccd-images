@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+
+"""Base class for all the analysers of the images saved in the same HDF5
+file.
+
+"""
+
 from __future__ import division, print_function
 
 import warnings
@@ -9,7 +15,7 @@ import h5py
 from readimages_utils.progress_bar import progress_bar
 from readimages_utils.hadd import hadd
 
-"""save results of calculations in this group inside the hdf5 file"""
+#save results of calculations in this group inside the hdf5 file
 post_processing_dirname = "postprocessing"
 corrected_images_group = "corrected_images"
 raw_images_group = "raw_images"
@@ -60,20 +66,31 @@ class BaseHDF5Analyser(object):
         return "NotImplemented"
 
     def if_not_exists(self):
-        """do some initialization if output object was not found in the input file"""
+        """Hook for some initialization if output object
+        was not found in the input file.
+        
+        """
         self.output_object = 0
         self.exists_in_file = False
 
     def if_exists(self):
-        """do some initialization if output object was  found in the input file"""
+        """Hook for some initialization if output object
+        was  found in the input file.
+        
+        """
         self.dont_start()
         self.exists_in_file = True
 
     def dont_start(self):
+        """Hook for doing some operation when no calculation has to be
+        performed.
+
+        """
         print("base_analyser: result already saved in file.")
         print(progress_bar(1))
 
     def output_exists(self, name):
+        """Hook if the output is found in the file."""
         try:
             self.output_object = self.output_directory[self.output_name()]
             return True
@@ -81,6 +98,10 @@ class BaseHDF5Analyser(object):
             return False
 
     def open(self):
+        """Look if the output object already exists and call the appropriate
+        methods.
+
+        """
         name = self.output_name()
         if self.overwrite or not self.output_exists(name):
             self.if_not_exists()

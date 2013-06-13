@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+"""Use the ProjectionStackMaker class to display a stack of all lines in the
+input file(s).
+
+""" 
+
 from __future__ import division, print_function
 
 import numpy as np
@@ -18,7 +23,7 @@ def get_projection_stack(files, args):
             batch=True)
     psm.open()
     if not psm.exists_in_file:
-        """Make projection stack if it doesn't exist."""
+        #Make projection stack if it doesn't exist.
         for i, image in enumerate(psm.images.itervalues()):
             psm.analyse_histogram(i, image)
     projection_stack = psm.output_object[:, args.roi[0]:args.roi[1]]
@@ -81,7 +86,7 @@ class ProjectionStackMaker(BaseHDF5Analyser):
                     total_pixels = shape[0] * shape[1]
                     print("direct conversions in the ccd:",
                         self.corrected_pixels,
-                        "pixels corrected (on {0} total pixels, {1:.3%})".format(
+                        "pixels corrected (/{0} total pixels, {1:.3%})".format(
                             total_pixels,
                             self.corrected_pixels / total_pixels))
                 plt.figure()
@@ -100,6 +105,7 @@ class ProjectionStackMaker(BaseHDF5Analyser):
             super(ProjectionStackMaker, self).close()
 
 if __name__ == '__main__':
+    commandline_parser.description = ProjectionStackMaker.__doc__
     args = commandline_parser.parse_args()
     file_name = args.file
     overwrite = args.overwrite

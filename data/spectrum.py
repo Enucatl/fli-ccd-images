@@ -1,17 +1,21 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+"""Print the mean energy of the simulated spectrum.
+
+"""
+
 from __future__ import division, print_function
 
 import argparse
 import numpy as np
 from itertools import islice
 
-commandline_parser = argparse.ArgumentParser(description='''Get some
-        properties of the simulated spectrum''',
+commandline_parser = argparse.ArgumentParser(description=__doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 commandline_parser.add_argument('file', metavar='FILE.spec',
         nargs=1, help='file with the spectrum calculated by SpekCalc')
+
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()

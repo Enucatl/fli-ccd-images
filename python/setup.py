@@ -1,3 +1,5 @@
+#pylint: disable=C0111
+
 from setuptools import setup, find_packages
 
 setup(
@@ -34,6 +36,7 @@ setup(
     description = "Read and analyse FLI CCD raw images",
     license = "GNU GPL 3",
     keywords = "readimages",
-    url = "https://bitbucket.org/Enucatl/readimages",   # project home page, if any
+    # project home page, if any
+    url = "https://bitbucket.org/Enucatl/readimages",
     # could also include long_description, download_url, classifiers, etc.
 )

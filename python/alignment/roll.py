@@ -1,10 +1,11 @@
 #!/usr/bin/env python
+
+"""Measure the roll of the grating, that is the rotation along the x axis.
+
+"""
+
 from __future__ import division, print_function
 
-import os
-import argparse
-
-import math
 import numpy as np
 from skimage import io
 from skimage import filter

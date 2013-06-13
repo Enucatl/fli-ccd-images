@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+"""Convert all raw images to hdf5."""
+
 from __future__ import division, print_function
 
 import os
@@ -14,8 +16,6 @@ import matplotlib.pyplot as plt
 import argparse
 
 from readimages_utils.progress_bar import progress_bar
-
-"""Convert all raw images to hdf5."""
 
 commandline_parser = argparse.ArgumentParser(description=__doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -45,7 +45,9 @@ if __name__ == '__main__':
             output_file = h5py.File(output_name, 'w')
         else:
             print()
-            print("""File exists. Run with the --overwrite (-o) flag if you want to overwrite it.""")
+            print("""File exists.
+                    Run with the --overwrite (-o) flag
+                    if you want to overwrite it.""")
             print(output_name)
             print()
             print(progress_bar(1))
@@ -60,7 +62,8 @@ if __name__ == '__main__':
             header = list(islice(input_file, header_lines))
             header_len = len("".join(header))
             exposure_time = float(header[4].split()[-1])
-            min_y, min_x, max_y, max_x = [int(x) for x in header[-2].split()[2:]]
+            min_y, min_x, max_y, max_x = [
+                    int(x) for x in header[-2].split()[2:]]
             input_file.close()
             input_file = open(input_file_name, 'rb')
             input_file.read(header_len + 1)

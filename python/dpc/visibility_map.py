@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-from __future__ import division, print_function
-
 """Draw the graph of the visibility in each pixel.
 
 If more than one phase stepping curve is found in the file,
@@ -8,7 +6,7 @@ the output is the average visibility for each phase stepping curve.
 
 """
 
-import os
+from __future__ import division, print_function
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -39,7 +37,7 @@ if __name__ == '__main__':
     plt.figure()
     axis = plt.axes()
     if visibility.shape[0] == 1:
-        plt.plot(np.arange(*roi), visibility.T)
+        plt.plot(np.arange(roi[0], roi[1]), visibility.T)
         plt.xlim(roi[0], roi[1])
         plt.xlabel("pixel number")
         plt.ylabel("visibility $2 a_1 / a_0$ ($\\%$)")

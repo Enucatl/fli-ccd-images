@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 from __future__ import division, print_function
 
 import matplotlib.pyplot as plt
@@ -7,7 +8,8 @@ import numpy as np
 from raw_images.base_analyser import BaseHDF5Analyser
 
 class IntensityScan(BaseHDF5Analyser):
-    """Plot the intensity as a function of the image number in a folder (e.g. a scan).
+    """Plot the intensity as a function of the
+    image number in a folder (e.g. a scan).
     
     """
     def __init__(self, roi, *args, **kwargs):
@@ -68,7 +70,7 @@ class IntensityScan(BaseHDF5Analyser):
                     yerr=np.sqrt(self.y), fmt='o')
             plt.xlabel("file number")
             plt.ylabel("intensity (integral)")
-            plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+            plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
             plt.ion()
             plt.show()
             try:

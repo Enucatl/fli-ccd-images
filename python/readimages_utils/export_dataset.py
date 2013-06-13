@@ -1,18 +1,15 @@
 #!/usr/bin/env python
-from __future__ import division, print_function
 
-import os
-import argparse
+"""Export a dataset to an image."""
+
+from __future__ import division, print_function
 
 import matplotlib.pyplot as plt
 import h5py
 
-import readimages_utils.rcparams
-from projections.projection_stack import get_projection_stack
+import readimages_utils.rcparams #pylint: disable=W0611
 from projections.commandline_parser import commandline_parser
 from readimages_utils.hadd import hadd
-
-"""Export a dataset to an image."""
 
 commandline_parser.description = __doc__
 commandline_parser.add_argument('--dataset', metavar='DATASET',
