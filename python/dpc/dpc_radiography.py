@@ -16,6 +16,7 @@ from scipy import stats
 from raw_images.base_analyser import post_processing_dirname
 from readimages_utils.progress_bar import progress_bar
 import readimages_utils.rcparams #pylint: disable=W0611
+from readimages_utils.hadd import hadd
 from dpc.phase_stepping_utils import get_signals
 from dpc.commandline_parser import commandline_parser
 from projections.projection_stack import get_projection_stack
