@@ -29,7 +29,7 @@ PYTHON_PROGRAMMES=$(addprefix python/,\
 				  $(addprefix raw_images/, correct.py export_images.py intensity_scan.py)\
 					)
 
-all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer) chmod
+all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer) install
 
 $(BIN_FOLDER)/ccdfli_viewer: ccdfli_viewer.cpp\
 	$(DICT_FOLDER)/main_frameDict.cpp\
@@ -53,9 +53,7 @@ $(BIN_FOLDER):
 $(DICT_FOLDER):
 	mkdir -p $(DICT_FOLDER)
 
-chmod: bash/*.sh
-	chmod +x bash/*.sh
-	-rm -rf bin/*py?
+install: 
 	cd python; python setup.py develop --user
 
 clean:
