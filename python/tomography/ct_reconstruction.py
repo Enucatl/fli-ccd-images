@@ -31,8 +31,8 @@ if __name__ == '__main__':
     overwrite = args.overwrite
     n = len(dataset_names)
     for i, name in enumerate(dataset_names):
-        output_name = "{0}_gridrec_reconstruction".format(
-                name)
+        output_name = "{0}_gridrec_reconstruction_{1}".format(
+                name, rotation_centre)
         if output_name in input_file and not overwrite:
             reconstructed_image = input_file[output_name]
         else:
