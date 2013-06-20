@@ -123,7 +123,7 @@ class ImageReconstructor(object):
 
     def set_names(self):
         """Set the titles of the images."""
-        self.absorption_image_title = "absorption image"
+        self.absorption_image_title = "absorption"
         self.differential_phase_image_title = "differential phase"
         self.dark_field_image_title = "visibility reduction"
         self.absorption_image_name = self.absorption_image_title.replace(
