@@ -3,7 +3,7 @@
 from projections.commandline_parser import commandline_parser
 
 commandline_parser.add_argument('--flat', metavar='FLAT_FILE.hdf5',
-        nargs='+',
+        nargs='+', required=True,
         help='hdf5 file(s) with the histogram for the flat field')
 commandline_parser.add_argument('--flats_every', metavar='N_FLATS',
         nargs='?', type=int, default=999999,

@@ -9,8 +9,8 @@ commandline_parser.add_argument('--dataset', metavar='DATASET',
         help='dataset(s) in the HDF5 file containing the sinogram')
 commandline_parser.add_argument('--centre', '-r',
         metavar='CENTRE',
-        help='Rotation centre as a fraction of the sinogram width.',
-        nargs='?', default=0.5, type=float)
+        help='Pixel number of the rotation centre.',
+        nargs='?', default=0, type=float)
 commandline_parser.add_argument('--filter', '-f',
         metavar='FILTER',
         nargs='?', default='parzen', type=str,

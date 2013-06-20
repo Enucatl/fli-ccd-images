@@ -33,23 +33,23 @@ if __name__ == '__main__':
     for i, name in enumerate(dataset_names):
         output_name = "{0}_gridrec_reconstruction".format(
                 name)
-        if args.overwrite and output_name in input_file:
-            del input_file[output_name]
-        elif output_name in input_file:
+        if output_name in input_file and not overwrite:
             reconstructed_image = input_file[output_name]
         else:
+            if output_name in input_file and overwrite:
+                del input_file[output_name]
             image_array = input_file[name][...].astype(np.float32)
             width = image_array.shape[0]
             height = image_array.shape[1]
             header = np.array(
-                    [width, height,
+                    [height, width,
                     width * height], dtype=np.uint16)
             print(image_array.shape)
             print(image_array.dtype)
             _, temporary_dmp_name = tempfile.mkstemp(suffix=".DMP")
             temporary_dmp = open(temporary_dmp_name, "wb")
             header.tofile(temporary_dmp)
-            image_array.T.tofile(temporary_dmp)
+            image_array.tofile(temporary_dmp)
             temporary_dmp.close()
             print(temporary_dmp_name)
             gridrec_command = "gridrec -f {0}\
@@ -62,20 +62,23 @@ if __name__ == '__main__':
                     #the dirs -D / -O / have to be specified,
                     #otherwise gridrec assumes
                     #that the file is in the current directory
-            
+            print("calling gridrec")
+            print(gridrec_command)
             subprocess.check_call(gridrec_command, shell=True)
             os.remove(temporary_dmp_name)
             reconstructed_name = temporary_dmp_name.replace(".DMP", ".rec.DMP")
             reconstructed_file = open(reconstructed_name, "rb")
-            reconstructed_header = np.fromfile(reconstructed_file,
+            reconstructed_header = np.fromfile(
+                    reconstructed_file,
                     dtype=np.uint16, count=3)
-            reconstructed_image = np.fromfile(reconstructed_file,
+            reconstructed_image = np.fromfile(
+                    reconstructed_file,
                     dtype=np.float32)
             print(reconstructed_header)
             print(reconstructed_image.shape)
             reconstructed_image = np.reshape(reconstructed_image,
-                    (reconstructed_header[1],
-                    reconstructed_header[0]))
+                    (reconstructed_header[0],
+                    reconstructed_header[1]))
             reconstructed_file.close()
             os.remove(reconstructed_name)
             input_file.create_dataset(output_name, data=reconstructed_image)
