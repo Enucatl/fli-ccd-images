@@ -44,14 +44,11 @@ if __name__ == '__main__':
             header = np.array(
                     [height, width,
                     width * height], dtype=np.uint16)
-            print(image_array.shape)
-            print(image_array.dtype)
             _, temporary_dmp_name = tempfile.mkstemp(suffix=".DMP")
             temporary_dmp = open(temporary_dmp_name, "wb")
             header.tofile(temporary_dmp)
             image_array.tofile(temporary_dmp)
             temporary_dmp.close()
-            print(temporary_dmp_name)
             gridrec_command = "gridrec -f {0}\
                     -c {1}\
                     -g 2 -t 0 -Z 1 -O / -D /\
@@ -74,8 +71,6 @@ if __name__ == '__main__':
             reconstructed_image = np.fromfile(
                     reconstructed_file,
                     dtype=np.float32)
-            print(reconstructed_header)
-            print(reconstructed_image.shape)
             reconstructed_image = np.reshape(reconstructed_image,
                     (reconstructed_header[0],
                     reconstructed_header[1]))
