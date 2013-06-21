@@ -6,13 +6,12 @@
 from __future__ import division, print_function
 
 import os
+import shutil
 from itertools import islice
 from glob import glob
-import shutil
 
 import h5py
 import numpy as np
-import matplotlib.pyplot as plt
 import argparse
 
 from readimages_utils.progress_bar import progress_bar
@@ -25,35 +24,59 @@ commandline_parser.add_argument('folder',
         nargs='+',
         help='''folder(s) with the raw files. If you pass multiple
         folders you will get one hdf5 file for each folder.''')
-commandline_parser.add_argument('--show',
-        action='store_true',
-        help='show each image.')
 commandline_parser.add_argument('--keep', '-k',
         action='store_true',
-        help='keep the RAW files')
+        help='keep the RAW files.')
 commandline_parser.add_argument('--overwrite', '-o',
         action='store_true',
         help='overwrite hdf5 files if they already exist.')
 
-if __name__ == '__main__':
-    args = commandline_parser.parse_args()
-    header_lines = 16
+#number of lines in a CCD FLI header
+HEADER_LINES = 16
+
+def analyse_header(input_file_name):
+    """Analyse a CCD FLI header in a RAW file saved as file_name.
+
+    Return the bytes in the header, exposure, min_x, max_x, min_y, max_y.
+
+    """
+    input_file = open(input_file_name, 'rb')
+    header = list(islice(input_file, HEADER_LINES))
+    header_len = len("".join(header))
+    exposure_time = float(header[4].split()[-1])
+    min_y, min_x, max_y, max_x = [
+            int(x) for x in header[-2].split()[2:]]
+    input_file.close()
+    return header_len, exposure_time, min_x, max_x, min_y, max_y
+
+def main(args):
+    """Iterate over the folders:
+        - check that the folder is valid
+        - check if the file exists (overwrite if the
+            --overwrite option was specified)
+        - analyse the header to save the parameters in the attributes of the
+          hdf5 dataset
+        - write the data as an hdf5 dataset
+        - remove the folder (unless --keep is true)
+
+    """
+    output_names = []
     for folder_name in args.folder:
         if not os.path.isdir(folder_name):
-            print("not a folder:", folder_name)
+            print("make_hdf5.py: not a folder:", folder_name)
             continue
-        print("converting", folder_name)
+        print("make_hdf5.py: converting", folder_name)
         files = glob(os.path.join(folder_name, "*.raw"))
         output_name = os.path.normpath(folder_name) + ".hdf5"
+        output_names.append(output_name)
         if not os.path.exists(output_name) or args.overwrite:
             output_file = h5py.File(output_name, 'w')
         else:
             print()
-            print("""File exists.
+            print("""make_hdf5.py: file {0} exists.
                     Run with the --overwrite (-o) flag
-                    if you want to overwrite it.""")
-            print(output_name)
-            print()
+                    if you want to overwrite it.""".format(
+                        output_name))
             print(progress_bar(1))
             print()
             continue
@@ -61,17 +84,14 @@ if __name__ == '__main__':
         n_files = len(files)
         for i, input_file_name in enumerate(files):
             print(progress_bar((i + 1) / n_files), end="\r")
-            input_file = open(input_file_name, 'rb')
-            image_name = os.path.splitext(os.path.basename(input_file_name))[0]
-            header = list(islice(input_file, header_lines))
-            header_len = len("".join(header))
-            exposure_time = float(header[4].split()[-1])
-            min_y, min_x, max_y, max_x = [
-                    int(x) for x in header[-2].split()[2:]]
-            input_file.close()
+            (header_len, exposure_time,
+                    min_x, max_x, 
+                    min_y, max_y) = analyse_header(input_file_name)
             input_file = open(input_file_name, 'rb')
             input_file.read(header_len + 1)
-            image = np.reshape(np.fromfile(input_file, dtype=np.uint16),
+            image_name = os.path.splitext(os.path.basename(input_file_name))[0]
+            image = np.reshape(
+                    np.fromfile(input_file, dtype=np.uint16),
                     (max_y - min_y, max_x - min_x),
                     order='FORTRAN')
             dataset = group.create_dataset(image_name, data=image)
@@ -80,21 +100,15 @@ if __name__ == '__main__':
             dataset.attrs['min_y'] = min_y
             dataset.attrs['max_x'] = max_x
             dataset.attrs['max_y'] = max_y
-            if args.show:
-                print("".join(header))
-                print(image.shape)
-                print(image)
-                print("exposure", exposure_time)
-                plt.figure()
-                plt.imshow(image, origin='lower',
-                        extent=[min_x, max_x, min_y, max_y])
-                plt.locator_params(axis='y', nbins=3)
-                plt.show()
             input_file.close()
         if not args.keep:
-            print("removing", folder_name)
+            print("make_hdf5.py: removing", folder_name)
             shutil.rmtree(folder_name)
         output_file.close()
         print()
-        print("written", output_name)
-    print("Done!")
+        print("make_hdf5.py: written", output_name)
+    print("make_hdf5.py: done!")
+    return output_names
+
+if __name__ == '__main__':
+    main(commandline_parser.parse_args())
