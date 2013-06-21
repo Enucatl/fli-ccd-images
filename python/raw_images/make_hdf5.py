@@ -28,6 +28,9 @@ commandline_parser.add_argument('folder',
 commandline_parser.add_argument('--show',
         action='store_true',
         help='show each image.')
+commandline_parser.add_argument('--keep', '-k',
+        action='store_true',
+        help='keep the RAW files')
 commandline_parser.add_argument('--overwrite', '-o',
         action='store_true',
         help='overwrite hdf5 files if they already exist.')
@@ -88,7 +91,9 @@ if __name__ == '__main__':
                 plt.locator_params(axis='y', nbins=3)
                 plt.show()
             input_file.close()
-        shutil.rmtree(folder_name)
+        if not args.keep:
+            print("removing", folder_name)
+            shutil.rmtree(folder_name)
         output_file.close()
         print()
         print("written", output_name)

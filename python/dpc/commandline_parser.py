@@ -10,6 +10,7 @@ commandline_parser.add_argument('--flats_every', metavar='N_FLATS',
         help='flats taken every N_FLATS steps')
 commandline_parser.add_argument('--steps', metavar='STEPS',
         nargs=1, type=int, default=8,
+        required=True,
         help='number of phase steps')
 commandline_parser.add_argument('--periods', metavar='PERIODS',
         type=int, default=1,
