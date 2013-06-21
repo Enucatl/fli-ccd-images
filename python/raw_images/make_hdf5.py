@@ -20,9 +20,13 @@ from readimages_utils.progress_bar import progress_bar
 commandline_parser = argparse.ArgumentParser(description=__doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-commandline_parser.add_argument('folder', metavar='FOLDER(s)',
-        nargs='+', help='folder(s) with the raw files')
-commandline_parser.add_argument('--show', action='store_true',
+commandline_parser.add_argument('folder',
+        metavar='FOLDER(s)',
+        nargs='+',
+        help='''folder(s) with the raw files. If you pass multiple
+        folders you will get one hdf5 file for each folder.''')
+commandline_parser.add_argument('--show',
+        action='store_true',
         help='show each image.')
 commandline_parser.add_argument('--overwrite', '-o',
         action='store_true',
@@ -30,18 +34,15 @@ commandline_parser.add_argument('--overwrite', '-o',
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
-    show = args.show
-    overwrite = args.overwrite
-    folder_names = args.folder
     header_lines = 16
-    for folder_name in folder_names:
+    for folder_name in args.folder:
         if not os.path.isdir(folder_name):
             print("not a folder:", folder_name)
             continue
         print("converting", folder_name)
         files = glob(os.path.join(folder_name, "*.raw"))
         output_name = os.path.normpath(folder_name) + ".hdf5"
-        if not os.path.exists(output_name) or overwrite:
+        if not os.path.exists(output_name) or args.overwrite:
             output_file = h5py.File(output_name, 'w')
         else:
             print()
@@ -76,7 +77,7 @@ if __name__ == '__main__':
             dataset.attrs['min_y'] = min_y
             dataset.attrs['max_x'] = max_x
             dataset.attrs['max_y'] = max_y
-            if show:
+            if args.show:
                 print("".join(header))
                 print(image.shape)
                 print(image)
