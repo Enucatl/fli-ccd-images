@@ -10,7 +10,6 @@ setup(
         'readimages_utils/export_dataset.py',
         'projections/projection_stack.py',
         'alignment/pitch.py',
-        'alignment/roll.py',
         'dpc/dpc_radiography.py',
         'dpc/phase_drift.py',
         'dpc/visibility_map.py',
