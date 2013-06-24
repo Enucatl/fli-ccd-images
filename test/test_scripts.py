@@ -25,7 +25,7 @@ class TestScripts(object):
     """
 
     def test_make_hdf5(self):
-        command = "make_hdf5.py --keep" + test_folder
+        command = "make_hdf5.py --keep " + test_folder
         argument_sets = [
                 "",
                 "-o",
