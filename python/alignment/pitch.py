@@ -100,21 +100,21 @@ if __name__ == '__main__':
         upper_edges.append(upper_edge)
         processed_images.append(filled)
     processed_images = np.reshape(processed_images, (-1, (roi[1] - roi[0])))
-    f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
-    plt.tight_layout()
-    ax1.imshow(image_array)
-    ax2.imshow(processed_images)
-    for i, (lower_edge, upper_edge) in enumerate(
-            zip(lower_edges, upper_edges)):
-        first_pixel = i * image_height
-        ax2.axhline(y=(first_pixel + lower_edge), color='r')
-        ax2.axhline(y=(first_pixel + upper_edge), color='r')
-    plt.figure()
-    plt.errorbar(x, y, fmt='o')
-    plt.xlabel("image number")
-    plt.ylabel("apparent grating thickness (pixels)")
-    plt.ion()
-    plt.show()
-    print()
     if not args.batch:
+        f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+        plt.tight_layout()
+        ax1.imshow(image_array)
+        ax2.imshow(processed_images)
+        for i, (lower_edge, upper_edge) in enumerate(
+                zip(lower_edges, upper_edges)):
+            first_pixel = i * image_height
+            ax2.axhline(y=(first_pixel + lower_edge), color='r')
+            ax2.axhline(y=(first_pixel + upper_edge), color='r')
+        plt.figure()
+        plt.errorbar(x, y, fmt='o')
+        plt.xlabel("image number")
+        plt.ylabel("apparent grating thickness (pixels)")
+        plt.ion()
+        plt.show()
+        print()
         raw_input("Press ENTER to quit.")

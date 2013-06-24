@@ -59,6 +59,7 @@ if __name__ == '__main__':
     axis.yaxis.set_major_formatter(FuncFormatter(
         lambda x, pos=0: "{0:.2%}".format(x)))
     plt.tight_layout()
-    plt.ion()
-    plt.show()
-    raw_input("Press ENTER to quit.")
+    if not args.batch:
+        plt.ion()
+        plt.show()
+        raw_input("Press ENTER to quit.")

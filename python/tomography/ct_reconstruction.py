@@ -77,7 +77,7 @@ if __name__ == '__main__':
             reconstructed_file.close()
             os.remove(reconstructed_name)
             input_file.create_dataset(output_name, data=reconstructed_image)
-            if args.show:
+            if not args.batch:
                 plt.figure()
                 plt.imshow(reconstructed_image)
                 plt.ion()
