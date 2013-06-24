@@ -53,7 +53,11 @@ class BaseHDF5Analyser(object):
                 Using the raw ones.""")
                 self.images = self.input_file[raw_images_group]
         else:
-            self.images = self.input_file[raw_images_group]
+            try:
+                self.images = self.input_file[raw_images_group]
+            except KeyError:
+                print(raw_images_group, "not found!\n\n")
+                raise
         self.output_directory = self.input_file.require_group(
                 post_processing_dirname)
         self.n_images = len(self.images)

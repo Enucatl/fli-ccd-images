@@ -27,7 +27,11 @@ if __name__ == '__main__':
     n = len(dataset_names)
     print('saving {0} images:'.format(n))
     for i, name in enumerate(dataset_names):
-        image_array = input_file[name]
+        try:
+            image_array = input_file[name]
+        except KeyError:
+            print(name, "not found!\n\n")
+            raise
         output_name = "{0}.{1}".format(
                 name, extension)
         without_slashes = output_name.replace("/", "_")

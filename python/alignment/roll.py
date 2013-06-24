@@ -39,4 +39,5 @@ if __name__ == '__main__':
     ax2.set_title("sobel filter")
     plt.ion()
     plt.show()
-    raw_input("Press ENTER to quit.")
+    if not args.batch:
+        raw_input("Press ENTER to quit.")

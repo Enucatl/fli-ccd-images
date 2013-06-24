@@ -116,4 +116,5 @@ if __name__ == '__main__':
     plt.ion()
     plt.show()
     print()
-    raw_input("Press ENTER to quit.")
+    if not args.batch:
+        raw_input("Press ENTER to quit.")

@@ -10,7 +10,7 @@ commandline_parser.add_argument('file', metavar='FILE.hdf5',
         nargs='+', help='file(s) with the images')
 commandline_parser.add_argument('--batch', '-b', 
         action='store_true',
-        help='batch mode (no drawing)')
+        help='batch mode (no drawing or user interaction)')
 commandline_parser.add_argument('--corrected', '-c', 
         action='store_true',
         help='use dark and flat corrected images.')
