@@ -19,6 +19,9 @@ The [ROOT data analysis framework](http://root.cern.ch "ROOT homepage") ≥ 5.34
 [Python Distribute](http://pythonhosted.org/distribute/index.html) for
 installing the python scripts
 
+[TOMCAT's gridrec](https://intranet.psi.ch/Tomcat/SVN-Overview) for the
+tomographic reconstruction
+
 
 ## Report Bugs & Request Features
 
@@ -98,7 +101,6 @@ lines together. More tools are then provided to analyse the stack:
 ### Alignment tools
 The stacked images can yield interesting alignment information:
 
-   * `roll.py`: rotation about the `x` axis.
    * `pitch.py`: rotation about the `y` axis.
 
 ### Differential phase contrast
@@ -110,3 +112,8 @@ scans:
    * `phase_drift.py`: show the drift of the phase values during a scan.
    * `visibility_map.py`: draw a graph with the visibility as a function of
       the pixel in the detector.
+
+### Tomography reconstruction
+Reconstruct a dataset with gridrec.
+
+   * `ct_reconstruction.py`: reconstruct a dataset with gridrec.
