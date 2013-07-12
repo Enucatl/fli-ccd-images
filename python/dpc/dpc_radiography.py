@@ -21,23 +21,13 @@ from dpc.phase_stepping_utils import get_signals
 from dpc.commandline_parser import commandline_parser
 from projections.projection_stack import get_projection_stack
 
-def subtract_drift(image, draw=False):
+def subtract_drift(image):
     """Force the phase to have zero mean in all lines.
 
     """
     correction = np.tile(np.mean(image, axis=1),
             (image.shape[1], 1)).transpose()
     corrected_image = image - correction
-    if draw:
-        plt.figure()
-        axis = plt.axes()
-        axis.set_title("phase drift interpolation")
-        plt.plot(x, line, 'r-', x, y, 'o')
-        plt.xlabel('image number')
-        plt.ylabel('average phase (rad)')
-        #plt.figure()
-        #image = plt.imshow(corrected_image)
-        #image.set_clim(-0.5, 0.5)
     return corrected_image
 
 class ImageReconstructor(object):
@@ -230,14 +220,14 @@ class ImageReconstructor(object):
         plt.show()
         raw_input("Press ENTER to quit.")
 
-    def correct_drift(self, draw=False):
+    def correct_drift(self):
         """Correct the phase image for a phase drift with the subtract_drift
         function.
 
         """
         self.differential_phase_image_title += " (drift corrected)"
         self.differential_phase_image = subtract_drift(
-                self.differential_phase_image, draw)
+                self.differential_phase_image)
         
 commandline_parser.description = ImageReconstructor.__doc__
 
