@@ -90,10 +90,11 @@ class ImageReconstructor(object):
         flat_absorption, flat_phase, flat_dark_field = get_signals(
                     flat_images,
                     None, self.n_periods)
+        unwrapped_phase = np.unwrap(flat_phase, axis=0)
         if self.n_flats > 1:
-            corrected_flat_phase = subtract_drift(flat_phase)
+            corrected_flat_phase = subtract_drift(unwrapped_phase)
         else:
-            corrected_flat_phase = flat_phase
+            corrected_flat_phase = unwrapped_phase
         average_absorption = np.median(flat_absorption, axis=0)
         average_phase = np.median(corrected_flat_phase, axis=0)
         average_dark_field = np.median(flat_dark_field, axis=0)
