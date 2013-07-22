@@ -106,7 +106,7 @@ class ImageReconstructor(object):
             raise ValueError("""
             wrong number of steps,
             division does not result in an integer.
-            Image shape: {0}""".format(image_array.shape))
+            Image shape: {0}""".format(self.image_array.shape))
         self.extension = args.format[0]
         self.images = np.dstack(np.split(
             self.image_array, self.n_lines, axis=0))
