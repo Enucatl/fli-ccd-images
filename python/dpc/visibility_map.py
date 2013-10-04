@@ -32,12 +32,13 @@ if __name__ == '__main__':
     image = np.rollaxis(image, 2, 1)
     a0, _, a1 = get_signals(image, n_periods=n_periods)
     visibility = (2 * a1 / a0)
+    pixels = np.arange(roi[0], roi[1])
     mean_visibility = np.mean(visibility, axis=1)
     std_dev_visibility = np.std(visibility, axis=1) / visibility.shape[1]
     plt.figure()
     axis = plt.axes()
     if visibility.shape[0] == 1:
-        plt.plot(np.arange(roi[0], roi[1]), visibility.T)
+        plt.plot(pixels, visibility.T)
         plt.xlim(roi[0], roi[1])
         plt.xlabel("pixel number")
         plt.ylabel("visibility $2 a_1 / a_0$ ($\\%$)")
@@ -54,8 +55,7 @@ if __name__ == '__main__':
                 )
         plt.xlim(0, mean_visibility.shape[0] + 1)
         plt.xlabel("image number")
-        plt.ylabel("average visibility $2 a_1 / a_0$ ($\\%$)",
-                )
+        plt.ylabel("average visibility $2 a_1 / a_0$ ($\\%$)")
     axis.yaxis.set_major_formatter(FuncFormatter(
         lambda x, pos=0: "{0:.2%}".format(x)))
     plt.tight_layout()
