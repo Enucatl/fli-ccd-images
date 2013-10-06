@@ -2,7 +2,7 @@
 .SUFFIXES: .cpp .o
 
 BIN_FOLDER=bin
-READIMAGES_FOLDER=readimages
+READIMAGES_FOLDER=root_reader
 GUI_FOLDER=gui
 ANA_FOLDER=analysis
 ANA_SRC_FOLDER=$(ANA_FOLDER)/src
@@ -22,12 +22,6 @@ CFLAGS=-Wall `root-config --cflags` -I$(INC_FOLDER)/ -I$(GUI_INC_FOLDER) -I$(DIC
 LDFLAGS=`root-config --glibs`
 BOOST_LIBS=-lboost_program_options -lboost_filesystem -lboost_system
 BOOST_THREAD_LIBS=-lboost_thread
-PYTHON_PROGRAMMES=$(addprefix python/,\
-				  $(addprefix projections/, export_stack.py projection_stack.py)\
-				  $(addprefix alignment/, pitch.py roll.py)\
-				  $(addprefix dpc/, dpc_radiography.py phase_drift.py visibility_map.py)\
-				  $(addprefix raw_images/, correct.py export_images.py intensity_scan.py)\
-					)
 
 all: $(addprefix $(BIN_FOLDER)/, ccdfli_viewer) install
 
@@ -54,7 +48,7 @@ $(DICT_FOLDER):
 	mkdir -p $(DICT_FOLDER)
 
 install: 
-	cd python; python setup.py develop --user
+	python setup.py develop --user
 
 clean:
 	-rm -rf $(DICT_FOLDER) $(LIB_FOLDER) $(BIN_FOLDER)\

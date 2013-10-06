@@ -1,22 +1,26 @@
 #pylint: disable=C0111
 
+from distribute_setup import use_setuptools
+use_setuptools()
+
 from setuptools import setup, find_packages
+from version import get_git_version
 
 setup(
     name = "ReadImages",
-    version = "3",
+    version = get_git_version(),
     packages = find_packages(),
     scripts = [
-        'readimages_utils/export_dataset.py',
-        'projections/projection_stack.py',
-        'alignment/pitch.py',
-        'dpc/dpc_radiography.py',
-        'dpc/phase_drift.py',
-        'dpc/visibility_map.py',
-        'raw_images/make_hdf5.py',
-        'raw_images/export_images.py',
-        'raw_images/intensity_scan.py',
-        'tomography/ct_reconstruction.py',
+        'bin/export_dataset.py',
+        'bin/projection_stack.py',
+        'bin/pitch.py',
+        'bin/dpc_radiography.py',
+        'bin/phase_drift.py',
+        'bin/visibility_map.py',
+        'bin/make_hdf5.py',
+        'bin/export_images.py',
+        'bin/intensity_scan.py',
+        'bin/ct_reconstruction.py',
         ],
 
     install_requires = [
@@ -31,7 +35,7 @@ setup(
 
     # metadata for upload to PyPI
     author = "Matteo Abis",
-    author_email = "matteo.abis@psi.ch",
+    author_email = "matteo.dot.abis.at@.psi.ch",
     description = "Read and analyse FLI CCD raw images",
     license = "GNU GPL 3",
     keywords = "readimages",

@@ -74,9 +74,9 @@ if you specify a FOLDER name, it will continuously update the display with
     the most recent image in the folder.
 
 
-## Post-processing and other bonus programmes
+## Post-processing and other programmes
 
-The python scripts will be installed with the `python setup.py --user` option, and will end up in `~/.local/bin`. This folder should therefore be appended to the `PATH` variable.
+The python scripts will be installed with the `python setup.py develop --user` option, and will end up in `~/.local/bin`. This folder should therefore be appended to the `PATH` variable.
 
 ### Make HDF5 file
 reads all images in a folder and convert them from RAW to HDF5.

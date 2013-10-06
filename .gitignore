@@ -11,3 +11,4 @@ test/png
 callgrind*
 *debuglog*
 *egg-info*
+RELEASE-VERSION
