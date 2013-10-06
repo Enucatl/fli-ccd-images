@@ -9,12 +9,15 @@ the output is the average visibility for each phase stepping curve.
 from __future__ import division, print_function
 
 import numpy as np
+import h5py
+import os
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
 from dpc.commandline_parser import commandline_parser
 from dpc.dpc_radiography import get_signals
 from projections.projection_stack import get_projection_stack
+from readimages_utils.hadd import hadd
 
 commandline_parser.description = __doc__
 
@@ -63,3 +66,13 @@ if __name__ == '__main__':
         plt.ion()
         plt.show()
         raw_input("Press ENTER to quit.")
+
+    """Save to hdf5 file"""
+    output_object = np.vstack((pixels, visibility))
+    output_name = "postprocessing/visibility_{0}".format(args.pixel[0])
+    output_file_name = hadd(args.file)
+    output_file = h5py.File(output_file_name)
+    if output_name in output_file:
+        del output_file[output_name]
+    output_file.create_dataset(output_name, data=output_object)
+    print("Saved", os.path.join(output_file_name, output_name))
