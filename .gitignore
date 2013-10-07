@@ -1,4 +1,4 @@
-bin
+bin/ccdfli_viewer
 lib
 test/test_contrast_adjuster
 test/test_gui
