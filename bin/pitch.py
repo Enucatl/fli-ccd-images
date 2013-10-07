@@ -11,8 +11,8 @@ from scipy import ndimage
 from skimage import filter
 import matplotlib.pyplot as plt
 
-from projections.commandline_parser import commandline_parser
-from projections.projection_stack import get_projection_stack
+from readimages.projections.commandline_parser import commandline_parser
+from readimages.projections.get_projection_stack import get_projection_stack
 
 def split_indices(array):
     """Find the grating position as the indices where the array change from

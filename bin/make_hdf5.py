@@ -14,7 +14,7 @@ import h5py
 import numpy as np
 import argparse
 
-from readimages_utils.progress_bar import progress_bar
+from readimages.utils.progress_bar import progress_bar
 
 commandline_parser = argparse.ArgumentParser(description=__doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)

@@ -14,10 +14,10 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
-from dpc.commandline_parser import commandline_parser
-from dpc.dpc_radiography import get_signals
-from projections.projection_stack import get_projection_stack
-from readimages_utils.hadd import hadd
+from readimages.dpc.commandline_parser import commandline_parser
+from readimages.dpc.phase_stepping_utils import get_signals
+from readimages.projections.get_projection_stack import get_projection_stack
+from readimages.utils.hadd import hadd
 
 commandline_parser.description = __doc__
 

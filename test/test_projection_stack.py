@@ -6,7 +6,8 @@ import h5py
 import os
 import numpy as np
 
-import projections.projection_stack as projection_stack
+from readimages.projections.get_projection_stack import get_projection_stack
+from readimages.projections.commandline_parser import commandline_parser
 
 test_file = "data.hdf5"
 golden_file = "data_golden_projection.hdf5"
@@ -25,9 +26,9 @@ class TestProjectionStack(object):
         together.
 
         """
-        args = projection_stack.commandline_parser.parse_args(
+        args = commandline_parser.parse_args(
                 ["--overwrite", test_file])
-        stack = projection_stack.get_projection_stack(
+        stack = get_projection_stack(
                 args.file, args)
         h5_file = h5py.File(test_file)
         images = h5_file["raw_images"].itervalues()
@@ -61,9 +62,9 @@ class TestProjectionStack(object):
         the algorithm produces the same result.
 
         """
-        args = projection_stack.commandline_parser.parse_args(
+        args = commandline_parser.parse_args(
                 ["--overwrite", test_file])
-        stack = projection_stack.get_projection_stack(
+        stack = get_projection_stack(
                 args.file, args)
         golden = h5py.File(golden_file, "r")
         golden_stack = golden["postprocessing/stack_pixel_510"][
@@ -74,19 +75,19 @@ class TestProjectionStack(object):
         """Test the overwrite flag.
 
         """
-        args = projection_stack.commandline_parser.parse_args(
+        args = commandline_parser.parse_args(
                 ["--overwrite", test_file])
-        projection_stack.get_projection_stack(args.file, args)
+        get_projection_stack(args.file, args)
         date_modified = os.path.getmtime(test_file)
-        args = projection_stack.commandline_parser.parse_args(
+        args = commandline_parser.parse_args(
                 [test_file])
-        projection_stack.get_projection_stack(args.file, args)
+        get_projection_stack(args.file, args)
         date_modified2 = os.path.getmtime(test_file)
         """Check that it was not overwritten."""
         assert date_modified == date_modified2
         """Check that it was overwritten."""
-        args = projection_stack.commandline_parser.parse_args(
+        args = commandline_parser.parse_args(
                 ["--overwrite", test_file])
-        projection_stack.get_projection_stack(args.file, args)
+        get_projection_stack(args.file, args)
         date_modified3 = os.path.getmtime(test_file)
         assert date_modified3 >= date_modified

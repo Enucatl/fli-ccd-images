@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 import math
 import numpy as np
 
-from projections.projection_stack import get_projection_stack
-from dpc.commandline_parser import commandline_parser
-from dpc.phase_stepping_utils import get_signals
+from readimages.projections.get_projection_stack import get_projection_stack
+from readimages.dpc.commandline_parser import commandline_parser
+from readimages.dpc.phase_stepping_utils import get_signals
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()

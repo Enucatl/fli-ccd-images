@@ -7,7 +7,7 @@ import tempfile
 import os
 import random
 
-from dpc.phase_stepping_utils import get_signals
+from readimages.dpc.phase_stepping_utils import get_signals
 
 def phase_stepping_curve(c, v, phi, n, periods):
     """Return the phase stepping curve sampled over 'periods' periods

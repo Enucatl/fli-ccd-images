@@ -13,13 +13,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-from raw_images.base_analyser import post_processing_dirname
-from readimages_utils.progress_bar import progress_bar
-import readimages_utils.rcparams #pylint: disable=W0611
-from readimages_utils.hadd import hadd
-from dpc.phase_stepping_utils import get_signals
-from dpc.commandline_parser import commandline_parser
-from projections.projection_stack import get_projection_stack
+from readimages.raw_images.base_analyser import post_processing_dirname
+from readimages.utils.progress_bar import progress_bar
+import readimages.utils.rcparams #pylint: disable=W0611
+from readimages.utils.hadd import hadd
+from readimages.dpc.phase_stepping_utils import get_signals
+from readimages.dpc.commandline_parser import commandline_parser
+from readimages.projections.get_projection_stack import get_projection_stack
 
 def subtract_drift(image):
     """Force the phase to have zero mean in all lines.

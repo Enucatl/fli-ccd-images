@@ -12,8 +12,8 @@ import os
 
 import h5py
 
-from readimages_utils.progress_bar import progress_bar
-from readimages_utils.hadd import hadd
+from readimages.utils.progress_bar import progress_bar
+from readimages.utils.hadd import hadd
 
 #save results of calculations in this group inside the hdf5 file
 post_processing_dirname = "postprocessing"
@@ -140,7 +140,7 @@ class BaseHDF5Analyser(object):
         print(progress_bar((i + 1) / self.n_images), end='')
 
 if __name__ == '__main__':
-    from raw_images.commandline_parser import commandline_parser
+    from readimages.raw_images.commandline_parser import commandline_parser
     args = commandline_parser.parse_args()
     file_name = args.file
     overwrite = args.overwrite

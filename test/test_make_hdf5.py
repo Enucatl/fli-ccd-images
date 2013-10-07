@@ -7,7 +7,10 @@ import os
 import numpy as np
 from glob import glob
 
-import raw_images.make_hdf5 as make_hdf5
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../bin")))
+
+import make_hdf5
 
 class TestMakeHdf5(object):
     """Tests:

@@ -1,6 +1,6 @@
 """Commandline parser for tomographic reconstruction."""
 
-from projections.commandline_parser import commandline_parser
+from readimages.projections.commandline_parser import commandline_parser
 
 commandline_parser.add_argument('--show', action='store_false',
         help='show the reconstructed image.')

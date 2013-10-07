@@ -7,9 +7,9 @@ from __future__ import division, print_function
 import matplotlib.pyplot as plt
 import h5py
 
-import readimages_utils.rcparams #pylint: disable=W0611
-from projections.commandline_parser import commandline_parser
-from readimages_utils.hadd import hadd
+import readimages.utils.rcparams #pylint: disable=W0611
+from readimages.projections.commandline_parser import commandline_parser
+from readimages.utils.hadd import hadd
 
 commandline_parser.description = __doc__
 commandline_parser.add_argument('--dataset', metavar='DATASET',

@@ -7,8 +7,8 @@ import os
 import shutil
 
 import matplotlib.pyplot as plt
-from raw_images.base_analyser import BaseHDF5Analyser
-from readimages_utils.hadd import hadd
+from readimages.raw_images.base_analyser import BaseHDF5Analyser
+from readimages.utils.hadd import hadd
 
 class ImageConverter(BaseHDF5Analyser):
     """Convert all raw images in to an image format."""
@@ -48,7 +48,7 @@ class ImageConverter(BaseHDF5Analyser):
         print()
 
 if __name__ == '__main__':
-    from raw_images.commandline_parser import commandline_parser
+    from readimages.raw_images.commandline_parser import commandline_parser
 
     commandline_parser.description = ImageConverter.__doc__
     commandline_parser.add_argument('--format', metavar='FORMAT',

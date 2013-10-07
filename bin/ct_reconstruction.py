@@ -14,10 +14,10 @@ import numpy as np
 import subprocess
 import matplotlib.pyplot as plt
 
-import readimages_utils.rcparams #pylint: disable=W0611
-from readimages_utils.hadd import hadd
+import readimages.utils.rcparams #pylint: disable=W0611
+from readimages.utils.hadd import hadd
 
-from tomography.commandline_parser import commandline_parser
+from readimages.tomography.commandline_parser import commandline_parser
 
 commandline_parser.description = __doc__
 

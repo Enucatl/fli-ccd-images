@@ -42,7 +42,7 @@ def hadd(files):
         return output_name_with_dir
 
 if __name__ == '__main__':
-    from raw_images.commandline_parser import commandline_parser
+    from readimages.raw_images.commandline_parser import commandline_parser
     args = commandline_parser.parse_args()
     output_file = hadd(args.file)
     print(output_file)
