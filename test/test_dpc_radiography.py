@@ -17,9 +17,7 @@ def phase_stepping_curve(c, v, phi, n, periods):
         array([ 1. ,  0.5,  0. ,  0.5])
     """
     p = 2 * pi * periods / n #period
-    #last step (n + 1) taken here and discarded in
-    #phase_stepping_utils.get_signals
-    xs = np.arange(n + 1)
+    xs = np.arange(n)
     angles = p * xs + phi
     return c * (1 + v * np.cos(angles))
 

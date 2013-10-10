@@ -15,7 +15,7 @@ def get_signals(phase_stepping_curves, flat=None, n_periods=1):
     n_phase_steps = phase_stepping_curves.shape[0]
     transformed = np.fft.rfft(
             phase_stepping_curves,
-            n_phase_steps - 1,
+            n_phase_steps,
             axis=0)
     a0 = np.abs(transformed[0, :, :]) 
     a1 = np.abs(transformed[n_periods, :, :]) 
