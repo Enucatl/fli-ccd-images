@@ -1,3 +1,5 @@
+from __future__ import division, print_function
+
 import numpy as np
 
 from readimages.utils.progress_bar import progress_bar
@@ -5,7 +7,7 @@ from readimages.raw_images.base_analyser import BaseHDF5Analyser
 
 def get_projection_stack(files, args):
     """Factory of projection stacks."""
-    psm = ProjectionStackMaker(args.pixel[0],
+    psm = ProjectionStackMaker(args.pixel,
             files,
             "a",
             args.corrected,
@@ -33,7 +35,7 @@ class ProjectionStackMaker(BaseHDF5Analyser):
         first_pixel = example_image.attrs["min_y"]
         self.max_x = example_image.attrs["max_x"]
         self.min_x = example_image.attrs["min_x"]
-        self.projection_pixel = self.pixel - first_pixel - 1
+        self.projection_pixel = self.pixel - first_pixel
         self.corrected_pixels = 0
 
     def output_name(self):
@@ -56,8 +58,9 @@ class ProjectionStackMaker(BaseHDF5Analyser):
         mean = np.mean(line)
         std_dev = np.std(line)
         if (line > mean + 3 * std_dev).any():
+            self.corrected_pixels += line[
+                    line > mean + 3 * std_dev].shape[0]
             line[line > mean + 3 * std_dev] = mean
-            self.corrected_pixels += 1
         self.output_object[i, :] = line
 
     def dont_start(self):

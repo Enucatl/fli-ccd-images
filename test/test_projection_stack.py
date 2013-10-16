@@ -2,12 +2,14 @@
 
 """
 
+from __future__ import division, print_function
+
 import h5py
 import os
 import numpy as np
 
-from readimages.projections.get_projection_stack import get_projection_stack
 from readimages.projections.commandline_parser import commandline_parser
+from readimages.projections.get_projection_stack import get_projection_stack
 
 test_file = "data.hdf5"
 golden_file = "data_golden_projection.hdf5"
@@ -34,7 +36,7 @@ class TestProjectionStack(object):
         images = h5_file["raw_images"].itervalues()
         first_pixel = h5_file[
                 "raw_images/ccdimage_00045_00000_00"].attrs["min_y"]
-        projection_pixel = args.pixel[0] - first_pixel
+        projection_pixel = args.pixel - first_pixel
         manual_stack = np.dstack(
                 (image[:, args.roi[0]:args.roi[1]]
                     for image in images))
@@ -63,7 +65,7 @@ class TestProjectionStack(object):
 
         """
         args = commandline_parser.parse_args(
-                ["--overwrite", test_file])
+                [test_file, "--overwrite"])
         stack = get_projection_stack(
                 args.file, args)
         golden = h5py.File(golden_file, "r")

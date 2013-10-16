@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
     """Save to hdf5 file"""
     output_object = np.vstack((pixels, visibility))
-    output_name = "postprocessing/visibility_{0}".format(args.pixel[0])
+    output_name = "postprocessing/visibility_{0}".format(args.pixel)
     output_file_name = hadd(args.file)
     output_file = h5py.File(output_file_name)
     if output_name in output_file:

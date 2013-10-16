@@ -27,3 +27,13 @@ def get_signals(phase_stepping_curves, flat=None, n_periods=1):
         phi1 -= phi_flat
         phi1 = np.mod(phi1 + math.pi, 2 * math.pi) - math.pi
     return a0, phi1, a1
+
+def subtract_drift(image):
+    """Force the phase to have zero mean in all lines.
+
+    """
+    correction = np.tile(np.mean(image, axis=1),
+            (image.shape[1], 1)).transpose()
+    corrected_image = image - correction
+    return corrected_image
+ 

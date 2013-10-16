@@ -13,14 +13,14 @@ from readimages.utils.hadd import hadd
 
 commandline_parser.description = __doc__
 commandline_parser.add_argument('--dataset', metavar='DATASET',
-        nargs='+', default=['postprocessing/stack_pixel_510'],
+        nargs='+', default=['postprocessing/stack_pixel_509'],
         help='dataset(s) in the HDF5 file to be exported')
 commandline_parser.add_argument('--show', action='store_true',
         help='show each image.')
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
-    extension = args.format[0]
+    extension = args.format
     dataset_names = args.dataset
     file_name = hadd(args.file)
     input_file = h5py.File(file_name, "r")

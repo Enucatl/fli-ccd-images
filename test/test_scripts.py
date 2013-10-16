@@ -41,7 +41,7 @@ class TestScripts(object):
         command = "export_dataset.py " + test_file
         argument_sets = [
                 "",
-                "-o --dataset postprocessing/stack_pixel_510",
+                "-o --dataset postprocessing/stack_pixel_509",
                 "-o",
                 "-o --roi 150 950",
                 ]
@@ -49,7 +49,7 @@ class TestScripts(object):
             full_command = command + " " + argument_set
             print(full_command)
             check_call(full_command, shell=True)
-        os.remove("data_postprocessing_stack_pixel_510.tif")
+        os.remove("data_postprocessing_stack_pixel_509.tif")
 
     def test_projection_stack(self):
         command = "projection_stack.py " + test_file
@@ -67,7 +67,7 @@ class TestScripts(object):
     def test_pitch(self):
         command = "pitch.py test_pitch.hdf5"
         argument_sets = [
-                "-b --pixel 515 --split 17",
+                "-b --pixel 516 --split 17",
                 ]
         for argument_set in argument_sets:
             full_command = command + " " + argument_set

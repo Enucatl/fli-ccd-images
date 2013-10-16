@@ -16,7 +16,7 @@ if __name__ == '__main__':
     file_name = args.file
     overwrite = args.overwrite
     use_corrected = args.corrected
-    pixel = args.pixel[0]
+    pixel = args.pixel
     batch = args.batch
     open_option = "a"
 
