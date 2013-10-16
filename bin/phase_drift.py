@@ -16,8 +16,10 @@ from readimages.dpc.phase_stepping_utils import get_signals
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
     roi = args.roi
-    image_array = get_projection_stack(args.file, args)
-    n_steps = args.steps[0]
+    image_array = get_projection_stack(
+            args.file, args.pixel,
+            args.roi, args.overwrite)
+    n_steps = args.steps
     n_lines = image_array.shape[0] // n_steps 
     n_periods = args.periods
     n_intervals = n_lines - 1

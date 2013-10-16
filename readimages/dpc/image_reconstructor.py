@@ -22,25 +22,35 @@ class ImageReconstructor(object):
     
     """
 
-    def __init__(self, args):
-        self.overwrite = args.overwrite
-        self.image_array = get_projection_stack(args.file, args)
-        self.flat_image = get_projection_stack(args.flat, args)
+    def __init__(self, image_files,
+            flat_files,
+            pixel,
+            roi,
+            steps, periods,
+            extension,
+            overwrite):
+        self.overwrite = overwrite
+        self.image_array = get_projection_stack(image_files, pixel, 
+                roi, overwrite)
+        self.flat_image = get_projection_stack(flat_files, pixel,
+                roi, overwrite)
         open_option = "a"
-        self.input_file = h5py.File(hadd(args.file), open_option)
+        self.input_file = h5py.File(hadd(image_files), open_option)
         output_names = self.set_names()
         self.output_directory = self.input_file.require_group(
                 post_processing_dirname)
-        self.export_name = hadd(args.file).replace(
-                ".hdf5",
-                "." + args.format[0])
+        self.export_name = hadd(image_files).replace(".hdf5", extension)
+        self.n_steps = steps
+        self.n_periods = periods
+        self.n_flats = self.flat_image.shape[0] // self.n_steps
+        self.extension = extension
         #Overwrite if necessary
         if self.overwrite:
             self.exists_in_file = False
             for name in output_names:
                 if name in self.output_directory:
                     del self.output_directory[name]
-            self.initialize_reconstruction(args)
+            self.initialize_reconstruction()
         else:
             images = {}
             for name in output_names:
@@ -57,17 +67,14 @@ class ImageReconstructor(object):
                 self.exists_in_file = True
             else:
                 self.exists_in_file = False
-                self.initialize_reconstruction(args)
+                self.initialize_reconstruction()
 
-    def initialize_reconstruction(self, args):
+    def initialize_reconstruction(self):
         """Calculate the flat parameters and properly stack the images in a
         3D structure so that the phase steps are along axis=2.
 
         """
-        self.n_steps = args.steps[0]
-        self.n_periods = args.periods
         #Average flats if more than one flat image.
-        self.n_flats = self.flat_image.shape[0] // self.n_steps
         flat_images = np.dstack(np.split(self.flat_image,
             self.n_flats, axis=0))
         #rows and columns have to be swapped with rollaxis so that
@@ -93,7 +100,6 @@ class ImageReconstructor(object):
             wrong number of steps,
             division does not result in an integer.
             Image shape: {0}""".format(self.image_array.shape))
-        self.extension = args.format[0]
         self.images = np.dstack(np.split(
             self.image_array, self.n_lines, axis=0))
         self.images = np.rollaxis(self.images, 2, 1)

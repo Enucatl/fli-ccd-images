@@ -5,20 +5,21 @@ import numpy as np
 from readimages.utils.progress_bar import progress_bar
 from readimages.raw_images.base_analyser import BaseHDF5Analyser
 
-def get_projection_stack(files, args):
+def get_projection_stack(files, pixel,
+        roi, overwrite):
     """Factory of projection stacks."""
-    psm = ProjectionStackMaker(args.pixel,
+    psm = ProjectionStackMaker(pixel,
             files,
             "a",
-            args.corrected,
-            args.overwrite,
+            use_corrected=False,
+            overwrite=overwrite,
             batch=True)
     psm.open()
     if not psm.exists_in_file:
         #Make projection stack if it doesn't exist.
         for i, image in enumerate(psm.images.itervalues()):
             psm.analyse_histogram(i, image)
-    projection_stack = psm.output_object[:, args.roi[0]:args.roi[1]]
+    projection_stack = psm.output_object[:, roi[0]:roi[1]]
     psm.close()
     return projection_stack
 

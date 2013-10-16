@@ -66,7 +66,9 @@ if __name__ == '__main__':
             help='split the original image into N subimages.')
     args = commandline_parser.parse_args()
     roi = args.roi
-    image_array = np.flipud(get_projection_stack(args.file, args))
+    image_array = np.flipud(get_projection_stack(
+        args.file, args.pixel,
+        args.roi, args.overwrite))
     images = np.split(image_array, args.split[0], 0)
     n_images = len(images)
     x = np.zeros(n_images)

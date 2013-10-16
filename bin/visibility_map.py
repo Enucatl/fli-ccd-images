@@ -25,8 +25,10 @@ if __name__ == '__main__':
     args = commandline_parser.parse_args()
     roi = args.roi
     n_periods = args.periods
-    image_array = get_projection_stack(args.file, args)
-    n_steps = args.steps[0]
+    image_array = get_projection_stack(
+            args.file, args.pixel,
+            args.roi, args.overwrite)
+    n_steps = args.steps
     n_images = image_array.shape[0] // n_steps
     if image_array.shape[0] % n_steps:
         raise ValueError("incorrect number of steps! {0}".format(

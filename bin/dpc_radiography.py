@@ -14,7 +14,10 @@ commandline_parser.description = ImageReconstructor.__doc__
 
 if __name__ == '__main__':
     args = commandline_parser.parse_args()
-    ir = ImageReconstructor(args)
+    ir = ImageReconstructor(args.file, args.flat,
+            args.pixel, args.roi,
+            args.steps, args.periods,
+            args.format, args.overwrite)
     ir.calculate_images()
     ir.correct_drift()
     ir.save_images()

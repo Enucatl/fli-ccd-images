@@ -31,7 +31,8 @@ class TestProjectionStack(object):
         args = commandline_parser.parse_args(
                 ["--overwrite", test_file])
         stack = get_projection_stack(
-                args.file, args)
+                args.file, args.pixel,
+                args.roi, args.overwrite)
         h5_file = h5py.File(test_file)
         images = h5_file["raw_images"].itervalues()
         first_pixel = h5_file[
@@ -67,7 +68,8 @@ class TestProjectionStack(object):
         args = commandline_parser.parse_args(
                 [test_file, "--overwrite"])
         stack = get_projection_stack(
-                args.file, args)
+                args.file, args.pixel,
+                args.roi, args.overwrite)
         golden = h5py.File(golden_file, "r")
         golden_stack = golden["postprocessing/stack_pixel_510"][
                 :, args.roi[0]:args.roi[1]]
@@ -79,17 +81,23 @@ class TestProjectionStack(object):
         """
         args = commandline_parser.parse_args(
                 ["--overwrite", test_file])
-        get_projection_stack(args.file, args)
+        get_projection_stack(
+                args.file, args.pixel,
+                args.roi, args.overwrite)
         date_modified = os.path.getmtime(test_file)
         args = commandline_parser.parse_args(
                 [test_file])
-        get_projection_stack(args.file, args)
+        get_projection_stack(
+                args.file, args.pixel,
+                args.roi, args.overwrite)
         date_modified2 = os.path.getmtime(test_file)
         """Check that it was not overwritten."""
         assert date_modified == date_modified2
         """Check that it was overwritten."""
         args = commandline_parser.parse_args(
                 ["--overwrite", test_file])
-        get_projection_stack(args.file, args)
+        get_projection_stack(
+                args.file, args.pixel,
+                args.roi, args.overwrite)
         date_modified3 = os.path.getmtime(test_file)
         assert date_modified3 >= date_modified
