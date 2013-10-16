@@ -26,7 +26,7 @@ class ProjectionStackMaker(BaseHDF5Analyser):
     
     """
     def __init__(self, pixel, *args, **kwargs):
-        self.pixel = pixel + 1
+        self.pixel = pixel
         super(ProjectionStackMaker, self).__init__(*args, **kwargs)
         example_image = self.images.itervalues().next()
         self.dtype = example_image.dtype
@@ -45,8 +45,6 @@ class ProjectionStackMaker(BaseHDF5Analyser):
                 self.input_file.filename,
                 self.pixel)
         width = self.max_x - self.min_x
-        """with respect to the ROOT version, this histogram has swapped axes
-        and the pixel number for the projection is the ROOT number + 1"""
         self.output_object = np.zeros(
                 (self.n_images, width),
                 dtype=self.dtype)
