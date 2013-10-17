@@ -34,10 +34,14 @@ class ProjectionStackMaker(BaseHDF5Analyser):
         example_image = self.images.itervalues().next()
         self.dtype = example_image.dtype
         first_pixel = example_image.attrs["min_y"]
+        last_pixel = example_image.attrs["max_y"]
         self.max_x = example_image.attrs["max_x"]
         self.min_x = example_image.attrs["min_x"]
         self.projection_pixel = self.pixel - first_pixel
         self.corrected_pixels = 0
+        if self.pixel > last_pixel:
+            raise IOError("max pixel is {0}, cannot get pixel {1}".format(
+                last_pixel, self.pixel))
 
     def output_name(self):
         return "stack_pixel_{0}".format(self.pixel)

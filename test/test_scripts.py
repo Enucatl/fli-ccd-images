@@ -22,6 +22,7 @@ class TestScripts(object):
     - export_images.py
     - intensity_scan.py
     - ct_reconstruction.py
+    - dpc_scan.py
     """
 
     def test_make_hdf5(self):

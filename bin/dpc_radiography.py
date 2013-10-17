@@ -13,6 +13,9 @@ from readimages.dpc.commandline_parser import commandline_parser
 commandline_parser.description = ImageReconstructor.__doc__
 
 if __name__ == '__main__':
+    commandline_parser.add_argument('--flat', metavar='FLAT_FILE.hdf5',
+            nargs='+', 
+            help='hdf5 file(s) with the flat images')
     args = commandline_parser.parse_args()
     ir = ImageReconstructor(args.file, args.flat,
             args.pixel, args.roi,

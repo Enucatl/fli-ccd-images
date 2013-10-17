@@ -21,6 +21,7 @@ setup(
         'bin/export_images.py',
         'bin/intensity_scan.py',
         'bin/ct_reconstruction.py',
+        'bin/dpc_scan.py',
         ],
 
     install_requires = [
