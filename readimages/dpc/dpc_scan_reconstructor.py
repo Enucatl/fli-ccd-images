@@ -45,7 +45,8 @@ class ScanReconstructor(object):
         self._roi = roi
         self._phase_steps = phase_steps
         self._periods = periods
-        self._projections = int(len(files) / (1 + n_flats / flats_every))
+        self._projections = int(len(files) / (1 + n_flats / flats_every)) + 1
+        print("Found", self._projections, "projections.")
         self._flats_every = flats_every
         self._n_flats = n_flats
         self._format = extension
@@ -88,18 +89,20 @@ class ScanReconstructor(object):
         """
         chunk_size = self._flats_every + self._n_flats
         total_chunks = int(np.ceil(len(self._files) / chunk_size))
+        first_pixel = 0
         for i, chunk in enumerate(chunks(self._files, chunk_size)):
             print("chunk {0}/{1}".format(i + 1, total_chunks))
-            image = chunk[:-self._n_flats]
-            flats = chunk[-self._n_flats:]
+            images_in_chunk = len(chunk) - self._n_flats
+            image = chunk[:images_in_chunk]
+            flats = chunk[images_in_chunk:]
+            print(len(image), len(flats))
             reconstructor = ImageReconstructor(image,
                     flats, self._pixel, self._roi,
                     self._phase_steps, self._periods,
                     self._format, self._overwrite)
             reconstructor.calculate_images()
             reconstructor.correct_drift()
-            first_pixel = i * self._flats_every
-            last_pixel = (i + 1) * self._flats_every
+            last_pixel = first_pixel + images_in_chunk
             self._absorption_image[
                     first_pixel:last_pixel, :] = reconstructor.absorption_image
             self._differential_phase_image[
@@ -107,6 +110,7 @@ class ScanReconstructor(object):
                     ] = reconstructor.differential_phase_image
             self._dark_field_image[
                     first_pixel:last_pixel, :] = reconstructor.dark_field_image
+            first_pixel = last_pixel
 
     def save(self):
         """After closing all datasets will not be accessible!"""
