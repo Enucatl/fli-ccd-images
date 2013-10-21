@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 "Reconstruct the dpc_scan macro"
 
 from __future__ import division, print_function
@@ -7,6 +10,7 @@ from readimages.dpc.commandline_parser import commandline_parser
 from readimages.print_version import print_version
 
 if __name__ == '__main__':
+    commandline_parser.description = __doc__
     print_version(commandline_parser.prog)
 
     commandline_parser.add_argument('--flats_every', 

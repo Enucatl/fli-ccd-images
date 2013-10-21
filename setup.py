@@ -11,6 +11,7 @@ setup(
     version = get_git_version(),
     packages = find_packages(),
     scripts = [
+        'bin/ccdfli_viewer.py',
         'bin/export_dataset.py',
         'bin/projection_stack.py',
         'bin/pitch.py',
