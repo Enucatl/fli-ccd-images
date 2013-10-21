@@ -11,6 +11,10 @@ from readimages.projections.commandline_parser import commandline_parser
 from readimages.projections.get_projection_stack import ProjectionStackMaker
 
 if __name__ == '__main__':
+    import pkg_resources
+    version = pkg_resources.require("readimages")[0].version
+    print("\n", commandline_parser.prog, version, end="\n\n")
+
     commandline_parser.description = ProjectionStackMaker.__doc__
     args = commandline_parser.parse_args()
     file_name = args.file

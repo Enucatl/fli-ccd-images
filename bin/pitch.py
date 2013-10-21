@@ -61,6 +61,10 @@ def grating_height(segments):
     return upper_position, lower_position, std_dev
 
 if __name__ == '__main__':
+    import pkg_resources
+    version = pkg_resources.require("readimages")[0].version
+    print("\n", commandline_parser.prog, version, end="\n\n")
+
     commandline_parser.add_argument('--split', metavar='N_SUB_IMAGES',
             nargs=1, type=int, default=[1],
             help='split the original image into N subimages.')

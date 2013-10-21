@@ -49,6 +49,10 @@ class ImageConverter(BaseHDF5Analyser):
 
 if __name__ == '__main__':
     from readimages.raw_images.commandline_parser import commandline_parser
+    import pkg_resources
+    version = pkg_resources.require("readimages")[0].version
+    print("\n", commandline_parser.prog, version, end="\n\n")
+
 
     commandline_parser.description = ImageConverter.__doc__
     commandline_parser.add_argument('--format', metavar='FORMAT',

@@ -6,6 +6,10 @@ from readimages.dpc.dpc_scan_reconstructor import ScanReconstructor
 from readimages.dpc.commandline_parser import commandline_parser
 
 if __name__ == '__main__':
+    import pkg_resources
+    version = pkg_resources.require("readimages")[0].version
+    print("\n", commandline_parser.prog, version, end="\n\n")
+
     commandline_parser.add_argument('--flats_every', 
             nargs='?', type=int, default=999999,
             help='flats taken every N_FLATS steps')

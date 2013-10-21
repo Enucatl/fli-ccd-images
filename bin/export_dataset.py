@@ -19,6 +19,10 @@ commandline_parser.add_argument('--show', action='store_true',
         help='show each image.')
 
 if __name__ == '__main__':
+    import pkg_resources
+    version = pkg_resources.require("readimages")[0].version
+    print("\n", commandline_parser.prog, version, end="\n\n")
+
     args = commandline_parser.parse_args()
     extension = args.format
     dataset_names = args.dataset

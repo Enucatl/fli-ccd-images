@@ -14,6 +14,10 @@ from readimages.dpc.commandline_parser import commandline_parser
 from readimages.dpc.phase_stepping_utils import get_signals
 
 if __name__ == '__main__':
+    import pkg_resources
+    version = pkg_resources.require("readimages")[0].version
+    print("\n", commandline_parser.prog, version, end="\n\n")
+
     args = commandline_parser.parse_args()
     roi = args.roi
     image_array = get_projection_stack(

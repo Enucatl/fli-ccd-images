@@ -22,6 +22,10 @@ from readimages.tomography.commandline_parser import commandline_parser
 commandline_parser.description = __doc__
 
 if __name__ == '__main__':
+    import pkg_resources
+    version = pkg_resources.require("readimages")[0].version
+    print("\n", commandline_parser.prog, version, end="\n\n")
+
     args = commandline_parser.parse_args()
     filter_name = args.filter
     rotation_centre = args.centre
