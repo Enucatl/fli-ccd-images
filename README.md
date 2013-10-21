@@ -33,7 +33,7 @@ or
     :::bash
     git clone git@bitbucket.org:Enucatl/readimages.git
 
-## Compile
+## Install
 
     :::bash
     python setup.py develop
