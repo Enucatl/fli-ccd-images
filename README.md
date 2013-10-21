@@ -2,8 +2,6 @@
 
 ## Requirements
 
-[GNU make](www.gnu.org/software/make/ "make homepage") ≥ 3.80 for order-only prerequisites with '|' in this Makefile
-
 [GIT](http://git-scm.com/ "GIT homepage") version control system ≥ 1.7
 
 [Python Distribute](http://pythonhosted.org/distribute/index.html) for
@@ -45,19 +43,18 @@ if you do not have root permissions, you can still install it by appending
     the `--user` flag.
 
 ## Programmes
+Use the `-h` flag to get help.
 
 ### View CCDFLI raw files
 read a single file
 
-    :::bash
-    ccdfli_viewer.py FILE
+   * `ccdfli_viewer.py`
 
 ### Make HDF5 file
 reads all images in a folder and convert them from RAW to HDF5.
 This file is then used in all the other scripts.
 
-    :::bash
-    make_hdf5.py FOLDER
+   * `make_hdf5.py`
 
 ### X-ray flux analysis
 
