@@ -10,6 +10,7 @@ import h5py
 import readimages.utils.rcparams #pylint: disable=W0611
 from readimages.projections.commandline_parser import commandline_parser
 from readimages.utils.hadd import hadd
+from readimages.print_version import print_version
 
 commandline_parser.description = __doc__
 commandline_parser.add_argument('--dataset', metavar='DATASET',
@@ -19,9 +20,7 @@ commandline_parser.add_argument('--show', action='store_true',
         help='show each image.')
 
 if __name__ == '__main__':
-    import pkg_resources
-    version = pkg_resources.require("readimages")[0].version
-    print("\n", commandline_parser.prog, version, end="\n\n")
+    print_version(commandline_parser.prog)
 
     args = commandline_parser.parse_args()
     extension = args.format

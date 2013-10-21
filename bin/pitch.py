@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 
 from readimages.projections.commandline_parser import commandline_parser
 from readimages.projections.get_projection_stack import get_projection_stack
+from readimages.print_version import print_version
 
 def split_indices(array):
     """Find the grating position as the indices where the array change from
@@ -61,9 +62,7 @@ def grating_height(segments):
     return upper_position, lower_position, std_dev
 
 if __name__ == '__main__':
-    import pkg_resources
-    version = pkg_resources.require("readimages")[0].version
-    print("\n", commandline_parser.prog, version, end="\n\n")
+    print_version(commandline_parser.prog)
 
     commandline_parser.add_argument('--split', metavar='N_SUB_IMAGES',
             nargs=1, type=int, default=[1],

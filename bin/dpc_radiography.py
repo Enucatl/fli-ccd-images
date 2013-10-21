@@ -8,14 +8,13 @@ from __future__ import division, print_function
 
 from readimages.dpc.image_reconstructor import ImageReconstructor
 from readimages.dpc.commandline_parser import commandline_parser
+from readimages.print_version import print_version
 
 
 commandline_parser.description = ImageReconstructor.__doc__
 
 if __name__ == '__main__':
-    import pkg_resources
-    version = pkg_resources.require("readimages")[0].version
-    print("\n", commandline_parser.prog, version, end="\n\n")
+    print_version(commandline_parser.prog)
 
     commandline_parser.add_argument('--flat', metavar='FLAT_FILE.hdf5',
             nargs='+', 

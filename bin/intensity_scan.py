@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from readimages.raw_images.base_analyser import BaseHDF5Analyser
+from readimages.print_version import print_version
 
 class IntensityScan(BaseHDF5Analyser):
     """Plot the intensity as a function of the
@@ -83,9 +84,7 @@ class IntensityScan(BaseHDF5Analyser):
 
 if __name__ == '__main__':
     from readimages.raw_images.commandline_parser import commandline_parser
-    import pkg_resources
-    version = pkg_resources.require("readimages")[0].version
-    print("\n", commandline_parser.prog, version, end="\n\n")
+    print_version(commandline_parser.prog)
 
     commandline_parser.description = IntensityScan.__doc__
     commandline_parser.add_argument('--roi',

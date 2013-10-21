@@ -15,6 +15,7 @@ import numpy as np
 import argparse
 
 from readimages.utils.progress_bar import progress_bar
+from readimages.print_version import print_version
 
 commandline_parser = argparse.ArgumentParser(description=__doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -111,8 +112,5 @@ def main(args):
     return output_names
 
 if __name__ == '__main__':
-    import pkg_resources
-    version = pkg_resources.require("readimages")[0].version
-    print("\n", commandline_parser.prog, version, end="\n\n")
-
+    print_version(commandline_parser.prog)
     main(commandline_parser.parse_args())

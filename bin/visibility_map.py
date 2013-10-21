@@ -18,13 +18,12 @@ from readimages.dpc.commandline_parser import commandline_parser
 from readimages.dpc.phase_stepping_utils import get_signals
 from readimages.projections.get_projection_stack import get_projection_stack
 from readimages.utils.hadd import hadd
+from readimages.print_version import print_version
 
 commandline_parser.description = __doc__
 
 if __name__ == '__main__':
-    import pkg_resources
-    version = pkg_resources.require("readimages")[0].version
-    print("\n", commandline_parser.prog, version, end="\n\n")
+    print_version(commandline_parser.prog)
 
     args = commandline_parser.parse_args()
     roi = args.roi
