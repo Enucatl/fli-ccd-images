@@ -28,6 +28,8 @@ setup(
     install_requires = [
         'h5py',
         'numpy',
+        'pyinotify',
+        'scipy',
         'scikit-image'],
 
     package_data = {
