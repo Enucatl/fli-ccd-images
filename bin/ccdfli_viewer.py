@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-"""display a raw file. If it is a dir it watches for updates and always
-shows the most recent RAW file."""
+"""
+Display a raw file. If it you pass a directory it watches for updates and always
+shows the most recent RAW file in it.
+
+"""
 
 from __future__ import division, print_function
 
@@ -11,33 +14,40 @@ import os
 
 import pyinotify
 import matplotlib.pyplot as plt
-import numpy as np
 from scipy import stats
 
 from readimages.raw_images.read_raw import read_data
 from readimages.print_version import print_version
 
 class EventHandler(pyinotify.ProcessEvent):
-    def my_init(self):
+    def my_init(self, folder):
         plt.ion()
         self._fig = plt.figure()
         self._ax = self._fig.add_subplot(111)
-        image = np.zeros((10, 100))
+        file_list = [os.path.join(folder, f)
+                for f in os.listdir(folder)
+                if f.lower().endswith(".raw")]
+        newest = max(file_list,
+                key=lambda x: os.stat(x).st_mtime)
+        image = read_data(newest)
         self._plt_image = plt.imshow(image, aspect='auto')
+        simple_name = os.path.splitext(os.path.basename(newest))[0]
+        limits = stats.mstats.mquantiles(image, prob=[0.02, 0.98])
+        self._plt_image.set_clim(*limits)
+        plt.title(simple_name.replace("_", " "))
 
     def process_IN_CLOSE_WRITE(self, event):
         if os.path.splitext(event.pathname)[1].lower() != ".raw":
             print(event.pathname, "not a RAW file")
         else:
             image = read_data(event.pathname)
-            simple_name = os.path.splitext(os.path.basename(event.pathname))[0]
             self._plt_image.set_array(image)
+            simple_name = os.path.splitext(os.path.basename(event.pathname))[0]
             limits = stats.mstats.mquantiles(image, prob=[0.02, 0.98])
             self._plt_image.set_clim(*limits)
             plt.title(simple_name.replace("_", " "))
-            self._ax.set_autoscale_on(True)
-            self._ax.relim()
-            self._ax.autoscale_view(True, True, True)
+            self._ax.set_xlim(0, image.shape[1] - 1)
+            self._ax.set_ylim(0, image.shape[0] - 1)
             self._fig.canvas.draw()
 
 if __name__ == '__main__':
@@ -66,7 +76,7 @@ if __name__ == '__main__':
     elif os.path.isdir(file_name):
         try:
             wm = pyinotify.WatchManager()
-            handler = EventHandler()
+            handler = EventHandler(folder=file_name)
             mask = pyinotify.IN_CLOSE_WRITE
             notifier = pyinotify.ThreadedNotifier(wm, handler)
             notifier.start()
