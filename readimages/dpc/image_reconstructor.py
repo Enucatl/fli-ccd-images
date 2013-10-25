@@ -1,5 +1,6 @@
 """Reconstruct the three signals from images and flats."""
 
+from __future__ import division, print_function
 
 import os
 
@@ -39,7 +40,7 @@ class ImageReconstructor(object):
         output_names = self.set_names()
         self.output_directory = self.input_file.require_group(
                 post_processing_dirname)
-        self.export_name = hadd(image_files).replace(".hdf5", extension)
+        self.export_name = hadd(image_files).replace("hdf5", extension)
         self.n_steps = steps
         self.n_periods = periods
         self.n_flats = self.flat_image.shape[0] // self.n_steps
