@@ -71,7 +71,7 @@ class ScanReconstructor(object):
         self._output_file = h5py.File(self._output_file_name, "w-")
         self._output_group = self._output_file.create_group(
             post_processing_dirname)
-        image_size = (self._projections, roi[1] - roi[0])
+        image_size = (self._projections - 1, roi[1] - roi[0])
         self._absorption_image = self._output_group.create_dataset(
             "absorption",
             image_size, dtype=np.float)
