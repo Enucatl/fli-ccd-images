@@ -76,7 +76,7 @@ class IntensityScan(BaseHDF5Analyser):
             plt.show()
             try:
                 print()
-                raw_input("press ENTER to quit")
+                input("press ENTER to quit")
             except KeyboardInterrupt:
                 pass
             finally:

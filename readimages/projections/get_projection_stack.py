@@ -1,3 +1,7 @@
+"""
+
+"""
+
 from __future__ import division, print_function
 
 import numpy as np
@@ -17,7 +21,7 @@ def get_projection_stack(files, pixel,
     psm.open()
     if not psm.exists_in_file:
         #Make projection stack if it doesn't exist.
-        for i, image in enumerate(psm.images.itervalues()):
+        for i, image in enumerate(psm.images.values()):
             psm.analyse_histogram(i, image)
     projection_stack = psm.output_object[:, roi[0]:roi[1]]
     psm.close()
@@ -26,12 +30,12 @@ def get_projection_stack(files, pixel,
 class ProjectionStackMaker(BaseHDF5Analyser):
     """Draw a stack of a projection along a pixel of all the images in the
     file.
-    
+
     """
     def __init__(self, pixel, *args, **kwargs):
         self.pixel = pixel
         super(ProjectionStackMaker, self).__init__(*args, **kwargs)
-        example_image = self.images.itervalues().next()
+        example_image = next(iter(self.images.values()))
         self.dtype = example_image.dtype
         first_pixel = example_image.attrs["min_y"]
         last_pixel = example_image.attrs["max_y"]
@@ -94,7 +98,7 @@ class ProjectionStackMaker(BaseHDF5Analyser):
                 print()
                 plt.ion()
                 plt.show()
-                raw_input("Press ENTER to quit.")
+                input("Press ENTER to quit.")
         except KeyboardInterrupt:
             pass
         finally:

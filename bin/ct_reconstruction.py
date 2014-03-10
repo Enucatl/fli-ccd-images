@@ -85,4 +85,4 @@ if __name__ == '__main__':
             plt.imshow(reconstructed_image)
             plt.ion()
             plt.show()
-            raw_input("Press ENTER to continue.")
+            input("Press ENTER to continue.")

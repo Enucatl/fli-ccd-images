@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
     commandline_parser.description = ImageConverter.__doc__
     commandline_parser.add_argument('--format', metavar='FORMAT',
-            nargs=1, default=["tif"], help='output format')
+            nargs=1, default=["png"], help='output format')
     args = commandline_parser.parse_args()
     extension = args.format[0]
     overwrite = args.overwrite

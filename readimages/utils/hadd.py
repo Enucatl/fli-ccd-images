@@ -11,9 +11,10 @@ import h5py
 
 raw_images_group = "raw_images"
 
+
 def hadd(files):
     """Merge several files into one.
-    
+
     Return the name of the output file.
     """
 
@@ -25,7 +26,7 @@ def hadd(files):
         first_name = os.path.splitext(os.path.basename(files[0]))[0]
         last_name = os.path.splitext(os.path.basename(files[-1]))[0]
         output_name = "{0}_{1}.hdf5".format(
-                first_name, last_name)
+            first_name, last_name)
         output_name_with_dir = os.path.join(dir_name, output_name)
         #Don't overwrite
         if not os.path.exists(output_name_with_dir):
@@ -33,9 +34,9 @@ def hadd(files):
             output_group = output_file.create_group(raw_images_group)
             for input_file_name in files:
                 input_file = h5py.File(input_file_name, "r")
-                for name, data in input_file[raw_images_group].iteritems():
+                for name, data in input_file[raw_images_group].items():
                     dataset = output_group.create_dataset(name, data=data)
-                    for key, value in data.attrs.iteritems():
+                    for key, value in data.attrs.items():
                         dataset.attrs[key] = value
                 input_file.close()
             output_file.close()

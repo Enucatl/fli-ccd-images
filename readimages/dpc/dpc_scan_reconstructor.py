@@ -11,7 +11,7 @@ def chunks(l, n):
     """ Yield successive n-sized chunks from l.
     http://stackoverflow.com/a/312464
     """
-    for i in xrange(0, len(l), n):
+    for i in range(0, len(l), n):
         yield l[i:i + n]
 
 class ScanReconstructor(object):
@@ -181,4 +181,4 @@ class ScanReconstructor(object):
             print("saved", self._export_name)
         plt.ion()
         plt.show()
-        raw_input("Press ENTER to quit.")
+        input("Press ENTER to quit.")

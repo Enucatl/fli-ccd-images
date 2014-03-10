@@ -212,7 +212,7 @@ class ImageReconstructor(object):
             print("saved", self.export_name)
         plt.ion()
         plt.show()
-        raw_input("Press ENTER to quit.")
+        input("Press ENTER to quit.")
 
     def correct_drift(self):
         """Correct the phase image for a phase drift with the subtract_drift

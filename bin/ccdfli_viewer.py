@@ -72,7 +72,7 @@ if __name__ == '__main__':
         plt_image.set_clim(*limits)
         plt.ion()
         plt.show()
-        raw_input("Press ENTER to close.")
+        input("Press ENTER to close.")
     elif os.path.isdir(file_name):
         try:
             wm = pyinotify.WatchManager()
@@ -81,7 +81,7 @@ if __name__ == '__main__':
             notifier = pyinotify.ThreadedNotifier(wm, handler)
             notifier.start()
             watch = wm.add_watch(file_name, mask)
-            raw_input("Press ENTER to close.")
+            input("Press ENTER to close.")
         except KeyboardInterrupt:
             print("closing")
         finally:

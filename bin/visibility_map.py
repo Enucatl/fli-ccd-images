@@ -70,7 +70,7 @@ if __name__ == '__main__':
     if not args.batch:
         plt.ion()
         plt.show()
-        raw_input("Press ENTER to quit.")
+        input("Press ENTER to quit.")
 
     """Save to hdf5 file"""
     output_object = np.vstack((pixels, visibility))

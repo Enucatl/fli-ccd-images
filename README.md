@@ -67,7 +67,7 @@ lines together. More tools are then provided to analyse the stack:
 
    * `projection_stack.py`: make the stacked image.
    * `export_stack.py`: save the stacked image in a different format
-     (default: tif).
+     (default: png).
 
 ### Alignment tools
 

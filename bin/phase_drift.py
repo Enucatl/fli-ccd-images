@@ -80,4 +80,4 @@ if __name__ == '__main__':
         plt.axhline(color='r')
         plt.ion()
         plt.show()
-        raw_input("Press ENTER to quit.")
+        input("Press ENTER to quit.")

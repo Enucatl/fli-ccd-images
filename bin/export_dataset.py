@@ -46,7 +46,7 @@ if __name__ == '__main__':
             plt.imshow(image_array)
             plt.ion()
             plt.show()
-            raw_input("Press ENTER to continue.")
+            input("Press ENTER to continue.")
     print()
     print("Done!")
     print()
