@@ -17,8 +17,8 @@ def get_signals(phase_stepping_curves, flat=None, n_periods=1):
             phase_stepping_curves,
             n_phase_steps,
             axis=0)
-    a0 = np.abs(transformed[0, :, :]) 
-    a1 = np.abs(transformed[n_periods, :, :]) 
+    a0 = np.abs(transformed[0, :, :])
+    a1 = np.abs(transformed[n_periods, :, :])
     phi1 = np.angle(transformed[n_periods, :, :])
     if flat:
         a0_flat, phi_flat, a1_flat = flat
@@ -36,4 +36,3 @@ def subtract_drift(image):
             (image.shape[1], 1)).transpose()
     corrected_image = image - correction
     return corrected_image
- 
