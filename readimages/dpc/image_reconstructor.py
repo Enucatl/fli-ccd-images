@@ -20,7 +20,7 @@ from readimages.projections.get_projection_stack import get_projection_stack
 class ImageReconstructor(object):
     """Reconstruct the three signals from the phase stepping curve of the
     grating interferometer.
-    
+
     """
 
     def __init__(self, image_files,
@@ -31,7 +31,7 @@ class ImageReconstructor(object):
             extension,
             overwrite):
         self.overwrite = overwrite
-        self.image_array = get_projection_stack(image_files, pixel, 
+        self.image_array = get_projection_stack(image_files, pixel,
                 roi, overwrite)
         self.flat_image = get_projection_stack(flat_files, pixel,
                 roi, overwrite)
@@ -95,7 +95,7 @@ class ImageReconstructor(object):
         self.flat_parameters = (average_absorption,
                 average_phase,
                 average_dark_field)
-        self.n_lines = self.image_array.shape[0] // self.n_steps 
+        self.n_lines = self.image_array.shape[0] // self.n_steps
         if self.image_array.shape[0] % self.n_steps:
             raise ValueError("""
             wrong number of steps,
@@ -127,11 +127,13 @@ class ImageReconstructor(object):
 
         """
         if not self.exists_in_file:
-            images = get_signals( 
+            images = get_signals(
                 self.images,
                 self.flat_parameters,
                 self.n_periods)
-            self.absorption_image, self.differential_phase_image, self.dark_field_image = images
+            (self.absorption_image,
+             self.differential_phase_image,
+             self.dark_field_image) = images
         else:
             print("dpc_radiography: result already saved in file.")
             print(progress_bar(1))
@@ -143,7 +145,9 @@ class ImageReconstructor(object):
 
         """
         if not self.exists_in_file:
-            images = self.absorption_image, self.differential_phase_image, self.dark_field_image
+            images = (self.absorption_image,
+                      self.differential_phase_image,
+                      self.dark_field_image)
             for name, image in zip(self.set_names(), images):
                 self.output_directory.create_dataset(
                         name,
@@ -222,4 +226,4 @@ class ImageReconstructor(object):
         self.differential_phase_image_title += " (drift corrected)"
         self.differential_phase_image = subtract_drift(
                 self.differential_phase_image)
-        
+
