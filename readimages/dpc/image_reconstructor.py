@@ -226,4 +226,3 @@ class ImageReconstructor(object):
         self.differential_phase_image_title += " (drift corrected)"
         self.differential_phase_image = subtract_drift(
                 self.differential_phase_image)
-
