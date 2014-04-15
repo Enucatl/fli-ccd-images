@@ -28,6 +28,7 @@ def hadd(files):
         output_name = "{0}_{1}.hdf5".format(
             first_name, last_name)
         output_name_with_dir = os.path.join(dir_name, output_name)
+
         #Don't overwrite
         if not os.path.exists(output_name_with_dir):
             output_file = h5py.File(output_name_with_dir, "w-")
