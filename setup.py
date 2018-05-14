@@ -4,11 +4,10 @@ from distribute_setup import use_setuptools
 use_setuptools()
 
 from setuptools import setup, find_packages
-from version import get_git_version
 
 setup(
     name = "ReadImages",
-    version = get_git_version(),
+    version = "0",
     packages = find_packages(),
     scripts = [
         'bin/ccdfli_viewer.py',
